@@ -16,3 +16,4 @@ source:
   page: linux/journalctl.md
   commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
   license: CC-BY-4.0
+  example: 1

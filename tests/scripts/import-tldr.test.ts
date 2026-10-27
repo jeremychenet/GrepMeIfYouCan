@@ -141,7 +141,7 @@ describe('buildDrafts', () => {
           category: 'linux',
           tags: ['files'],
           danger: 'safe',
-          source: { type: 'tldr', page: 'common/demo.md', commit: SHA, license: 'CC-BY-4.0' },
+          source: { type: 'tldr', page: 'common/demo.md', commit: SHA, license: 'CC-BY-4.0', example: 1 },
         },
       },
     ]);
@@ -211,7 +211,7 @@ describe('writeDrafts', () => {
     category: 'linux' as const,
     card: { id, title: 'T', description: '', command, tool: 'ls', category: 'linux', tags: ['x'], danger: 'safe' } as Card,
   });
-  const published = { ids: new Set(['published']), sources: new Set(['common/ls.md\nls -la']) };
+  const published = { ids: new Set(['published']), sources: new Set(['common/ls.md#2']) };
   const opts = (force = false) => ({ outDir: join(dir, 'drafts'), published, force });
   const file = (id: string) => join(dir, 'drafts', 'linux', `${id}.yaml`);
 
@@ -236,23 +236,26 @@ describe('writeDrafts', () => {
     expect(existsSync(file('published'))).toBe(false);
   });
 
-  it('recognizes a published card renamed during review by its source page and command', () => {
-    const renamed = draft('old-id', 'ls -la');
-    renamed.card.source = { type: 'tldr', page: 'common/ls.md' };
-    expect(writeDrafts([renamed], opts())).toMatchObject({ published: 1, created: 0 });
+  it('recognizes a published card rewritten during review by its source page and example number', () => {
+    const rewritten = draft('old-id', 'ls --all');
+    rewritten.card.source = { type: 'tldr', page: 'common/ls.md', example: 2 };
+    expect(writeDrafts([rewritten], opts())).toMatchObject({ published: 1, created: 0 });
+    rewritten.card.source = { type: 'tldr', page: 'common/ls.md', example: 3 };
+    expect(writeDrafts([rewritten], opts())).toMatchObject({ published: 0, created: 1 });
   });
 });
 
 describe('readPublished', () => {
   it('indexes ids and tldr sources, and tolerates broken or original cards', () => {
     mkdirSync(join(dir, 'linux'));
-    writeFileSync(join(dir, 'linux', 'a.yaml'), 'command: ls -la\nsource: { type: tldr, page: common/ls.md }\n');
+    writeFileSync(join(dir, 'linux', 'a.yaml'), 'command: ls -la\nsource: { type: tldr, page: common/ls.md, example: 2 }\n');
+    writeFileSync(join(dir, 'linux', 'd.yaml'), 'command: ls\nsource: { type: tldr, page: common/ls.md }\n');
     writeFileSync(join(dir, 'linux', 'b.yaml'), 'command: x\nsource: { type: original }\n');
     writeFileSync(join(dir, 'linux', 'c.yaml'), 'command: [unclosed\n');
     writeFileSync(join(dir, 'linux', 'notes.txt'), 'ignored');
     expect(readPublished(join(dir))).toEqual({
-      ids: new Set(['a', 'b', 'c']),
-      sources: new Set(['common/ls.md\nls -la']),
+      ids: new Set(['a', 'b', 'c', 'd']),
+      sources: new Set(['common/ls.md#2']),
     });
     expect(readPublished(join(dir, 'missing'))).toEqual({ ids: new Set(), sources: new Set() });
   });

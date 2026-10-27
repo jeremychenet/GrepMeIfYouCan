@@ -202,7 +202,7 @@ export async function buildDrafts(selection: Selection, read: PageReader): Promi
           tags: entry.tags,
           danger: suggestDanger(conversion.command),
           ...(entry.page.startsWith('linux/') ? { platforms: ['linux'] } : {}),
-          source: { type: 'tldr', page: entry.page, commit: selection.tldr.commit, license: 'CC-BY-4.0' },
+          source: { type: 'tldr', page: entry.page, commit: selection.tldr.commit, license: 'CC-BY-4.0', example: number },
         };
         result.drafts.push({ category, card });
         for (const note of conversion.notes) result.notes.push({ id, note });
@@ -228,10 +228,10 @@ export function renderDraft(card: Card): string {
 /** Cards already in content/commands: those drafts were reviewed and moved, never recreate them. */
 export interface Published {
   ids: Set<string>;
-  /** `<source page>\n<command>` of published tldr cards, to recognize a card whose id was renamed. */
+  /** `<page>#<example>` of published tldr cards: recognizes a card even after its id and command were rewritten. */
   sources: Set<string>;
 }
-const sourceKey = (page: unknown, command: unknown) => `${page}\n${command}`;
+const sourceKey = (page: unknown, example: unknown) => `${page}#${example}`;
 
 export interface WriteOptions {
   outDir: string;
@@ -251,8 +251,8 @@ export interface WriteCounts {
 export function writeDrafts(drafts: Draft[], { outDir, published, force }: WriteOptions): WriteCounts {
   const counts: WriteCounts = { created: 0, updated: 0, unchanged: 0, kept: 0, published: 0 };
   for (const { category, card } of drafts) {
-    const source = card.source as { page?: string } | undefined;
-    if (published.ids.has(card.id) || published.sources.has(sourceKey(source?.page, card.command))) {
+    const source = card.source as { page?: string; example?: number } | undefined;
+    if (published.ids.has(card.id) || published.sources.has(sourceKey(source?.page, source?.example))) {
       counts.published++;
       continue;
     }
@@ -284,13 +284,13 @@ export function readPublished(root: string): Published {
   if (!existsSync(root)) return published;
   for (const file of readdirSync(root, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.yaml'))) {
     published.ids.add(file.split('/').pop()!.replace(/\.yaml$/, ''));
-    let card: { source?: { page?: unknown }; command?: unknown } | null = null;
+    let card: { source?: { page?: unknown; example?: unknown } } | null = null;
     try {
       card = parseYaml(readFileSync(join(root, file), 'utf8'));
     } catch {
       continue;
     }
-    if (card?.source?.page) published.sources.add(sourceKey(card.source.page, card.command));
+    if (card?.source?.page && card.source.example) published.sources.add(sourceKey(card.source.page, card.source.example));
   }
   return published;
 }

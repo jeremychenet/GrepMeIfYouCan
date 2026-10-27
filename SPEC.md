@@ -141,6 +141,7 @@ source:
   page: common/find.md
   commit: <sha tldr épinglé>
   license: CC-BY-4.0
+  example: 1            # optionnel : numéro de l'exemple dans la page tldr (à partir de 1)
 ```
 - Le schéma est validé au build (Zod ou JSON Schema). Tout fichier invalide fait échouer la CI.
 - `id` est unique et sert de slug d'URL.
@@ -157,7 +158,7 @@ source:
   3. Chaque exemple tldr devient une fiche : texte de l'exemple tldr → `title`, ligne de code → `command`. Les placeholders `{{...}}` sont conservés. tldr ne fournit pas de phrase expliquant ce que fait la commande : la `description` est donc **rédigée pour chaque fiche importée** (brouillon possible, puis relue dans la PR d'import). Une fiche sans description valide ne passe pas la CI.
   4. Le `danger` est pré-rempli par le linter (voir §7.2), puis revu manuellement.
   5. Conversion des placeholders tldr : `{{path/to/file}}` est conservé ; `{{[-r|--recursive]}}` et `{{[ps|container ls]}}` deviennent la forme longue écrite en dur ; une URL devient `{{url:<URL>}}` ; tout autre `:` dans un placeholder devient `_` (signalé à la relecture). Les exemples avec accolades échappées (`\{\{`), accolades ambiguës (`{{{`), caractères non ASCII ou invisibles sont écartés et listés dans le rapport.
-  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même page source + même commande) n'est pas recréée.
+  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même `source.page` + `source.example`) n'est pas recréée, même si son titre et sa commande ont été réécrits. Un exemple écarté à la relecture est aussi retiré de `scripts/tldr-selection.yaml`.
 - Le résultat est commité via **une PR relue** comme n'importe quelle contribution.
 - **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous une licence à choisir (MIT proposée).
 
