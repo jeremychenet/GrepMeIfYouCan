@@ -1,6 +1,6 @@
 ---
 // About and Privacy pages arrive in J15; links are in place already.
-const REPO = 'https://github.com/jeremychenet/GrepMeIfYouCan';
+import { REPO_URL } from '../lib/github';
 ---
 
 <footer class="site-footer">
@@ -9,7 +9,7 @@ const REPO = 'https://github.com/jeremychenet/GrepMeIfYouCan';
       <ul>
         <li><a href="/about">About</a></li>
         <li><a href="/privacy">Privacy</a></li>
-        <li><a href={REPO} rel="noopener">GitHub</a></li>
+        <li><a href={REPO_URL} rel="noopener">GitHub</a></li>
       </ul>
     </nav>
     <p class="muted">

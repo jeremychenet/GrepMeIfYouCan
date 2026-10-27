@@ -1,9 +1,11 @@
 ---
 // A command card (SPEC §2.4). `full` is the /c/<id> page; `compact` is a
-// list item on tool and category pages, linking to the card page.
+// list item on tool and category pages and in search results, linking to the
+// card page. Tags link to the search filtered by that tag.
+// src/components/ResultsList.ts fills a copy of this markup: keep them in sync.
 // Copy / Favorite / Report actions arrive in J12, J14 and J15.
 import type { Command } from '../content/schema';
-import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, toolPath } from '../lib/pages';
+import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, tagSearchPath, toolPath } from '../lib/pages';
 import CommandText from './CommandText.astro';
 import DangerBadge from './DangerBadge.astro';
 
@@ -42,6 +44,20 @@ const source = sourceUrl(card);
   <CommandText command={card.command} scroll={full} />
 
   {
+    !full && (
+      <ul class="tags" aria-label="Tags">
+        {card.tags.map((t) => (
+          <li>
+            <a href={tagSearchPath(t)} data-tag={t}>
+              {t}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
     full && (
       <dl class="meta">
         <div>
@@ -67,7 +83,11 @@ const source = sourceUrl(card);
           <dd>
             <ul class="tags">
               {card.tags.map((t) => (
-                <li>{t}</li>
+                <li>
+                  <a href={tagSearchPath(t)} data-tag={t}>
+                    {t}
+                  </a>
+                </li>
               ))}
             </ul>
           </dd>
@@ -173,13 +193,21 @@ const source = sourceUrl(card);
     list-style: none;
   }
 
-  .tags li {
+  .tags a {
+    display: block;
     padding: 0 var(--space-2);
+    color: var(--color-text-muted);
     background: var(--color-surface-2);
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     line-height: 1.75;
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
   }
 
   .attribution {

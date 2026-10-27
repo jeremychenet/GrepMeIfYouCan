@@ -1,13 +1,16 @@
 // Checks the built site in dist/ (PLAN J10): one page per card, tool and
 // category; a title, meta description and canonical URL on every page;
-// danger badges/warnings on card pages; a sitemap listing every page.
+// danger badges/warnings on card pages; a sitemap listing every page; a
+// search index with one up-to-date entry per card (J11).
 // Runs in CI after `npm run build`: `tsx scripts/check-dist.ts [--dist dir] [--site url]`.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
 import { validateEntries } from '../src/content/validate';
 import type { Command } from '../src/content/schema';
 import { cardPath, expectedPages } from '../src/lib/pages';
+import { toSearchDoc } from '../src/lib/search';
 import { canonicalUrl, siteUrl } from '../src/lib/site';
 import { readEntries } from './validate-content';
 
@@ -89,6 +92,34 @@ function checkSitemap(dist: string, urls: string[]): string[] {
   return errors;
 }
 
+const SEARCH_INDEX = 'search-index.json';
+
+function checkSearchIndex(dist: string, commands: readonly Command[]): string[] {
+  const file = join(dist, SEARCH_INDEX);
+  if (!existsSync(file)) return [`${SEARCH_INDEX} is missing`];
+  let entries: unknown;
+  try {
+    entries = JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    entries = null;
+  }
+  if (!Array.isArray(entries)) return [`${SEARCH_INDEX} is not a JSON array`];
+
+  const cards = new Map(commands.map((c) => [c.id, c]));
+  const seen = new Set<string>();
+  const errors: string[] = [];
+  for (const entry of entries as { id?: string }[]) {
+    const id = String(entry?.id);
+    const card = cards.get(id);
+    if (!card) errors.push(`${SEARCH_INDEX}: ${id} matches no card`);
+    else if (seen.has(id)) errors.push(`${SEARCH_INDEX}: ${id} is listed twice`);
+    else if (!isDeepStrictEqual(entry, toSearchDoc(card))) errors.push(`${SEARCH_INDEX}: ${id} is out of date`);
+    seen.add(id);
+  }
+  for (const id of cards.keys()) if (!seen.has(id)) errors.push(`${SEARCH_INDEX}: ${id} is missing`);
+  return errors;
+}
+
 export function checkDist({ dist, content, site }: Options): { errors: string[]; pages: number } {
   if (!existsSync(dist)) return { errors: [`${dist} does not exist: run the build first`], pages: 0 };
   const { entries, parseErrors } = readEntries(content);
@@ -110,6 +141,7 @@ export function checkDist({ dist, content, site }: Options): { errors: string[];
   const wanted = new Set(expected);
   for (const path of files.keys()) if (!wanted.has(path)) errors.push(`${path}: unexpected page`);
   errors.push(...checkSitemap(dist, expected.map((p) => canonicalUrl(site, p))));
+  errors.push(...checkSearchIndex(dist, commands));
   return { errors, pages: expected.length };
 }
 
@@ -120,7 +152,7 @@ export function main(opts: Options, log = console.log, error = console.error): n
     error(`\n✗ ${errors.length} problem(s) in ${opts.dist}`);
     return 1;
   }
-  log(`✓ ${pages} page(s) checked in ${opts.dist} (title, description, canonical, danger, sitemap)`);
+  log(`✓ ${pages} page(s) checked in ${opts.dist} (title, description, canonical, danger, sitemap, search index)`);
   return 0;
 }
 

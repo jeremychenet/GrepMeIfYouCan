@@ -116,6 +116,11 @@ pre {
 }
 
 /* ---- Utilities ---- */
+/* Scoped `display` rules must not override the hidden attribute. */
+[hidden] {
+  display: none !important;
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

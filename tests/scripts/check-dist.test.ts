@@ -70,6 +70,20 @@ function buildSite() {
     '/categories/linux',
   ].map((p) => `<url><loc>${p === '/' ? `${SITE}/` : SITE + p}</loc></url>`);
   write(join(dist, 'sitemap-0.xml'), `<urlset>${urls.join('')}</urlset>`);
+  write(join(dist, 'search-index.json'), JSON.stringify(CARDS.map(searchDoc)));
+}
+
+function searchDoc(c: (typeof CARDS)[number]) {
+  return {
+    id: c.id,
+    title: `Title of ${c.id}`,
+    description: c.description,
+    command: `${c.tool} x`,
+    tool: c.tool,
+    category: 'linux',
+    tags: ['x'],
+    danger: c.danger,
+  };
 }
 
 const check = () => checkDist({ dist, content, site: SITE });
@@ -144,6 +158,24 @@ describe('checkDist', () => {
     expect(errors).toContain(`sitemap: unexpected ${SITE}/old`);
     rmSync(join(dist, 'sitemap-index.xml'));
     expect(check().errors).toContain('sitemap-index.xml is missing');
+  });
+
+  it('requires a search index with exactly one up-to-date entry per card', () => {
+    const index = join(dist, 'search-index.json');
+    const [a, b, c] = CARDS.map(searchDoc);
+    write(index, JSON.stringify([a, { ...b, title: 'Stale' }, b, { ...c, id: 'ghost' }]));
+    expect(check().errors).toEqual([
+      'search-index.json: svc-restart is out of date',
+      'search-index.json: svc-restart is listed twice',
+      'search-index.json: ghost matches no card',
+      'search-index.json: rm-dir is missing',
+    ]);
+    write(index, '{"not": "a list"}');
+    expect(check().errors).toEqual(['search-index.json is not a JSON array']);
+    write(index, '[');
+    expect(check().errors).toEqual(['search-index.json is not a JSON array']);
+    rmSync(index);
+    expect(check().errors).toEqual(['search-index.json is missing']);
   });
 
   it('fails clearly when dist or the content is unusable', () => {

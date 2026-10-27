@@ -37,10 +37,13 @@ Une fiche n'est pas une page outil. La page outil (`find`) regroupe les fiches q
 - Barre de recherche toujours visible, focus avec `/` ou `⌘K` / `Ctrl+K`.
 - **Recherche fuzzy instantanée, côté client**, à chaque frappe, sans appel réseau.
   - Champs indexés et pondérés : titre > nom de l'outil > tags > commande > description.
-  - Tolérance aux fautes de frappe, recherche par préfixe.
+  - Tolérance aux fautes de frappe, recherche par préfixe. Fautes admises par mot : aucune jusqu'à 3 lettres, 1 jusqu'à 6, 2 au-delà (une inversion de deux lettres compte pour 2).
+  - Les fiches qui contiennent tous les mots de la requête viennent en premier, puis celles qui en contiennent au moins un (« list open ports » trouve aussi une fiche qui ne dit jamais « open »).
   - Lib : MiniSearch (de préférence) ou Fuse.js.
-- **Filtres** par catégorie (chips) et par tag. Ils se combinent avec la requête.
-- L'état de la recherche est reflété dans l'URL (`?q=large+files&cat=linux`), donc partageable.
+  - Au plus 50 résultats affichés ; la ligne de statut indique le total.
+- **Filtres** par catégorie (chips, une seule à la fois) et par tag (plusieurs possibles, combinés en ET ; on ajoute un tag en cliquant sur un tag d'une fiche). Ils se combinent avec la requête.
+- L'état de la recherche est reflété dans l'URL (`?q=large+files&cat=linux&tag=disk`), donc partageable. Les tags d'une fiche pointent vers `/?tag=<tag>`.
+- Sans requête ni filtre, l'accueil affiche la liste des catégories.
 - Un état « aucun résultat » propose un lien « Suggest this command » (formulaire d'issue prérempli avec la requête).
 
 ### 2.4 Fiche commande

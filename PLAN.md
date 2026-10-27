@@ -158,7 +158,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] `sitemap-index.xml` est généré.
 - [x] Les fiches `destructive` affichent le badge rouge et l'avertissement, les `caution` le badge orange.
 
-### - [ ] J11 — Recherche instantanée + filtres
+### - [x] J11 — Recherche instantanée + filtres
 **Objectif** : trouver une commande en tapant quelques mots, avec tolérance aux fautes.
 **Fichiers**
 - `src/pages/search-index.json.ts` (index généré au build)
@@ -168,10 +168,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `tests/lib/search.test.ts`
 
 **Validation**
-- [ ] Les tests de pertinence placent la bonne fiche dans le top 3 : « large files », « restart service », « delete pod », « undo last commit », « terraform plan », « list open ports », et « larg fles » (faute de frappe).
-- [ ] Recherche en moins de 50 ms sur 1000 fiches (benchmark Vitest avec des données générées).
-- [ ] Les filtres catégorie et tag se combinent avec la requête. L'état est dans l'URL et survit au rechargement.
-- [ ] Aucun résultat : un lien « Suggest this command » apparaît.
+- [x] Les tests de pertinence placent la bonne fiche dans le top 3 : « large files », « restart service », « delete pod », « undo last commit », « terraform plan », « list open ports », et « larg fles » (faute de frappe).
+- [x] Recherche en moins de 50 ms sur 1000 fiches (benchmark Vitest avec des données générées).
+- [x] Les filtres catégorie et tag se combinent avec la requête. L'état est dans l'URL et survit au rechargement.
+- [x] Aucun résultat : un lien « Suggest this command » apparaît.
 
 ### - [ ] J12 — Variables éditables + copie sécurisée
 **Objectif** : adapter la commande puis la copier sans risque.
