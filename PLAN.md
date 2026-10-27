@@ -144,7 +144,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Contrastes AA vérifiés dans les deux thèmes (axe DevTools : 0 erreur de contraste).
 - [x] Aucune requête vers un domaine tiers (onglet Réseau).
 
-### - [ ] J10 — Pages statiques des fiches, outils et catégories
+### - [x] J10 — Pages statiques des fiches, outils et catégories
 **Objectif** : chaque fiche a sa page, indexable et partageable.
 **Fichiers**
 - `src/pages/c/[id].astro`, `src/pages/tools/[tool].astro`, `src/pages/categories/[category].astro`
@@ -153,10 +153,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `astro.config.mjs` (sitemap, `site: PUBLIC_BASE_URL`)
 
 **Validation**
-- [ ] Le build génère une page par fiche, par outil et par catégorie (nombre vérifié par un test).
-- [ ] Chaque page a un `<title>`, une meta description (= description de la fiche) et une URL canonique.
-- [ ] `sitemap-index.xml` est généré.
-- [ ] Les fiches `destructive` affichent le badge rouge et l'avertissement, les `caution` le badge orange.
+- [x] Le build génère une page par fiche, par outil et par catégorie (nombre vérifié par un test).
+- [x] Chaque page a un `<title>`, une meta description (= description de la fiche) et une URL canonique.
+- [x] `sitemap-index.xml` est généré.
+- [x] Les fiches `destructive` affichent le badge rouge et l'avertissement, les `caution` le badge orange.
 
 ### - [ ] J11 — Recherche instantanée + filtres
 **Objectif** : trouver une commande en tapant quelques mots, avec tolérance aux fautes.
@@ -272,7 +272,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 **Fichiers**
 - `docker/web.Dockerfile` (stage `prod` : build Astro → Nginx non-root)
 - `compose.prod.yaml` (images taguées, `read_only`, `cap_drop`, `no-new-privileges`, limites, healthchecks, rotation des logs)
-- `docker/nginx/nginx.prod.conf` (TLS, redirections `www` → apex et HTTP → HTTPS, `/healthz`)
+- `docker/nginx/nginx.prod.conf` (TLS, redirections `www` → apex et HTTP → HTTPS, `/healthz`, `try_files $uri $uri.html =404` : le build écrit `c/<id>.html` pour servir `/c/<id>`)
 - `Makefile` (`prod-local`)
 
 **Validation**

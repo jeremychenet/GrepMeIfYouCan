@@ -53,7 +53,7 @@ Chaque fiche affiche :
 - les actions : **Copier**, **Favori ★**, **Report an issue** ;
 - la source et l'attribution (ex. « Adapted from tldr-pages, CC BY 4.0 »).
 
-Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien.
+Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (fichiers `c/<id>.html`). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique et des balises Open Graph, et figure dans `sitemap-index.xml`. `scripts/check-dist.ts` vérifie tout cela en CI après le build.
 
 ### 2.5 Variables éditables
 - Syntaxe dans les données : `{{nom}}` ou `{{nom:valeur_par_défaut}}`, compatible avec les placeholders tldr.
@@ -191,7 +191,7 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 - **Site 100 % statique, pas d'API en v1.** Le seul composant dynamique est Umami (analytics).
 - **Même domaine** pour le site et les stats : pas de CORS, CSP simple.
 - **Domaine de production : `grepmeifyoucan.com`**. URL canonique `https://grepmeifyoucan.com` ; `www.grepmeifyoucan.com` redirige en 301 vers l'apex.
-  - `PUBLIC_BASE_URL=https://grepmeifyoucan.com` : utilisé pour le sitemap, les URL canoniques et les liens de partage.
+  - `PUBLIC_BASE_URL=https://grepmeifyoucan.com` : utilisé pour le sitemap, les URL canoniques et les liens de partage. Valeur par défaut si la variable est absente (en CI par exemple).
   - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS activé progressivement (`max-age` court d'abord, puis 1 an ; `preload` envisagé ensuite).
   - DNS : enregistrements A/AAAA vers le serveur, CAA limité à Let's Encrypt.
 

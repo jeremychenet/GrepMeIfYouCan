@@ -1,0 +1,31 @@
+---
+// Responsive list of compact cards: one column on mobile, two from 1024px.
+---
+
+<ul class="card-list">
+  <slot />
+</ul>
+
+<style>
+  .card-list {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .card-list > :global(li) {
+    display: flex;
+    min-width: 0;
+  }
+
+  .card-list > :global(li) > :global(*) {
+    flex: 1;
+  }
+
+  @media (min-width: 1024px) {
+    .card-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

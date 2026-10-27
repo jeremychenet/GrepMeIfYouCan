@@ -22,6 +22,7 @@ export default defineConfig({
         'src/content/schema.ts': CRITICAL,
         'src/lib/danger-patterns.ts': CRITICAL,
         'src/lib/unsafe-chars.ts': CRITICAL,
+        'src/lib/template.ts': CRITICAL,
         'scripts/lint-danger.ts': CRITICAL,
       },
     },

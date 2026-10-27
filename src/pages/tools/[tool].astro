@@ -1,0 +1,37 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import CardList from '../../components/CardList.astro';
+import CommandCard from '../../components/CommandCard.astro';
+import Base from '../../layouts/Base.astro';
+import { groupBy, toolPageMeta } from '../../lib/pages';
+
+export const getStaticPaths = (async () => {
+  const cards = (await getCollection('commands')).map((e) => e.data);
+  return [...groupBy(cards, (c) => c.tool)].map(([tool, list]) => ({
+    params: { tool },
+    props: { tool, cards: list },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tool, cards } = Astro.props;
+const meta = toolPageMeta(tool, cards);
+---
+
+<Base title={meta.title} description={meta.description}>
+  <h1><code>{tool}</code></h1>
+  <p class="muted count">{cards.length} {cards.length === 1 ? 'command' : 'commands'}</p>
+  <CardList>
+    {cards.map((card) => <li><CommandCard card={card} level={2} /></li>)}
+  </CardList>
+</Base>
+
+<style>
+  h1 {
+    font-size: var(--text-xl);
+  }
+
+  .count {
+    margin-block: var(--space-1) var(--space-6);
+  }
+</style>

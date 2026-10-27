@@ -1,0 +1,42 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import CommandCard from '../../components/CommandCard.astro';
+import Base from '../../layouts/Base.astro';
+import { CATEGORY_LABELS, categoryPath, toolPath } from '../../lib/pages';
+
+export const getStaticPaths = (async () => {
+  const cards = await getCollection('commands');
+  return cards.map(({ data }) => ({ params: { id: data.id }, props: { card: data } }));
+}) satisfies GetStaticPaths;
+
+const { card } = Astro.props;
+---
+
+<Base title={card.title} description={card.description}>
+  <nav aria-label="Breadcrumb" class="breadcrumb">
+    <ol>
+      <li><a href={categoryPath(card.category)}>{CATEGORY_LABELS[card.category]}</a></li>
+      <li><a href={toolPath(card.tool)}>{card.tool}</a></li>
+    </ol>
+  </nav>
+  <CommandCard card={card} variant="full" />
+</Base>
+
+<style>
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  .breadcrumb li + li::before {
+    content: '/';
+    margin-right: var(--space-2);
+    color: var(--color-text-muted);
+  }
+</style>
