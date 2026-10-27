@@ -98,7 +98,8 @@ Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par Gi
 ### 3.1 Direction : « Terminal moderne »
 Références : Raycast, Warp, Linear.
 - **Thème sombre par défaut**, thème clair disponible. Le choix est mémorisé, et `prefers-color-scheme` est respecté au premier chargement.
-- Police monospace (ex. JetBrains Mono) pour les commandes, sans-serif lisible pour le reste.
+- Police monospace JetBrains Mono (auto-hébergée, woff2 variable, sous-ensemble latin) pour les commandes ; police système (`system-ui`) pour le reste, pour ne charger qu'un seul fichier de police.
+- Le thème est appliqué avant le premier affichage par un petit script externe bloquant (`/theme-init.js`), compatible CSP. Sans JavaScript, le site reste en thème sombre et le bouton de thème est masqué.
 - Interface dense : beaucoup de résultats visibles, peu de décor, pas d'effet rétro (pas de CRT ni de « vert matrix »).
 - Couleur d'accent sobre. Les couleurs de danger (orange, rouge) sont réservées au danger.
 
@@ -172,7 +173,7 @@ source:
 ## 5. Données & vie privée
 
 - **Aucun compte, aucune donnée personnelle stockée côté serveur en v1.**
-- Données conservées sur l'appareil de l'utilisateur uniquement : favoris, historique de copie, thème choisi.
+- Données conservées sur l'appareil de l'utilisateur uniquement : favoris, historique de copie, thème choisi (clé `gmiyc:v1:theme`).
 - Analytics Umami sans cookies et sans données personnelles (voir §6.4). Les logs Nginx ont une rétention limitée (14 jours).
 - Une page « Privacy » explique ces points simplement.
 - **Comptes utilisateurs (OAuth GitHub/Google) et synchronisation multi-appareils : reportés en v2** (voir §9).

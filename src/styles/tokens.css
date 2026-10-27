@@ -1,0 +1,89 @@
+/*
+ * Design tokens (SPEC §3.1 "modern terminal").
+ * Colors exist in both themes with the same names; tests/styles/contrast.test.ts
+ * checks WCAG AA on every text/background pair, so keep colors as 6-digit hex.
+ * Danger colors (caution, destructive) are reserved for danger levels.
+ */
+
+/* JetBrains Mono 2.304, variable weight, latin subset, from
+   @fontsource-variable/jetbrains-mono 5.3.0. License: public/fonts/JetBrainsMono-OFL.txt */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif;
+  --font-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --content-max: 72rem;
+  /* Minimum touch target (SPEC §3.3). */
+  --tap-min: 44px;
+  --focus-width: 2px;
+}
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #0d1117;
+  --color-surface: #151b23;
+  --color-surface-2: #1d2530;
+  --color-border: #2a333f;
+  --color-border-strong: #6b7685;
+  --color-text: #e6edf3;
+  --color-text-muted: #9ba7b4;
+  --color-accent: #4fc1e9;
+  --color-on-accent: #0d1117;
+  --color-focus: #4fc1e9;
+  --color-caution: #f0a442;
+  --color-caution-bg: #2b2112;
+  --color-destructive: #ff7b72;
+  --color-destructive-bg: #2d1517;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-surface: #f6f8fa;
+  --color-surface-2: #eaeef2;
+  --color-border: #d6dbe1;
+  --color-border-strong: #7d8590;
+  --color-text: #1f2328;
+  --color-text-muted: #57606a;
+  --color-accent: #0a6680;
+  --color-on-accent: #ffffff;
+  --color-focus: #0a6680;
+  --color-caution: #8a4b00;
+  --color-caution-bg: #fff4e0;
+  --color-destructive: #b42318;
+  --color-destructive-bg: #fdecea;
+}
