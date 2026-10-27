@@ -1,0 +1,63 @@
+# Pages imported from tldr-pages by scripts/import-tldr.ts (SPEC §4.2).
+#
+# - commit: tldr-pages commit every page is read at. Bumping it is a
+#   reviewed change: re-run `make import-tldr` and review the diff.
+# - page: path under tldr's pages/ folder (common/… or linux/…).
+# - tool: the card's `tool` (docker-container-run.md → docker).
+# - tags: tags given to every card of the page (kebab-case).
+# - examples: 1-based numbers of the examples to keep (default: all).
+tldr:
+  repo: tldr-pages/tldr
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+
+categories:
+  linux:
+    - { page: common/find.md, tool: find, tags: [files, search], examples: [1, 3, 4, 5, 8] }
+    - { page: common/grep.md, tool: grep, tags: [search, text], examples: [1, 2, 3, 4, 6, 7, 8] }
+    - { page: common/tar.md, tool: tar, tags: [archive, compression], examples: [2, 3, 4, 5, 7] }
+    - { page: common/rsync.md, tool: rsync, tags: [sync, transfer, files], examples: [2, 3, 5, 7, 8] }
+    - { page: common/ssh.md, tool: ssh, tags: [remote, network], examples: [1, 2, 5, 6, 7] }
+    - { page: linux/systemctl.md, tool: systemctl, tags: [services, systemd], examples: [1, 2, 3, 4, 5, 8] }
+    - { page: linux/journalctl.md, tool: journalctl, tags: [logs, systemd], examples: [1, 2, 3, 4, 5, 8] }
+    - { page: common/du.md, tool: du, tags: [disk, files], examples: [2, 3, 5, 7] }
+    - { page: linux/df.md, tool: df, tags: [disk, filesystem], examples: [2, 3, 4] }
+    - { page: linux/ss.md, tool: ss, tags: [network, sockets], examples: [1, 3, 4, 5] }
+    - { page: common/chmod.md, tool: chmod, tags: [permissions, files], examples: [1, 7, 8] }
+    - { page: common/curl.md, tool: curl, tags: [http, network], examples: [1, 2, 3, 4] }
+
+  containers:
+    - { page: common/docker-container-run.md, tool: docker, tags: [run], examples: [2, 3, 4, 5, 6, 7] }
+    - { page: common/docker-container-ls.md, tool: docker, tags: [list], examples: [1, 2, 4, 7] }
+    - { page: common/docker-container-logs.md, tool: docker, tags: [logs], examples: [2, 3, 4] }
+    - { page: common/docker-container-exec.md, tool: docker, tags: [shell, debug], examples: [1, 2, 6] }
+    - { page: common/docker-image-ls.md, tool: docker, tags: [images, list], examples: [1, 4] }
+    - { page: common/docker-compose.md, tool: docker, tags: [compose], examples: [2, 3, 4, 5, 6, 8] }
+    - { page: common/kubectl-get.md, tool: kubectl, tags: [kubernetes, list], examples: [3, 4, 5, 7, 8] }
+    - { page: common/kubectl-logs.md, tool: kubectl, tags: [kubernetes, logs], examples: [2, 4, 5, 7] }
+    - { page: common/kubectl-describe.md, tool: kubectl, tags: [kubernetes, debug], examples: [1, 3, 5] }
+    - { page: common/kubectl-apply.md, tool: kubectl, tags: [kubernetes, deploy], examples: [1, 2, 3] }
+    - { page: common/helm.md, tool: helm, tags: [kubernetes, charts], examples: [1, 2, 4, 5, 6, 8] }
+    - { page: common/podman.md, tool: podman, tags: [containers], examples: [1, 2, 4, 6, 8] }
+
+  cloud-iac:
+    - { page: common/terraform.md, tool: terraform, tags: [iac] }
+    - { page: common/terraform-plan.md, tool: terraform, tags: [iac, plan], examples: [2, 3, 4, 5, 6, 7] }
+    - { page: common/ansible-playbook.md, tool: ansible, tags: [automation, playbook] }
+    - { page: common/ansible.md, tool: ansible, tags: [automation, ad-hoc] }
+    - { page: common/aws-s3.md, tool: aws, tags: [aws, s3, storage] }
+    - { page: common/aws-ec2.md, tool: aws, tags: [aws, ec2, compute], examples: [1, 2, 3, 4, 5, 6] }
+    - { page: common/gcloud.md, tool: gcloud, tags: [gcp], examples: [1, 2, 3, 4, 5, 6, 7] }
+    - { page: common/az.md, tool: az, tags: [azure], examples: [1, 3, 4] }
+
+  git-ci:
+    - { page: common/git-log.md, tool: git, tags: [history], examples: [2, 3, 4, 5, 6, 7, 8] }
+    - { page: common/git-commit.md, tool: git, tags: [commit], examples: [2, 4, 6, 7] }
+    - { page: common/git-branch.md, tool: git, tags: [branch], examples: [1, 3, 4, 6, 7] }
+    - { page: common/git-rebase.md, tool: git, tags: [rebase, history], examples: [1, 2, 3, 5, 6] }
+    - { page: common/git-stash.md, tool: git, tags: [stash], examples: [1, 2, 4, 6, 8] }
+    - { page: common/git-reset.md, tool: git, tags: [undo], examples: [2, 4, 5, 6, 7] }
+    - { page: common/git-diff.md, tool: git, tags: [diff], examples: [1, 3, 5, 7] }
+    - { page: common/git-push.md, tool: git, tags: [remote, push], examples: [3, 4, 6, 7] }
+    - { page: common/gh-pr.md, tool: gh, tags: [github, pull-request], examples: [1, 2, 3, 5, 8] }
+    - { page: common/gh-run.md, tool: gh, tags: [github, ci], examples: [2, 4, 6, 8] }
+    - { page: common/gh-workflow.md, tool: gh, tags: [github, ci], examples: [3, 5, 6] }
