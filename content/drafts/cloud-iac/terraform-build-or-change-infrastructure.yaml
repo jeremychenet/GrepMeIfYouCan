@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: terraform-build-or-change-infrastructure
+title: Build or change infrastructure
+description: ""
+command: terraform apply
+tool: terraform
+category: cloud-iac
+tags: [ iac ]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

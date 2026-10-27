@@ -1,0 +1,18 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: ss-show-all-tcp-sockets-listening-on-the-local-8080-port
+title: Show all TCP sockets listening on the local 8080 port
+description: ""
+command: ss --listening --tcp src :8080
+tool: ss
+category: linux
+tags: [ network, sockets ]
+danger: safe
+platforms:
+  - linux
+source:
+  type: tldr
+  page: linux/ss.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

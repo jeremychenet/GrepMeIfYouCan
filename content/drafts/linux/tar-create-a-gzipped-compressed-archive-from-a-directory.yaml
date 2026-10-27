@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: tar-create-a-gzipped-compressed-archive-from-a-directory
+title: Create a gzipped (compressed) archive from a directory using relative paths
+description: ""
+command: tar czf {{path/to/target.tar.gz}} --directory {{path/to/directory}} .
+tool: tar
+category: linux
+tags: [ archive, compression ]
+danger: safe
+source:
+  type: tldr
+  page: common/tar.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

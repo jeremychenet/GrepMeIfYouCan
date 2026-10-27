@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: docker-print-last-5-lines
+title: Print last 5 lines
+description: ""
+command: docker container logs {{name|id}} --tail 5
+tool: docker
+category: containers
+tags: [ logs ]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-logs.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

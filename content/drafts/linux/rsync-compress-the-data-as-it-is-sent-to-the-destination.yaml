@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: rsync-compress-the-data-as-it-is-sent-to-the-destination
+title: Compress the data as it is sent to the destination, display verbose and human-readable progress, and keep partially transferred files if interrupted
+description: ""
+command: rsync --compress --verbose --human-readable --partial --progress {{path/to/source}} {{path/to/destination}}
+tool: rsync
+category: linux
+tags: [ sync, transfer, files ]
+danger: safe
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
