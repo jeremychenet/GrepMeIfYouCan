@@ -1,0 +1,172 @@
+---
+// Search box, filters and results of the home page (SPEC §2.3). The markup
+// is static; src/components/SearchBox.ts brings it to life. Result cards are
+// copies of the <template> below, which renders a real CommandCard so results
+// look exactly like the cards of the tool and category pages.
+import type { Command } from '../content/schema';
+import { CATEGORIES } from '../content/schema';
+import { CATEGORY_LABELS } from '../lib/pages';
+import { QUERY_MAX } from '../lib/search-state';
+import CardList from './CardList.astro';
+import CommandCard from './CommandCard.astro';
+import DangerBadge from './DangerBadge.astro';
+
+// Never shown: only its markup is copied (one variable, one tag, a badge).
+const prototype: Command = {
+  id: 'prototype',
+  title: 'Prototype',
+  description: 'Template for search results.',
+  command: 'x {{v}}',
+  tool: 'x',
+  category: 'linux',
+  tags: ['t'],
+  danger: 'destructive',
+  source: { type: 'original' },
+};
+---
+
+<section class="search" aria-label="Search" data-search>
+  <form class="search-form" role="search" action="/" method="get" data-search-form>
+    <label for="search-input" class="visually-hidden">Search commands</label>
+    <input
+      id="search-input"
+      class="search-input"
+      name="q"
+      type="search"
+      placeholder="Search commands, e.g. large files"
+      maxlength={QUERY_MAX}
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      enterkeyhint="search"
+      data-search-input
+    />
+  </form>
+
+  <div class="chips" role="group" aria-label="Filter by category" data-category-chips>
+    <button type="button" class="chip" data-cat="" aria-pressed="true">All</button>
+    {
+      CATEGORIES.map((c) => (
+        <button type="button" class="chip" data-cat={c} aria-pressed="false">
+          {CATEGORY_LABELS[c]}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="active-tags" role="group" aria-label="Active tag filters" hidden data-active-tags>
+  </div>
+
+  <p class="status muted" role="status" data-search-status></p>
+
+  <div hidden data-search-results>
+    <CardList />
+  </div>
+
+  <p class="empty" hidden data-search-empty>
+    No command matches your search.
+    <a href="#" data-suggest-link>Suggest this command</a>
+  </p>
+
+  <template data-result-template>
+    <li><CommandCard card={prototype} /></li>
+  </template>
+  <template data-badge-template>
+    <DangerBadge level="caution" />
+    <DangerBadge level="destructive" />
+  </template>
+  <template data-tag-chip-template>
+    <button type="button" class="chip chip--tag">
+      <span data-tag-name></span>
+      <span aria-hidden="true">×</span>
+    </button>
+  </template>
+</section>
+
+<script>
+  import './SearchBox';
+</script>
+
+<style>
+  .search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+
+  .search-input {
+    width: 100%;
+    min-height: var(--tap-min);
+    padding: var(--space-2) var(--space-4);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  .chips,
+  .active-tags {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .active-tags {
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    flex: none;
+    min-height: 2.25rem;
+    padding: 0 var(--space-3);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    border-color: var(--color-accent);
+  }
+
+  .chip[aria-pressed='true'] {
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .chip--tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+  }
+
+  .status {
+    min-height: 1lh;
+    font-size: var(--text-sm);
+  }
+
+  .status:empty {
+    display: none;
+  }
+
+  .empty {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+</style>

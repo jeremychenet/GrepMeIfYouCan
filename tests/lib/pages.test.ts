@@ -10,6 +10,7 @@ import {
   sortByTitle,
   sourceUrl,
   toolPageMeta,
+  tagSearchPath,
   toolPath,
 } from '../../src/lib/pages';
 
@@ -38,6 +39,7 @@ describe('paths', () => {
   it('builds the public URLs without trailing slash', () => {
     expect(cardPath('chmod-executable')).toBe('/c/chmod-executable');
     expect(toolPath('kubectl')).toBe('/tools/kubectl');
+    expect(tagSearchPath('large-files')).toBe('/?tag=large-files');
     expect(categoryPath('cloud-iac')).toBe('/categories/cloud-iac');
   });
 

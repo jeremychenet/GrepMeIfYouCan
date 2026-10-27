@@ -15,6 +15,8 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 export const cardPath = (id: string) => `/c/${id}`;
 export const toolPath = (tool: string) => `/tools/${tool}`;
 export const categoryPath = (category: string) => `/categories/${category}`;
+/** Home page search filtered by one tag. */
+export const tagSearchPath = (tag: string) => `/?tag=${encodeURIComponent(tag)}`;
 
 const byTitle = (a: Command, b: Command) =>
   a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id);

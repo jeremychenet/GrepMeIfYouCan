@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import SearchApp from '../components/SearchApp.astro';
 import { CATEGORIES } from '../content/schema';
 import { CATEGORY_LABELS, categoryPath } from '../lib/pages';
 
-// Until the search lands (J11), the home page links to the categories.
+// Search first; the category list shows while there is nothing to search.
 const cards = (await getCollection('commands')).map((e) => e.data);
 const categories = CATEGORIES.map((category) => {
   const inCategory = cards.filter((c) => c.category === category);
@@ -22,21 +23,25 @@ const categories = CATEGORIES.map((category) => {
     Search, adapt and copy Linux, container, cloud and Git commands in seconds.
   </p>
 
-  <h2>Browse by category</h2>
-  <ul class="categories">
-    {
-      categories.map(({ category, count, tools }) => (
-        <li>
-          <a href={categoryPath(category)}>
-            <span class="name">{CATEGORY_LABELS[category]}</span>
-            <span class="muted">
-              {count} commands, {tools} tools
-            </span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+  <SearchApp />
+
+  <div data-browse>
+    <h2>Browse by category</h2>
+    <ul class="categories">
+      {
+        categories.map(({ category, count, tools }) => (
+          <li>
+            <a href={categoryPath(category)}>
+              <span class="name">{CATEGORY_LABELS[category]}</span>
+              <span class="muted">
+                {count} commands, {tools} tools
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </Base>
 
 <style>
@@ -45,7 +50,7 @@ const categories = CATEGORIES.map((category) => {
   }
 
   .lead {
-    margin-block: var(--space-2) var(--space-8);
+    margin-block: var(--space-2) var(--space-6);
   }
 
   h2 {
