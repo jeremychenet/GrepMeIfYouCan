@@ -1,6 +1,6 @@
 id: ci-test-card
 title: Find files larger than a given size
-description: Lists big files. Hides errors.
+description: Lists big files while hiding permission errors.
 command: find {{path:/}} -type f -size +{{size:1G}} 2>/dev/null
 tool: find
 category: linux
