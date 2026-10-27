@@ -23,6 +23,7 @@ export default defineConfig({
         'src/lib/danger-patterns.ts': CRITICAL,
         'src/lib/unsafe-chars.ts': CRITICAL,
         'src/lib/template.ts': CRITICAL,
+        'src/lib/copy.ts': CRITICAL,
         'scripts/lint-danger.ts': CRITICAL,
       },
     },

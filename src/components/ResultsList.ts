@@ -4,6 +4,7 @@
 import { cardPath, tagSearchPath } from '../lib/pages';
 import type { SearchDoc } from '../lib/search';
 import { parseTemplate } from '../lib/template';
+import { enhanceCard } from './CommandTemplate';
 
 /** Results shown at most; the status line says when there are more. */
 export const RESULTS_MAX = 50;
@@ -53,6 +54,7 @@ export function createResultsList(root: HTMLElement) {
     const article = required<HTMLElement>(item, 'article');
     article.dataset['card'] = doc.id;
     article.dataset['danger'] = doc.danger;
+    article.dataset['command'] = doc.command;
 
     const link = required<HTMLAnchorElement>(article, '.title a');
     link.href = cardPath(doc.id);
@@ -65,6 +67,8 @@ export function createResultsList(root: HTMLElement) {
     required<HTMLElement>(article, '.description').textContent = doc.description;
     fillCommand(required<HTMLElement>(article, 'pre code'), doc.command);
     fillTags(required<HTMLElement>(article, '.tags'), doc.tags);
+    required<HTMLButtonElement>(article, '[data-copy]').setAttribute('aria-label', `Copy command: ${doc.title}`);
+    enhanceCard(article);
     return item;
   }
 

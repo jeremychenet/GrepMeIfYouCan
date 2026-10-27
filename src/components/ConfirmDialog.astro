@@ -1,0 +1,78 @@
+---
+// Confirmation before the first copy of a destructive command in the session
+// (SPEC §2.7, §7.3). Shows the exact text that will be copied.
+// src/components/ConfirmDialog.ts opens it.
+---
+
+<dialog class="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-text" data-confirm>
+  <form method="dialog">
+    <h2 id="confirm-title">Copy a destructive command?</h2>
+    <p id="confirm-text">
+      This command can permanently delete data. Check every value before running it.
+    </p>
+    <pre class="command"><code data-confirm-command></code></pre>
+    <div class="buttons">
+      <button type="submit" value="cancel" class="button" autofocus>Cancel</button>
+      <button type="submit" value="copy" class="button button--danger">Copy anyway</button>
+    </div>
+  </form>
+</dialog>
+
+<style>
+  .confirm {
+    /* The global reset removes the margin that centers a modal dialog. */
+    margin: auto;
+    width: min(36rem, calc(100% - 2 * var(--space-4)));
+    padding: var(--space-6);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-destructive);
+    border-radius: var(--radius-md);
+  }
+
+  .confirm::backdrop {
+    background: rgb(0 0 0 / 60%);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  h2 {
+    color: var(--color-destructive);
+    font-size: var(--text-lg);
+  }
+
+  .command {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-3);
+  }
+
+  .button {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .button--danger {
+    color: var(--color-destructive);
+    background: var(--color-destructive-bg);
+    border-color: currentColor;
+  }
+</style>

@@ -173,7 +173,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Les filtres catégorie et tag se combinent avec la requête. L'état est dans l'URL et survit au rechargement.
 - [x] Aucun résultat : un lien « Suggest this command » apparaît.
 
-### - [ ] J12 — Variables éditables + copie sécurisée
+### - [x] J12 — Variables éditables + copie sécurisée
 **Objectif** : adapter la commande puis la copier sans risque.
 **Fichiers**
 - `src/lib/template.ts` (parsing `{{nom}}` / `{{nom:défaut}}`, rendu final)
@@ -182,11 +182,11 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `tests/lib/template.test.ts`, `tests/lib/copy.test.ts`
 
 **Validation**
-- [ ] Le texte copié correspond exactement à la commande rendue avec les valeurs saisies (ou les valeurs par défaut).
-- [ ] Le texte copié ne finit jamais par `\n` et ne contient aucun caractère invisible.
-- [ ] Les valeurs saisies sont traitées comme du texte : aucune injection HTML possible (test avec `<img onerror>`).
-- [ ] La première copie d'une fiche `destructive` dans la session demande une confirmation, les suivantes non.
-- [ ] Le toast « Copied » est annoncé via `aria-live`.
+- [x] Le texte copié correspond exactement à la commande rendue avec les valeurs saisies (ou les valeurs par défaut).
+- [x] Le texte copié ne finit jamais par `\n` et ne contient aucun caractère invisible.
+- [x] Les valeurs saisies sont traitées comme du texte : aucune injection HTML possible (test avec `<img onerror>`).
+- [x] La première copie d'une fiche `destructive` dans la session demande une confirmation, les suivantes non.
+- [x] Le toast « Copied » est annoncé via `aria-live`.
 
 ### - [ ] J13 — Navigation clavier + tests E2E
 **Objectif** : tout faire au clavier, sous la protection de tests end-to-end.

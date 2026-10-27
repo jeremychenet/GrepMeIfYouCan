@@ -3,8 +3,10 @@
 // list item on tool and category pages and in search results, linking to the
 // card page. Tags link to the search filtered by that tag.
 // src/components/ResultsList.ts fills a copy of this markup: keep them in sync.
-// Copy / Favorite / Report actions arrive in J12, J14 and J15.
+// The Copy button (J12) is hidden until src/components/CommandTemplate.ts
+// enables it; Favorite and Report arrive in J14 and J15.
 import type { Command } from '../content/schema';
+import { variableNames } from '../lib/template';
 import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, tagSearchPath, toolPath } from '../lib/pages';
 import CommandText from './CommandText.astro';
 import DangerBadge from './DangerBadge.astro';
@@ -20,9 +22,15 @@ const { card, variant = 'compact', level = 2 } = Astro.props;
 const full = variant === 'full';
 const Heading = full ? 'h1' : (`h${level}` as const);
 const source = sourceUrl(card);
+const hasVariables = variableNames(card.command).length > 0;
 ---
 
-<article class:list={['card', `card--${variant}`]} data-card={card.id} data-danger={card.danger}>
+<article
+  class:list={['card', `card--${variant}`]}
+  data-card={card.id}
+  data-danger={card.danger}
+  data-command={card.command}
+>
   <div class="head">
     <Heading class="title">
       {full ? card.title : <a href={cardPath(card.id)}>{card.title}</a>}
@@ -41,7 +49,18 @@ const source = sourceUrl(card);
     )
   }
 
-  <CommandText command={card.command} scroll={full} />
+  <div class="command-row">
+    <CommandText command={card.command} scroll={full} />
+    <button type="button" class="copy" hidden data-copy aria-label={`Copy command: ${card.title}`}>
+      Copy
+    </button>
+  </div>
+
+  {
+    full && hasVariables && (
+      <p class="hint muted">Edit the highlighted values, then copy. They are inserted as typed, without shell escaping.</p>
+    )
+  }
 
   {
     !full && (
@@ -106,6 +125,10 @@ const source = sourceUrl(card);
   }
 </article>
 
+<script>
+  import './CommandTemplate';
+</script>
+
 <style>
   .card {
     display: flex;
@@ -123,6 +146,41 @@ const source = sourceUrl(card);
 
   .card--compact :global(pre) {
     background: var(--color-bg);
+  }
+
+  .command-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .command-row > :global(pre) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .copy {
+    flex: none;
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+    padding: 0 var(--space-3);
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .copy:hover {
+    filter: brightness(1.1);
+  }
+
+  .hint {
+    font-size: var(--text-sm);
   }
 
   .head {

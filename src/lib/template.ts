@@ -40,3 +40,16 @@ export function variableNames(command: string): string[] {
   const names = parseTemplate(command).flatMap((s) => (s.type === 'var' ? [s.name] : []));
   return [...new Set(names)];
 }
+
+/**
+ * The command with each variable replaced by its value, or by its default
+ * when the value is empty, or by its name when there is no default.
+ * Values are inserted as plain text: no shell escaping (SPEC §2.5).
+ */
+export function renderTemplate(command: string, values: Readonly<Record<string, string>>): string {
+  // Own keys only: a variable named "constructor" must not read Object.prototype.
+  const value = (name: string) => (Object.hasOwn(values, name) ? values[name] : '');
+  return parseTemplate(command)
+    .map((s) => (s.type === 'text' ? s.value : value(s.name) || (s.default ?? s.name)))
+    .join('');
+}

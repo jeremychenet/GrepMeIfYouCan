@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
-import { parseTemplate, variableNames } from '../../src/lib/template';
+import { parseTemplate, renderTemplate, variableNames } from '../../src/lib/template';
 
 describe('parseTemplate', () => {
   it('returns a single text segment when there is no placeholder', () => {
@@ -85,5 +85,27 @@ describe('parseTemplate', () => {
         expect(text, file).not.toMatch(/\{\{|\}\}/);
       }
     }
+  });
+});
+
+describe('renderTemplate', () => {
+  it('uses the value, else the default, else the name', () => {
+    expect(renderTemplate('find {{path:.}} -name {{pattern}} -size +{{size:1M}}', { size: '5G' })).toBe(
+      'find . -name pattern -size +5G',
+    );
+  });
+
+  it('keeps an explicit empty default and every non-placeholder brace', () => {
+    expect(renderTemplate("ls {{opts:}} && echo ${HOME} {} {{.State}}", {})).toBe(
+      'ls  && echo ${HOME} {} {{.State}}',
+    );
+  });
+
+  it('inserts values as plain text, never interpreted', () => {
+    expect(renderTemplate('echo {{msg}}', { msg: '{{other}} <b>$(id)</b>' })).toBe('echo {{other}} <b>$(id)</b>');
+  });
+
+  it('reads own values only, so names like "constructor" are safe', () => {
+    expect(renderTemplate('{{constructor}} {{toString:x}} {{__proto__}}', {})).toBe('constructor x __proto__');
   });
 });

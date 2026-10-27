@@ -35,7 +35,8 @@ const INVISIBLE: Range[] = [
 
 const inRanges = (cp: number, ranges: Range[]) => ranges.some(([lo, hi]) => cp >= lo && cp <= hi);
 
-function classify(cp: number, asciiOnly: boolean): UnsafeKind | undefined {
+/** Kind of an unsafe code point, or undefined when it is safe. */
+export function classify(cp: number, asciiOnly = false): UnsafeKind | undefined {
   if (inRanges(cp, NEWLINE)) return 'newline';
   if (inRanges(cp, CONTROL)) return 'control';
   if (inRanges(cp, BIDI)) return 'bidi';
