@@ -1,0 +1,65 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project state
+
+GrepMeIfYouCan is a responsive website where Linux / Infra / DevOps engineers find, adapt and copy the right shell command in under 10 seconds. Production domain: `grepmeifyoucan.com`.
+
+**No code exists yet.** The repo contains only the design documents:
+- `SPEC.md` — the v1 specification (source of truth for behavior, security rules, scope). Written in French.
+- `PLAN.md` — the MVP broken into 20 milestones (J1 → J20), each with objective, files and validation criteria as a checklist.
+
+**Every new feature or bug fix ships with its tests in the same commit/PR** (SPEC §8.1): Vitest for logic in `src/lib/` and `scripts/`, Playwright for user flows, and fixtures for every new schema or danger rule. For a bug, write the failing test first. Coverage thresholds are enforced in CI and must never be lowered to make a PR pass: ≥ 80 % (lines/functions/branches) on `src/lib/**` and `scripts/**`, ≥ 95 % on security-critical modules (`copy.ts`, `template.ts`, `danger-patterns.ts`, `store.ts`, `schema.ts`, `lint-danger.ts`).
+
+Work milestone by milestone, in order. A milestone is done only when every validation box in `PLAN.md` is checked; tick them in `PLAN.md` as part of the milestone's commit. If an implementation choice contradicts `SPEC.md`, update the spec in the same change rather than silently diverging. Things listed in SPEC §9 (accounts/OAuth, API, AI search, admin panel, web terminal, i18n) are out of scope for v1 — don't add them.
+
+Language: site UI and command content are **English only**; spec/plan docs and conversation with the maintainer are in French.
+
+## Commands (planned — defined in PLAN.md J1–J18)
+
+Everything runs in Docker; nothing (not even Node) is installed on the macOS host. Use `make` targets, which wrap `docker compose`:
+
+| Target | Purpose |
+|---|---|
+| `make up` / `make down` / `make logs` | Dev stack (`proxy` + `web`), site at http://localhost:8080 |
+| `make up-analytics` | Adds `db` (PostgreSQL) + `umami` (Compose profile `analytics`) |
+| `make npm <args>` / `make sh` | Run npm / a shell inside the `web` container |
+| `make test` | Vitest unit tests |
+| `make coverage` | Vitest with coverage thresholds (same check as CI) |
+| `make e2e` | Playwright E2E (official Playwright image, Compose profile `test`) |
+| `make lint-content` | Schema validation + danger lint of `content/commands/**` |
+| `make import-tldr` | Regenerate drafts from tldr-pages at the pinned SHA |
+| `make prod-local` | Run the production images locally |
+
+Single test: `make npm -- exec vitest run tests/lib/search.test.ts` (or `-t "<name>"`); Playwright: `make e2e -- tests/e2e/keyboard.spec.ts`. Keep these docs in sync with the real Makefile once it exists.
+
+## Architecture (v1)
+
+**Fully static site, no backend.** Astro + TypeScript generates every page at build time; Nginx serves it. The only dynamic component is self-hosted Umami analytics (with its own PostgreSQL). There is no application API or database in v1.
+
+**Content pipeline** — the core of the project:
+1. `scripts/import-tldr.ts` reads tldr-pages at a pinned commit (`scripts/tldr-selection.yaml`) and writes **drafts** to `content/drafts/<category>/`. One tldr *example* becomes one card (not one card per tool).
+2. A human writes the mandatory one-sentence `description` (≤ 140 chars, explains what the command does, ≠ title), reviews `danger`, and moves the file to `content/commands/<category>/<id>.yaml`. Drafts are excluded from the build.
+3. `src/content/schema.ts` (Zod) validates cards at build and in CI; `scripts/lint-danger.ts` fails CI when a risky pattern (SPEC §7.2) is labeled `safe`, or when a command contains invisible/bidi Unicode or newlines.
+4. At build, Astro produces `/c/<id>`, `/tools/<tool>`, `/categories/<category>` pages plus `/search-index.json` consumed by client-side MiniSearch.
+
+Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger levels: `safe | caution | destructive`.
+
+**Client-side islands** (light TS, no framework unless needed): search + filters (state mirrored in the URL), command templates (`{{name}}` / `{{name:default}}` placeholders, tldr-compatible), copy, keyboard navigation, favorites/history.
+
+**Invariants that are easy to break:**
+- Copy builds the text from the card data, never from the DOM; never ends with `\n`; first copy of a `destructive` card per session requires confirmation. Variable values are inserted as plain text (no shell escaping, never as HTML).
+- All favorites/history access goes through `src/lib/store.ts` (`localStorage`, versioned keys `gmiyc:v1:*`, every access in `try/catch`, limits 1000 favorites / 200 history entries of *copied* commands only — never search queries). This single layer exists so v2 can add server sync without touching the UI.
+- Strict CSP (`default-src 'self'`, no inline scripts): no third-party scripts, fonts or CDNs; fonts are self-hosted, the theme script is an external file, Umami is proxied under `/stats/`.
+- Analytics must never block rendering; the site must work with Umami down.
+
+**Contributions** go through GitHub issue forms (`.github/ISSUE_TEMPLATE/`), linked prefilled from the site — no in-site submission form. Nothing is published without a reviewed, merged PR (branch protection + CODEOWNERS).
+
+**Docker layout:** shared `compose.yaml` + `compose.dev.yaml` (bind mounts, `astro dev`, `node_modules` in a named volume, ports on 127.0.0.1 only) + `compose.prod.yaml` (GHCR images tagged by commit SHA, read-only, non-root, `cap_drop: ALL`). One `docker/web.Dockerfile` with `dev` and `prod` targets; the prod image is Nginx serving the static build and proxying `/stats`. Pin every image version (no `latest`).
+
+**Deploy:** merge to `main` → GitHub Actions builds the image, pushes to GHCR, scans with Trivy, then SSH to the server (forced command `deploy/deploy.sh`) → `docker compose pull && up -d` → healthcheck `/healthz`. Rollback = redeploy the previous SHA tag.
+
+## Licensing
+
+Content imported from tldr-pages is CC BY 4.0: every imported card keeps its `source` block (page, pinned commit, license), and attribution appears on the card and on `/about`. Code license is not decided yet (MIT proposed).
