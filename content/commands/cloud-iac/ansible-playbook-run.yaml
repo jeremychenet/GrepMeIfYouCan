@@ -1,0 +1,14 @@
+id: ansible-playbook-run
+title: Run an Ansible playbook
+description: Executes the plays and tasks of the playbook on the hosts they target, using the default inventory.
+command: ansible-playbook {{playbook:site.yml}}
+tool: ansible
+category: cloud-iac
+tags: [playbook]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

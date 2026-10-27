@@ -1,0 +1,14 @@
+id: gh-run-watch
+title: Watch a GitHub Actions run until it finishes
+description: Lets you pick an in-progress run, then refreshes its jobs and steps until it completes.
+command: gh run watch
+tool: gh
+category: git-ci
+tags: [ci, actions]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

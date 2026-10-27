@@ -1,0 +1,14 @@
+id: aws-ec2-list-volumes
+title: List EBS volumes
+description: Prints every EBS volume in the current region as JSON, with its size, state and attachments.
+command: aws ec2 describe-volumes
+tool: aws
+category: cloud-iac
+tags: [ec2, ebs]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: aws-ec2-list-instances
+title: List EC2 instances as a table
+description: Prints the ID, state, type and private IP of every instance in the current region as a table.
+command: aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,State.Name,InstanceType,PrivateIpAddress]' --output table
+tool: aws
+category: cloud-iac
+tags: [ec2, compute]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

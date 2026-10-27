@@ -1,0 +1,14 @@
+id: git-stash-clear
+title: Delete all stashes
+description: Removes every entry from the stash list at once, and the stashed changes cannot easily be recovered.
+command: git stash clear
+tool: git
+category: git-ci
+tags: [stash, cleanup]
+danger: destructive
+source:
+  type: tldr
+  page: common/git-stash.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

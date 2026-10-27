@@ -1,0 +1,14 @@
+id: git-branch-rename
+title: Rename a branch
+description: Renames the local branch, while the remote branch keeps its old name until you push the new one.
+command: git branch -m {{old_name}} {{new_name}}
+tool: git
+category: git-ci
+tags: [branch]
+danger: safe
+source:
+  type: tldr
+  page: common/git-branch.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

@@ -1,0 +1,14 @@
+id: terraform-apply
+title: Apply Terraform changes
+description: Shows the plan for the current directory, then creates, updates or destroys resources to match the configuration once you confirm.
+command: terraform apply
+tool: terraform
+category: cloud-iac
+tags: [apply]
+danger: caution
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

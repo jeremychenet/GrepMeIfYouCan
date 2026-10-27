@@ -1,0 +1,14 @@
+id: ansible-list-hosts
+title: List the hosts in an inventory group
+description: Prints the hosts that belong to the group according to the inventory, without connecting to them.
+command: ansible {{group:all}} --list-hosts
+tool: ansible
+category: cloud-iac
+tags: [inventory]
+danger: safe
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

@@ -1,0 +1,14 @@
+id: ansible-playbook-inventory
+title: Run a playbook against a specific inventory
+description: Runs the playbook on the hosts listed in the given inventory file instead of the default one.
+command: ansible-playbook -i {{inventory:inventory.ini}} {{playbook:site.yml}}
+tool: ansible
+category: cloud-iac
+tags: [playbook, inventory]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

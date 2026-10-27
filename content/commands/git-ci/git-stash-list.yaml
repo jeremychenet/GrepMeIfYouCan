@@ -1,0 +1,14 @@
+id: git-stash-list
+title: List stashes
+description: Prints each stash entry with its index, the branch it was made on and its message.
+command: git stash list
+tool: git
+category: git-ci
+tags: [stash]
+danger: safe
+source:
+  type: tldr
+  page: common/git-stash.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

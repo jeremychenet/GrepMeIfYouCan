@@ -1,0 +1,14 @@
+id: git-commit-files
+title: Commit only specific files
+description: Commits the current content of the given tracked files, leaving any other staged change out of the commit.
+command: git commit -m "{{message}}" -- {{files}}
+tool: git
+category: git-ci
+tags: [commit]
+danger: safe
+source:
+  type: tldr
+  page: common/git-commit.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

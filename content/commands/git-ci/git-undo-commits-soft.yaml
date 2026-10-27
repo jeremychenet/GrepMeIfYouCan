@@ -1,0 +1,14 @@
+id: git-undo-commits-soft
+title: Undo the last commits and keep them staged
+description: Moves the branch back by the given number of commits and keeps their changes staged for a new commit.
+command: git reset --soft HEAD~{{count:2}}
+tool: git
+category: git-ci
+tags: [undo, commit]
+danger: caution
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

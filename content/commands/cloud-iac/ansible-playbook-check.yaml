@@ -1,0 +1,14 @@
+id: ansible-playbook-check
+title: Preview the changes a playbook would make
+description: Runs the playbook in check mode, which reports what would change, with a diff of modified files, without touching the hosts.
+command: ansible-playbook {{playbook:site.yml}} --check --diff
+tool: ansible
+category: cloud-iac
+tags: [playbook, dry-run]
+danger: safe
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

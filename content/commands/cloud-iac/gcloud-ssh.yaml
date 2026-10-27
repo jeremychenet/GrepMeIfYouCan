@@ -1,0 +1,14 @@
+id: gcloud-ssh
+title: SSH into a Compute Engine instance
+description: Opens an SSH session on the instance, creating and installing an SSH key for your user on first use.
+command: gcloud compute ssh {{instance}} --zone {{zone}}
+tool: gcloud
+category: cloud-iac
+tags: [compute, ssh]
+danger: safe
+source:
+  type: tldr
+  page: common/gcloud.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

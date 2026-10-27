@@ -1,0 +1,14 @@
+id: gh-pr-status
+title: Show the status of your pull requests
+description: Prints the pull request of the current branch, the ones you created and the ones awaiting your review, with their checks.
+command: gh pr status
+tool: gh
+category: git-ci
+tags: [pull-request]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-pr.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

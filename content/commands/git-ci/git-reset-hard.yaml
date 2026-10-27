@@ -1,0 +1,14 @@
+id: git-reset-hard
+title: Discard all uncommitted changes
+description: Resets the index and working tree to the last commit, permanently losing every staged and unstaged change to tracked files.
+command: git reset --hard
+tool: git
+category: git-ci
+tags: [undo]
+danger: destructive
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

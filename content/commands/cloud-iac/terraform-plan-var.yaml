@@ -1,0 +1,14 @@
+id: terraform-plan-var
+title: Plan with an input variable value
+description: Runs a plan with the given value for the input variable, overriding its default and any .tfvars file.
+command: terraform plan -var '{{name}}={{value}}'
+tool: terraform
+category: cloud-iac
+tags: [plan, variables]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

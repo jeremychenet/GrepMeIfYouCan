@@ -1,0 +1,14 @@
+id: gcloud-set-project
+title: Set the active Google Cloud project
+description: Makes the project the default for every later gcloud command run with the active configuration.
+command: gcloud config set project {{project_id}}
+tool: gcloud
+category: cloud-iac
+tags: [config, project]
+danger: caution
+source:
+  type: tldr
+  page: common/gcloud.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

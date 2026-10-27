@@ -1,0 +1,14 @@
+id: ansible-playbook-tags
+title: Run only the playbook tasks with given tags
+description: Runs the playbook but only executes the tasks and roles labeled with one of the comma-separated tags.
+command: ansible-playbook {{playbook:site.yml}} --tags {{tags}}
+tool: ansible
+category: cloud-iac
+tags: [playbook, tags]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

@@ -1,0 +1,14 @@
+id: terraform-plan
+title: Preview Terraform changes
+description: Compares the configuration with the real infrastructure and prints the resources that would be created, changed or destroyed.
+command: terraform plan
+tool: terraform
+category: cloud-iac
+tags: [plan]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

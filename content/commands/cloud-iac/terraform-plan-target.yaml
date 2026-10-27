@@ -1,0 +1,14 @@
+id: terraform-plan-target
+title: Plan changes for a single resource
+description: Limits the plan to the resource at the given address and to the resources it depends on.
+command: terraform plan -target={{address}}
+tool: terraform
+category: cloud-iac
+tags: [plan]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

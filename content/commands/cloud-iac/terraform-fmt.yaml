@@ -1,0 +1,14 @@
+id: terraform-fmt
+title: Format Terraform files
+description: Rewrites the .tf files of the current directory and its subdirectories in the canonical style and prints the files it changed.
+command: terraform fmt -recursive
+tool: terraform
+category: cloud-iac
+tags: [format, lint]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

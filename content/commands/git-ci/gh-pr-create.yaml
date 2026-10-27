@@ -1,0 +1,14 @@
+id: gh-pr-create
+title: Create a pull request
+description: Prompts for a title and body, then opens a pull request from the current branch, offering to push it first.
+command: gh pr create
+tool: gh
+category: git-ci
+tags: [pull-request]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-pr.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

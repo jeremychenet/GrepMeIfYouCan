@@ -1,0 +1,14 @@
+id: terraform-plan-json
+title: Print a plan as JSON lines
+description: Prints the plan as a stream of JSON messages, one per line, for tools and CI pipelines to parse.
+command: terraform plan -json
+tool: terraform
+category: cloud-iac
+tags: [plan, ci]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

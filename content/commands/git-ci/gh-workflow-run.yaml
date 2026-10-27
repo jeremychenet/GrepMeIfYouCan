@@ -1,0 +1,14 @@
+id: gh-workflow-run
+title: Trigger a workflow manually
+description: Starts a workflow_dispatch run of the workflow on the default branch, passing the value for the input.
+command: gh workflow run {{workflow}} -f {{input}}={{value}}
+tool: gh
+category: git-ci
+tags: [ci, actions]
+danger: caution
+source:
+  type: tldr
+  page: common/gh-workflow.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

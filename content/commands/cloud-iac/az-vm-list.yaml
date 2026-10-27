@@ -1,0 +1,14 @@
+id: az-vm-list
+title: List Azure virtual machines
+description: Prints every virtual machine in the current subscription as a table, with its resource group and location.
+command: az vm list -o table
+tool: az
+category: cloud-iac
+tags: [compute, vm]
+danger: safe
+source:
+  type: tldr
+  page: common/az.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

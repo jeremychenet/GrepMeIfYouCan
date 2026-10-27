@@ -1,0 +1,14 @@
+id: git-diff-staged
+title: Show staged changes
+description: Prints the changes added to the index, which the next commit will record.
+command: git diff --staged
+tool: git
+category: git-ci
+tags: [diff]
+danger: safe
+source:
+  type: tldr
+  page: common/git-diff.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: git-rebase-abort
+title: Abort a rebase in progress
+description: Stops the current rebase and puts the branch back in the state it was in before the rebase started.
+command: git rebase --abort
+tool: git
+category: git-ci
+tags: [rebase, undo]
+danger: safe
+source:
+  type: tldr
+  page: common/git-rebase.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

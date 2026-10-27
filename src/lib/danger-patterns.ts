@@ -105,7 +105,13 @@ export const RULES: DangerRule[] = [
     level: 'destructive',
     test: (p) => new RegExp(`\\bbase64\\s+(?:-d|-D|--decode)\\b[^|]*\\|\\s*${SHELL}`).test(p.raw),
   },
-  { id: 'terraform-destroy', label: 'terraform destroy', level: 'destructive', test: runs('terraform', (a) => has(a, 'destroy', '-destroy')) },
+  {
+    id: 'terraform-destroy',
+    label: 'terraform destroy',
+    level: 'destructive',
+    // `terraform plan -destroy` only prints what would be destroyed.
+    test: runs('terraform', (a) => has(a, 'destroy') || (has(a, '-destroy') && !has(a, 'plan'))),
+  },
   { id: 'kubectl-delete', label: 'kubectl delete', level: 'destructive', test: runs('kubectl', (a) => has(a, 'delete')) },
   { id: 'helm-uninstall', label: 'helm uninstall', level: 'destructive', test: runs('helm', (a) => has(a, 'uninstall', 'delete', 'del', 'un')) },
   {
@@ -142,7 +148,70 @@ export const RULES: DangerRule[] = [
     level: 'destructive',
     test: runs('aws', (a) => has(a, 's3') && has(a, 'rm', 'rb') && has(a, '--recursive', '--force')),
   },
+  {
+    id: 'cloud-delete',
+    label: 'cloud resource deletion (aws delete-*/terminate-*, gcloud/az delete)',
+    level: 'destructive',
+    test: (p) =>
+      runs('aws', (a) => a.some((t) => /^(?:delete|terminate)-/.test(t)))(p) ||
+      runs('gcloud', (a) => has(a, 'delete'))(p) ||
+      runs('az', (a) => has(a, 'delete'))(p),
+  },
+  {
+    id: 'git-push-delete',
+    label: 'remote branch deletion (git push --delete / --prune / :branch)',
+    level: 'destructive',
+    test: runs('git', (a) => has(a, 'push') && (has(a, '--delete', '--prune') || shortFlag(a, 'd') || a.some((t) => /^:\S/.test(t)))),
+  },
+  {
+    id: 'git-branch-force-delete',
+    label: 'forced local branch deletion (git branch -D)',
+    level: 'destructive',
+    test: runs(
+      'git',
+      (a) => has(a, 'branch') && (shortFlag(a, 'D') || ((has(a, '--delete') || shortFlag(a, 'd')) && (has(a, '--force') || shortFlag(a, 'f')))),
+    ),
+  },
+  { id: 'git-stash-clear', label: 'git stash clear', level: 'destructive', test: runs('git', (a) => has(a, 'stash') && has(a, 'clear')) },
   // ---- caution ----
+  {
+    id: 'git-rewrite-history',
+    label: 'history rewrite (git rebase, commit --amend)',
+    level: 'caution',
+    test: runs(
+      'git',
+      (a) =>
+        (has(a, 'rebase') && !has(a, '--abort', '--continue', '--quit', '--edit-todo', '--show-current-patch')) ||
+        (has(a, 'commit') && has(a, '--amend')),
+    ),
+  },
+  {
+    id: 'git-branch-delete',
+    label: 'local branch deletion (git branch -d)',
+    level: 'caution',
+    test: runs('git', (a) => has(a, 'branch') && (has(a, '--delete') || shortFlag(a, 'dD'))),
+  },
+  { id: 'git-stash-drop', label: 'git stash drop', level: 'caution', test: runs('git', (a) => has(a, 'stash') && has(a, 'drop')) },
+  { id: 'terraform-apply', label: 'terraform apply', level: 'caution', test: runs('terraform', (a) => has(a, 'apply')) },
+  {
+    id: 'ansible-change',
+    label: 'changes on managed hosts (ansible-playbook, ansible shell/command)',
+    level: 'caution',
+    test: (p) =>
+      runs('ansible-playbook', (a) => !has(a, '--check', '--list-hosts', '--list-tasks', '--list-tags', '--syntax-check') && !shortFlag(a, 'C'))(p) ||
+      runs('ansible', (a) => {
+        const i = a.findIndex((t) => t === '-m' || t === '--module-name');
+        if (i === -1) return has(a, '-a', '--args');
+        return ['command', 'shell', 'raw', 'script'].includes(a[i + 1] ?? '');
+      })(p),
+  },
+  { id: 'gh-pr-merge', label: 'gh pr merge', level: 'caution', test: runs('gh', (a) => has(a, 'pr') && has(a, 'merge')) },
+  {
+    id: 'gh-workflow-trigger',
+    label: 'workflow trigger (gh workflow run, gh run rerun)',
+    level: 'caution',
+    test: runs('gh', (a) => (has(a, 'workflow') && has(a, 'run')) || (has(a, 'run') && has(a, 'rerun'))),
+  },
   { id: 'rm', label: 'file deletion (rm)', level: 'caution', test: runs('rm') },
   { id: 'chmod-777', label: 'world-writable permissions (chmod 777)', level: 'caution', test: runs('chmod', (a) => a.some((t) => /^0?777$/.test(t))) },
   {

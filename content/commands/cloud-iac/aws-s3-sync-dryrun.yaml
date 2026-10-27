@@ -1,0 +1,14 @@
+id: aws-s3-sync-dryrun
+title: Preview an S3 sync without copying anything
+description: Prints the copy operations that the sync would perform, without transferring any file.
+command: aws s3 sync {{path:.}} s3://{{bucket}} --dryrun
+tool: aws
+category: cloud-iac
+tags: [s3, sync, dry-run]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

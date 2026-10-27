@@ -1,0 +1,14 @@
+id: git-commit
+title: Commit staged changes with a message
+description: Records the staged changes as a new commit on the current branch with the given message.
+command: git commit -m "{{message}}"
+tool: git
+category: git-ci
+tags: [commit]
+danger: safe
+source:
+  type: tldr
+  page: common/git-commit.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

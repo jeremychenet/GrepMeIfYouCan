@@ -1,0 +1,14 @@
+id: ansible-command-become
+title: Run a command as root on a group of hosts
+description: Executes the command with sudo on every host of the group, after prompting for the privilege escalation password.
+command: ansible {{group}} -b -K -m command -a '{{command}}'
+tool: ansible
+category: cloud-iac
+tags: [ad-hoc, sudo]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

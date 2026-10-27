@@ -1,0 +1,14 @@
+id: ansible-ping
+title: Check that Ansible can reach a group of hosts
+description: Connects to each host of the group and runs the ping module, which confirms SSH access and a usable Python.
+command: ansible {{group:all}} -m ping
+tool: ansible
+category: cloud-iac
+tags: [ad-hoc, connectivity]
+danger: safe
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

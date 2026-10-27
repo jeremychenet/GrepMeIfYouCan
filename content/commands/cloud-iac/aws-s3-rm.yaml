@@ -1,0 +1,14 @@
+id: aws-s3-rm
+title: Delete a file from an S3 bucket
+description: Deletes the object at the given key, which is permanent unless versioning is enabled on the bucket.
+command: aws s3 rm s3://{{bucket}}/{{key}}
+tool: aws
+category: cloud-iac
+tags: [s3, storage]
+danger: caution
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5
