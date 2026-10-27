@@ -1,0 +1,32 @@
+{
+  "name": "grepmeifyoucan",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0",
+    "build": "npm run lint-content && astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "lint-content": "tsx scripts/validate-content.ts",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "lint-danger": "tsx scripts/lint-danger.ts"
+  },
+  "dependencies": {
+    "astro": "7.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "5.0.5",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5",
+    "yaml": "2.9.1"
+  }
+}

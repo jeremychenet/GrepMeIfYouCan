@@ -1,0 +1,11 @@
+id: find-files-larger-than
+title: Find files larger than a given size
+description: Recursively lists regular files bigger than the given size under a directory, hiding permission errors.
+command: find {{path:/}} -type f -size +{{size:1G}} 2>/dev/null
+tool: find
+category: containers
+tags: [disk, files, cleanup]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      target: dev
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    # No published port: only reachable through the proxy.
+
+  proxy:
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/security-headers.conf:/etc/nginx/snippets/security-headers.conf:ro
+      - ./docker/nginx/csp.dev.conf:/etc/nginx/snippets/csp.conf:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  node_modules:
