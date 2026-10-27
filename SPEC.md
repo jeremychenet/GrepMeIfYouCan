@@ -287,6 +287,10 @@ open http://localhost:8080
   - `Referrer-Policy: strict-origin-when-cross-origin` ;
   - `Permissions-Policy` restrictive.
 - Aucun script, police ou CDN tiers : tout est auto-hébergé.
+- **Écarts dev / prod** (proxy local, §6.6) : les en-têtes sont les mêmes, à trois exceptions près, toutes imposées par le rechargement à chaud ou par `localhost`.
+  - La CSP de dev ajoute `style-src 'unsafe-inline'` (styles injectés par Vite) et `connect-src ws://<host>` (WebSocket HMR). Les scripts inline restent interdits même en dev, et la barre d'outils de dev d'Astro est désactivée pour cette raison.
+  - HSTS n'est envoyé qu'en production : en local, il forcerait HTTPS sur `localhost` pour tous les projets.
+  - La CSP stricte de prod est vérifiée sur le vrai build en J18.
 - Pas d'API, donc pas de surface d'authentification ni d'écriture côté serveur en v1.
 - Rate limiting Nginx sur `/stats/api/send` (collecte Umami). L'interface d'administration Umami n'est pas exposée publiquement (accès via tunnel SSH, ou restreint par IP).
 - Les données lues depuis `localStorage` sont validées avant usage et ne sont jamais injectées comme HTML.

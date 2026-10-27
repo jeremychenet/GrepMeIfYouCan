@@ -13,7 +13,7 @@ Find, adapt and copy the right Linux / Infra / DevOps command in under 10 second
 
 ```bash
 cp .env.example .env
-make up          # http://localhost:4321
+make up          # http://localhost:8080
 ```
 
 ## Make targets
@@ -26,6 +26,10 @@ make up          # http://localhost:4321
 | `make sh` | Shell inside the web container |
 | `make npm ARGS="run build"` | Run any npm command inside the container |
 | `make clean` | Stop and delete volumes (forces a fresh `npm ci`) |
+| `make check-headers` | Check the security headers served on :8080 |
+| `make nginx-test` | Validate the Nginx configuration |
+
+The site is only reachable through the Nginx proxy on `127.0.0.1:8080`, which adds the security headers (CSP…); the Astro dev server has no published port.
 
 Dependencies are installed automatically at container start whenever `package-lock.json` changes.
 If hot reload does not pick up file changes, set `WATCH_POLLING=true` in `.env` and run `make up` again.

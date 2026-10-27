@@ -7,3 +7,13 @@ services:
       context: .
       dockerfile: docker/web.Dockerfile
     init: true
+
+  proxy:
+    image: nginxinc/nginx-unprivileged:1.30.6-alpine3.24
+    depends_on:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3

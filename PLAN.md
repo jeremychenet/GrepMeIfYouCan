@@ -28,7 +28,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] `node_modules` est dans un volume nommé. Côté Mac, il ne reste qu'un dossier vide (point de montage créé par Docker, ignoré par Git).
 - [x] Le conteneur tourne en non-root (`docker compose exec web id -u` ≠ 0).
 
-### - [ ] J2 — Proxy Nginx local + en-têtes de sécurité
+### - [x] J2 — Proxy Nginx local + en-têtes de sécurité
 **Objectif** : une URL unique `http://localhost:8080`, qui sert le site avec les mêmes en-têtes qu'en production.
 **Fichiers**
 - `docker/nginx/nginx.conf`, `docker/nginx/security-headers.conf`
@@ -36,10 +36,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `Makefile`
 
 **Validation**
-- [ ] `curl -I localhost:8080` renvoie 200 avec les en-têtes CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` et `frame-ancestors 'none'`.
-- [ ] Le rechargement à chaud d'Astro fonctionne à travers le proxy (WebSocket relayé).
-- [ ] Le port 8080 n'écoute que sur 127.0.0.1 (`lsof -iTCP:8080`).
-- [ ] La console du navigateur n'affiche aucune violation CSP.
+- [x] `curl -I localhost:8080` (automatisé : `make check-headers`) renvoie 200 avec les en-têtes CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` et `frame-ancestors 'none'`.
+- [x] Le rechargement à chaud d'Astro fonctionne à travers le proxy (WebSocket relayé).
+- [x] Le port 8080 n'écoute que sur 127.0.0.1 (`lsof -iTCP:8080`).
+- [x] La console du navigateur n'affiche aucune violation CSP.
 
 ### - [ ] J3 — Schéma de contenu + validation
 **Objectif** : définir le format d'une fiche et refuser automatiquement toute fiche invalide.

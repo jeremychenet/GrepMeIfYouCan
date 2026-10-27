@@ -22,7 +22,9 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 
 | Target | Purpose |
 |---|---|
-| `make up` / `make down` / `make logs` | Dev stack. Until J2: `web` only at http://localhost:4321; from J2: `proxy` + `web` at http://localhost:8080 |
+| `make up` / `make down` / `make logs` | Dev stack (`proxy` + `web`) at http://localhost:8080; `web` has no published port |
+| `make check-headers` | Asserts status 200 + security headers + loopback-only binding (`scripts/check-headers.sh [url]`, host-side, curl only) |
+| `make nginx-test` | `nginx -t` on the proxy config |
 | `make up-analytics` | Adds `db` (PostgreSQL) + `umami` (Compose profile `analytics`) |
 | `make npm ARGS="<args>"` / `make sh` | Run npm / a shell inside the `web` container (e.g. `make npm ARGS="run typecheck"`) |
 | `make clean` | `down -v`: drops the `node_modules` volume (forces a fresh `npm ci`) |
@@ -33,7 +35,7 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 | `make import-tldr` | Regenerate drafts from tldr-pages at the pinned SHA |
 | `make prod-local` | Run the production images locally |
 
-Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up down logs sh npm clean`).
+Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up down logs sh npm clean check-headers nginx-test`).
 
 Dev container mechanics (`docker/web-entrypoint.sh`): dependencies are reinstalled with `npm ci` only when the sha256 of `package-lock.json` differs from `node_modules/.lock-hash`; the stale Astro lock `.astro/dev.json` is removed at each start (otherwise a restart fails with "Another astro dev server is already running"). To add a dependency: `make npm ARGS="install -E <pkg>@<version>"` (exact versions only). `@astrojs/check` caps TypeScript at 6.x. Astro telemetry and npm update notices are disabled in the image.
 
@@ -56,6 +58,8 @@ Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger level
 - All favorites/history access goes through `src/lib/store.ts` (`localStorage`, versioned keys `gmiyc:v1:*`, every access in `try/catch`, limits 1000 favorites / 200 history entries of *copied* commands only — never search queries). This single layer exists so v2 can add server sync without touching the UI.
 - Strict CSP (`default-src 'self'`, no inline scripts): no third-party scripts, fonts or CDNs; fonts are self-hosted, the theme script is an external file, Umami is proxied under `/stats/`.
 - Analytics must never block rendering; the site must work with Umami down.
+- Nginx: headers live in `docker/nginx/security-headers.conf` (shared) + `csp.dev.conf` (dev CSP, mounted as `/etc/nginx/snippets/csp.conf`). Any `add_header` inside a `location` drops the inherited server-level headers, so re-include the snippets there. The Astro dev toolbar stays disabled because it injects an inline script.
+- Browser checks run in Docker (host Node is too old): `mcr.microsoft.com/playwright` with `--network container:grepmeifyoucan-proxy-1`, so `localhost:8080` works and Vite's host check passes.
 
 **Contributions** go through GitHub issue forms (`.github/ISSUE_TEMPLATE/`), linked prefilled from the site — no in-site submission form. Nothing is published without a reviewed, merged PR (branch protection + CODEOWNERS).
 
