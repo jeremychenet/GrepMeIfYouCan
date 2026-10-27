@@ -1,0 +1,14 @@
+id: git-log-graph
+title: Show a compact commit graph
+description: Prints one line per commit of the current branch, with an ASCII graph of merges.
+command: git log --oneline --graph
+tool: git
+category: git-ci
+tags: [history, log]
+danger: safe
+source:
+  type: tldr
+  page: common/git-log.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

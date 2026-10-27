@@ -1,0 +1,14 @@
+id: terraform-plan-refresh-only
+title: Detect drift between state and infrastructure
+description: Compares the state with the real resources and shows the changes made outside Terraform, without proposing any update.
+command: terraform plan -refresh-only
+tool: terraform
+category: cloud-iac
+tags: [plan, drift]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

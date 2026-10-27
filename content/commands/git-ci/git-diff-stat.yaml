@@ -1,0 +1,14 @@
+id: git-diff-stat
+title: Summarize changes since a commit
+description: Prints the files changed between the commit and the working tree, with a histogram and the total of added and removed lines.
+command: git diff --stat {{commit}}
+tool: git
+category: git-ci
+tags: [diff]
+danger: safe
+source:
+  type: tldr
+  page: common/git-diff.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

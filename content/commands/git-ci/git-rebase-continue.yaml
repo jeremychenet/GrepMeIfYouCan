@@ -1,0 +1,14 @@
+id: git-rebase-continue
+title: Continue a rebase after fixing conflicts
+description: Resumes the rebase once the conflicting files are fixed and staged with git add.
+command: git rebase --continue
+tool: git
+category: git-ci
+tags: [rebase, conflicts]
+danger: safe
+source:
+  type: tldr
+  page: common/git-rebase.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

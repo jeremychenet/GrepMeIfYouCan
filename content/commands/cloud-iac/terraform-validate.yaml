@@ -1,0 +1,14 @@
+id: terraform-validate
+title: Validate Terraform configuration
+description: Checks that the configuration files of the initialized directory are syntactically valid and internally consistent.
+command: terraform validate
+tool: terraform
+category: cloud-iac
+tags: [lint]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

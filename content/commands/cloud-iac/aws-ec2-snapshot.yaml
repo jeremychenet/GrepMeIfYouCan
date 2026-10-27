@@ -1,0 +1,14 @@
+id: aws-ec2-snapshot
+title: Create a snapshot of an EBS volume
+description: Starts a point-in-time snapshot of the volume, billed until it is deleted, and prints the snapshot ID.
+command: aws ec2 create-snapshot --volume-id {{volume_id}}
+tool: aws
+category: cloud-iac
+tags: [ec2, ebs, backup]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

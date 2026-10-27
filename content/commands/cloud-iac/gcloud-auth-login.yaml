@@ -1,0 +1,14 @@
+id: gcloud-auth-login
+title: Log in to Google Cloud
+description: Opens a browser to sign in to a Google account and stores the credentials used by later gcloud commands.
+command: gcloud auth login
+tool: gcloud
+category: cloud-iac
+tags: [auth]
+danger: safe
+source:
+  type: tldr
+  page: common/gcloud.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

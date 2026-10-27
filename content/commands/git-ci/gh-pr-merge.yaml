@@ -1,0 +1,14 @@
+id: gh-pr-merge
+title: Merge the current branch's pull request
+description: Merges the pull request of the current branch after asking for the method (merge, squash or rebase) and whether to delete the branch.
+command: gh pr merge
+tool: gh
+category: git-ci
+tags: [pull-request, merge]
+danger: caution
+source:
+  type: tldr
+  page: common/gh-pr.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

@@ -1,0 +1,14 @@
+id: aws-s3-sync-upload
+title: Upload a directory to an S3 bucket
+description: Copies the files that are new or changed in the directory to the bucket, overwriting objects with the same key but deleting nothing.
+command: aws s3 sync {{path:.}} s3://{{bucket}}
+tool: aws
+category: cloud-iac
+tags: [s3, sync]
+danger: caution
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

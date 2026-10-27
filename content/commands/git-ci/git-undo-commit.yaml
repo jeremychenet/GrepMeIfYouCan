@@ -1,0 +1,14 @@
+id: git-undo-commit
+title: Undo the last commit but keep its changes
+description: Moves the branch back one commit and leaves the changes of that commit unstaged in the working tree.
+command: git reset HEAD~
+tool: git
+category: git-ci
+tags: [undo, commit]
+danger: caution
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

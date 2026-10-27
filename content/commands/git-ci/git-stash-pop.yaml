@@ -1,0 +1,14 @@
+id: git-stash-pop
+title: Restore the latest stash
+description: Applies the most recent stashed changes to the working tree and removes them from the stash list unless a conflict occurs.
+command: git stash pop
+tool: git
+category: git-ci
+tags: [stash]
+danger: safe
+source:
+  type: tldr
+  page: common/git-stash.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

@@ -1,0 +1,14 @@
+id: git-unstage
+title: Unstage files
+description: Removes the files from the index while keeping their changes in the working tree.
+command: git reset -- {{files}}
+tool: git
+category: git-ci
+tags: [undo, staging]
+danger: safe
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

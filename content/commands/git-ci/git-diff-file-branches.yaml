@@ -1,0 +1,14 @@
+id: git-diff-file-branches
+title: Compare a file between two branches
+description: Shows the differences in a single file between two branches or commits.
+command: git diff {{branch1}}..{{branch2}} -- {{file}}
+tool: git
+category: git-ci
+tags: [diff, branch]
+danger: safe
+source:
+  type: tldr
+  page: common/git-diff.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

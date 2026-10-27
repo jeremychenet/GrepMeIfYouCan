@@ -1,0 +1,14 @@
+id: aws-ec2-delete-volume
+title: Delete an EBS volume
+description: Permanently deletes the volume and all its data; the volume must first be detached from any instance.
+command: aws ec2 delete-volume --volume-id {{volume_id}}
+tool: aws
+category: cloud-iac
+tags: [ec2, ebs]
+danger: destructive
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

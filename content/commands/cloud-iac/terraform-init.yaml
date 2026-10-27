@@ -1,0 +1,14 @@
+id: terraform-init
+title: Initialize a Terraform working directory
+description: Downloads the providers and modules and configures the state backend for the configuration in the current directory.
+command: terraform init
+tool: terraform
+category: cloud-iac
+tags: [setup]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

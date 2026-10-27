@@ -1,0 +1,14 @@
+id: git-push-delete-branch
+title: Delete a remote branch
+description: Deletes the branch on the remote for everyone who uses it, while local copies of the branch are kept.
+command: git push {{remote:origin}} --delete {{branch}}
+tool: git
+category: git-ci
+tags: [remote, branch]
+danger: destructive
+source:
+  type: tldr
+  page: common/git-push.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

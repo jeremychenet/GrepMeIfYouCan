@@ -1,0 +1,14 @@
+id: aws-ec2-describe-instance
+title: Show details of an EC2 instance
+description: Prints the full description of the instance as JSON, including its state, type, IP addresses and tags.
+command: aws ec2 describe-instances --instance-ids {{instance_id}}
+tool: aws
+category: cloud-iac
+tags: [ec2, compute]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

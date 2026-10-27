@@ -1,0 +1,14 @@
+id: gh-pr-checkout
+title: Check out a pull request locally
+description: Fetches the branch of the pull request and switches to it, so you can build or test it locally.
+command: gh pr checkout {{pr}}
+tool: gh
+category: git-ci
+tags: [pull-request, review]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-pr.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

@@ -1,0 +1,14 @@
+id: git-log-stat
+title: Show which files changed in each commit
+description: Prints the commit log with the files changed by each commit and their number of added and removed lines.
+command: git log --stat
+tool: git
+category: git-ci
+tags: [history, log]
+danger: safe
+source:
+  type: tldr
+  page: common/git-log.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

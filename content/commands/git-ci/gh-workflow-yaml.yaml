@@ -1,0 +1,14 @@
+id: gh-workflow-yaml
+title: Show a workflow's YAML definition
+description: Prints the YAML file of the workflow, identified by its ID, name or file name.
+command: gh workflow view {{workflow}} --yaml
+tool: gh
+category: git-ci
+tags: [ci, actions]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-workflow.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

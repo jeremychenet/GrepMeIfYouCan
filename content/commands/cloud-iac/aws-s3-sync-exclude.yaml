@@ -1,0 +1,14 @@
+id: aws-s3-sync-exclude
+title: Upload a directory to S3 except some files
+description: Syncs the directory to the bucket, skipping every path that matches the exclude pattern.
+command: aws s3 sync {{path:.}} s3://{{bucket}} --exclude '{{pattern:*.log}}'
+tool: aws
+category: cloud-iac
+tags: [s3, sync]
+danger: caution
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

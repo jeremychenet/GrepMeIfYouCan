@@ -1,0 +1,40 @@
+Content license
+===============
+
+This license covers the command cards in `content/` (YAML files under
+`content/commands/` and `content/drafts/`). It does not cover the source
+code of the site, whose license is defined separately.
+
+Command cards
+-------------
+
+The command cards of GrepMeIfYouCan are licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+You may share and adapt them for any purpose, provided you give appropriate
+credit, link to the license and indicate if changes were made.
+
+Attribution to tldr-pages
+-------------------------
+
+Most cards are adapted from tldr-pages (https://github.com/tldr-pages/tldr),
+Copyright (c) the tldr-pages contributors, licensed under CC BY 4.0:
+https://github.com/tldr-pages/tldr/blob/main/LICENSE.md
+
+Each adapted card records its origin in its `source` block:
+
+    source:
+      type: tldr
+      page: common/<page>.md       # tldr page the example comes from
+      commit: <sha>                # pinned tldr-pages commit
+      license: CC-BY-4.0
+      example: <n>                 # example number in that page
+
+Changes made to the tldr-pages examples: titles and commands were rewritten
+or adapted (option forms, placeholder names and defaults), and a description,
+tags and a danger level were added to each card. These changes are not
+endorsed by the tldr-pages project.
+
+Cards with `source.type: original` were written for GrepMeIfYouCan and are
+published under the same CC BY 4.0 license.

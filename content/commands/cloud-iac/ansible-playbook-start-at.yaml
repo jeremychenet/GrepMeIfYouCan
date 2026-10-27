@@ -1,0 +1,14 @@
+id: ansible-playbook-start-at
+title: Run a playbook starting from a specific task
+description: Runs the playbook but skips every task before the one with the given name.
+command: ansible-playbook {{playbook:site.yml}} --start-at-task '{{task_name}}'
+tool: ansible
+category: cloud-iac
+tags: [playbook]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

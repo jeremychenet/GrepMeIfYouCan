@@ -1,0 +1,14 @@
+id: git-reset-hard-commit
+title: Reset the branch to a given commit
+description: Moves the current branch to the commit and discards every commit, staged and unstaged change made after it.
+command: git reset --hard {{commit}}
+tool: git
+category: git-ci
+tags: [undo, history]
+danger: destructive
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

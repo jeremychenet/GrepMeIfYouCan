@@ -104,7 +104,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] `content/drafts/` est exclu du build et de la validation stricte, mais vérifié par le lint de danger.
 - [x] Relancer l'import ne crée ni doublon ni modification si le SHA est inchangé (idempotent).
 
-### - [ ] J7 — Contenu : catégories `linux` + `containers`
+### - [x] J7 — Contenu : catégories `linux` + `containers`
 **Objectif** : environ 100 fiches publiables, revues une par une.
 **Fichiers**
 - `content/commands/linux/*.yaml`, `content/commands/containers/*.yaml` (déplacées depuis `content/drafts/`)
@@ -112,18 +112,18 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 **Validation**
 - [x] Au moins 45 fiches par catégorie, toutes avec une description rédigée et un niveau de danger relu.
 - [x] `make lint-content` passe.
-- [ ] Revue manuelle d'un échantillon de 10 fiches : chaque commande est correcte et sa description explique ce qu'elle fait.
+- [x] Revue manuelle d'un échantillon de 10 fiches : chaque commande est correcte et sa description explique ce qu'elle fait.
 
-### - [ ] J8 — Contenu : catégories `cloud-iac` + `git-ci`
+### - [x] J8 — Contenu : catégories `cloud-iac` + `git-ci`
 **Objectif** : compléter les quatre catégories (≈ 200 fiches).
 **Fichiers**
 - `content/commands/cloud-iac/*.yaml`, `content/commands/git-ci/*.yaml`
 - `CONTENT_LICENSE` (CC BY 4.0 + attribution tldr-pages)
 
 **Validation**
-- [ ] Au moins 45 fiches par catégorie, avec les mêmes critères que J7.
-- [ ] `content/drafts/` est vide ou ne contient que des fiches écartées volontairement.
-- [ ] `CONTENT_LICENSE` est présent et cite tldr-pages.
+- [x] Au moins 45 fiches par catégorie, avec les mêmes critères que J7.
+- [x] `content/drafts/` est vide ou ne contient que des fiches écartées volontairement.
+- [x] `CONTENT_LICENSE` est présent et cite tldr-pages.
 
 ---
 

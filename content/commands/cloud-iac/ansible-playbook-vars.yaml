@@ -1,0 +1,14 @@
+id: ansible-playbook-vars
+title: Run a playbook with a variable set on the command line
+description: Runs the playbook with the given extra variable, which takes precedence over the values set in the inventory and roles.
+command: ansible-playbook {{playbook:site.yml}} -e '{{name}}={{value}}'
+tool: ansible
+category: cloud-iac
+tags: [playbook, variables]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible-playbook.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

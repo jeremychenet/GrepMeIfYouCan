@@ -1,0 +1,14 @@
+id: ansible-list-groups
+title: List the groups in an inventory
+description: Prints the names of all groups defined in the inventory, using the debug module on the local machine.
+command: ansible localhost -m debug -a 'var=groups.keys()'
+tool: ansible
+category: cloud-iac
+tags: [inventory]
+danger: safe
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

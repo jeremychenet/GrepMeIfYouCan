@@ -1,0 +1,14 @@
+id: gh-run-job-log
+title: Show the log of a GitHub Actions job
+description: Prints the full log of the job, step by step, to debug a failure.
+command: gh run view --job {{job_id}} --log
+tool: gh
+category: git-ci
+tags: [ci, actions, logs]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

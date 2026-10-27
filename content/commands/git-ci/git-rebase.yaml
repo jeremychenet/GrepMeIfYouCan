@@ -1,0 +1,14 @@
+id: git-rebase
+title: Rebase the current branch onto another branch
+description: Replays the commits of the current branch on top of the other branch, giving them new hashes.
+command: git rebase {{branch:main}}
+tool: git
+category: git-ci
+tags: [rebase, history]
+danger: caution
+source:
+  type: tldr
+  page: common/git-rebase.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

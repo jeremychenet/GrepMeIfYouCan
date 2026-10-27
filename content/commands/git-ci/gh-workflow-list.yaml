@@ -1,0 +1,14 @@
+id: gh-workflow-list
+title: List GitHub Actions workflows
+description: Prints the active workflows of the repository with their state and ID, and also disabled ones with --all.
+command: gh workflow list
+tool: gh
+category: git-ci
+tags: [ci, actions]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-workflow.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

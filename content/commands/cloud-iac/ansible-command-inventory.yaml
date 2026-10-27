@@ -1,0 +1,14 @@
+id: ansible-command-inventory
+title: Run a command on hosts from a specific inventory
+description: Executes the command on the group's hosts as listed in the given inventory file instead of the default one.
+command: ansible {{group}} -i {{inventory:inventory.ini}} -m command -a '{{command:uptime}}'
+tool: ansible
+category: cloud-iac
+tags: [ad-hoc, inventory]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

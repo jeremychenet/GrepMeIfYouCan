@@ -1,0 +1,14 @@
+id: git-rebase-interactive
+title: Rewrite recent commits interactively
+description: Opens an editor listing the commits after the base, where you can reorder, squash, edit or drop them.
+command: git rebase -i {{base:HEAD~3}}
+tool: git
+category: git-ci
+tags: [rebase, history]
+danger: caution
+source:
+  type: tldr
+  page: common/git-rebase.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

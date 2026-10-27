@@ -1,0 +1,14 @@
+id: ansible-facts
+title: Gather facts about a group of hosts
+description: Runs the setup module on each host of the group and prints its facts, such as OS, network interfaces and memory.
+command: ansible {{group:all}} -m setup
+tool: ansible
+category: cloud-iac
+tags: [ad-hoc, facts]
+danger: safe
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

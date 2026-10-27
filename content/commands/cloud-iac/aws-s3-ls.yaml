@@ -1,0 +1,14 @@
+id: aws-s3-ls
+title: List files in an S3 bucket
+description: Prints the prefixes and objects at the top level of the bucket, with their size and last modification date.
+command: aws s3 ls s3://{{bucket}}
+tool: aws
+category: cloud-iac
+tags: [s3, storage]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

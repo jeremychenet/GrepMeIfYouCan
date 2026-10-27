@@ -1,0 +1,14 @@
+id: terraform-destroy
+title: Destroy all Terraform-managed infrastructure
+description: Deletes every resource tracked in the state of the current directory, after showing the plan and asking for confirmation.
+command: terraform destroy
+tool: terraform
+category: cloud-iac
+tags: [destroy, cleanup]
+danger: destructive
+source:
+  type: tldr
+  page: common/terraform.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

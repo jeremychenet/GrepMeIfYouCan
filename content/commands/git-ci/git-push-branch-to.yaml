@@ -1,0 +1,14 @@
+id: git-push-branch-to
+title: Push a local branch to a differently named remote branch
+description: Updates the remote branch with the commits of the local branch, and refuses if that would lose remote commits.
+command: git push {{remote:origin}} {{local_branch}}:{{remote_branch}}
+tool: git
+category: git-ci
+tags: [remote, push]
+danger: safe
+source:
+  type: tldr
+  page: common/git-push.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

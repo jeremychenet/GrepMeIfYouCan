@@ -1,0 +1,14 @@
+id: git-commit-all
+title: Commit all modified files
+description: Stages every modified or deleted tracked file and commits them with the message, leaving untracked files out.
+command: git commit -am "{{message}}"
+tool: git
+category: git-ci
+tags: [commit]
+danger: safe
+source:
+  type: tldr
+  page: common/git-commit.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

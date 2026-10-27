@@ -1,0 +1,14 @@
+id: git-stash
+title: Stash uncommitted changes
+description: Saves the staged and unstaged changes to tracked files on the stash and resets the working tree to the last commit.
+command: git stash
+tool: git
+category: git-ci
+tags: [stash]
+danger: safe
+source:
+  type: tldr
+  page: common/git-stash.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

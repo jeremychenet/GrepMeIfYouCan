@@ -1,0 +1,14 @@
+id: gcloud-components-update
+title: Update the gcloud CLI
+description: Updates the Google Cloud CLI and all its installed components to the latest version.
+command: gcloud components update
+tool: gcloud
+category: cloud-iac
+tags: [maintenance]
+danger: safe
+source:
+  type: tldr
+  page: common/gcloud.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

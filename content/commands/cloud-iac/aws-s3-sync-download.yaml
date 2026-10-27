@@ -1,0 +1,14 @@
+id: aws-s3-sync-download
+title: Download an S3 bucket to a local directory
+description: Copies the objects that are new or changed in the bucket into the directory, overwriting local files with the same name.
+command: aws s3 sync s3://{{bucket}} {{path}}
+tool: aws
+category: cloud-iac
+tags: [s3, sync]
+danger: caution
+source:
+  type: tldr
+  page: common/aws-s3.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

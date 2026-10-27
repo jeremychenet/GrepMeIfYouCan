@@ -1,0 +1,14 @@
+id: az-login
+title: Log in to Azure
+description: Opens a browser to sign in to your Azure account and stores the credentials used by later az commands.
+command: az login
+tool: az
+category: cloud-iac
+tags: [auth]
+danger: safe
+source:
+  type: tldr
+  page: common/az.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

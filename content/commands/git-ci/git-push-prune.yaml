@@ -1,0 +1,14 @@
+id: git-push-prune
+title: Delete remote branches missing locally
+description: Pushes every local branch and deletes the remote branches that have no local counterpart, which can remove other people's work.
+command: git push --prune {{remote:origin}} 'refs/heads/*:refs/heads/*'
+tool: git
+category: git-ci
+tags: [remote, branch, cleanup]
+danger: destructive
+source:
+  type: tldr
+  page: common/git-push.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

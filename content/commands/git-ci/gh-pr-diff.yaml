@@ -1,0 +1,14 @@
+id: gh-pr-diff
+title: Show the diff of a pull request
+description: Prints the changes of the pull request associated with the current branch as a unified diff.
+command: gh pr diff
+tool: gh
+category: git-ci
+tags: [pull-request, review]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-pr.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: terraform-plan-out
+title: Save a plan to a file
+description: Writes the plan to a file so that terraform apply can later execute exactly those changes.
+command: terraform plan -out={{plan_file:tfplan}}
+tool: terraform
+category: cloud-iac
+tags: [plan]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

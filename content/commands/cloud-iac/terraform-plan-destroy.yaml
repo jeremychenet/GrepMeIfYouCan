@@ -1,0 +1,14 @@
+id: terraform-plan-destroy
+title: Preview the destruction of all resources
+description: Prints the plan that terraform destroy would run, listing every resource it would delete, without changing anything.
+command: terraform plan -destroy
+tool: terraform
+category: cloud-iac
+tags: [plan, destroy]
+danger: safe
+source:
+  type: tldr
+  page: common/terraform-plan.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

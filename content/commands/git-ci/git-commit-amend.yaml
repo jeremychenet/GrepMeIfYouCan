@@ -1,0 +1,14 @@
+id: git-commit-amend
+title: Amend the last commit
+description: Replaces the last commit with one that also includes the staged changes, and opens an editor to change its message.
+command: git commit --amend
+tool: git
+category: git-ci
+tags: [commit, history]
+danger: caution
+source:
+  type: tldr
+  page: common/git-commit.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

@@ -1,0 +1,14 @@
+id: git-branch-all
+title: List local and remote branches
+description: Prints all local and remote-tracking branches, marking the current one with an asterisk.
+command: git branch -a
+tool: git
+category: git-ci
+tags: [branch]
+danger: safe
+source:
+  type: tldr
+  page: common/git-branch.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

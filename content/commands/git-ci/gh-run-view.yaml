@@ -1,0 +1,14 @@
+id: gh-run-view
+title: Show a GitHub Actions run
+description: Prints the status of the run with its jobs and annotations, and the failed steps of any failed job.
+command: gh run view {{run_id}}
+tool: gh
+category: git-ci
+tags: [ci, actions]
+danger: safe
+source:
+  type: tldr
+  page: common/gh-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

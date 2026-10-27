@@ -1,0 +1,14 @@
+id: ansible-command
+title: Run a command on a group of hosts
+description: Executes the command on every host of the group through the command module, without a shell, and prints each host's output.
+command: ansible {{group}} -m command -a '{{command:uptime}}'
+tool: ansible
+category: cloud-iac
+tags: [ad-hoc, remote]
+danger: caution
+source:
+  type: tldr
+  page: common/ansible.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

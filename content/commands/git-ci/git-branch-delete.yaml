@@ -1,0 +1,14 @@
+id: git-branch-delete
+title: Delete a local branch
+description: Deletes the branch only if it is fully merged, and refuses otherwise.
+command: git branch -d {{branch}}
+tool: git
+category: git-ci
+tags: [branch, cleanup]
+danger: caution
+source:
+  type: tldr
+  page: common/git-branch.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7
