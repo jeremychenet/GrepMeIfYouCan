@@ -129,7 +129,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 ## Phase C — Site
 
-### - [ ] J9 — Design system & layout
+### - [x] J9 — Design system & layout
 **Objectif** : identité « terminal moderne », thèmes sombre et clair, structure commune des pages.
 **Fichiers**
 - `src/styles/tokens.css` (couleurs, espacements, typo, couleurs de danger)
@@ -139,10 +139,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `src/components/Header.astro`, `Footer.astro`, `ThemeToggle.ts`
 
 **Validation**
-- [ ] Sombre par défaut. Au premier chargement, `prefers-color-scheme: light` est respecté. Le choix persiste après rechargement.
-- [ ] Aucun flash de mauvais thème au chargement (script de thème externe, compatible CSP).
-- [ ] Contrastes AA vérifiés dans les deux thèmes (axe DevTools : 0 erreur de contraste).
-- [ ] Aucune requête vers un domaine tiers (onglet Réseau).
+- [x] Sombre par défaut. Au premier chargement, `prefers-color-scheme: light` est respecté. Le choix persiste après rechargement.
+- [x] Aucun flash de mauvais thème au chargement (script de thème externe, compatible CSP).
+- [x] Contrastes AA vérifiés dans les deux thèmes (axe DevTools : 0 erreur de contraste).
+- [x] Aucune requête vers un domaine tiers (onglet Réseau).
 
 ### - [ ] J10 — Pages statiques des fiches, outils et catégories
 **Objectif** : chaque fiche a sa page, indexable et partageable.

@@ -1,16 +1,31 @@
 ---
-const title = 'GrepMeIfYouCan';
+import Base from '../layouts/Base.astro';
+
+// Placeholder until the search lands (J11); exercises the mono font and
+// the scrolling code block.
+const sample = "find . -type f -name '*.log' -mtime +7 -size +10M -exec ls -lh {} + | sort -k5 -h";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <h1>{title}</h1>
-    <p>Hello</p>
-  </body>
-</html>
+<Base>
+  <h1>Find the right shell command</h1>
+  <p class="muted lead">
+    Search, adapt and copy Linux, container, cloud and Git commands in seconds.
+  </p>
+  <pre><code>{sample}</code></pre>
+</Base>
+
+<style>
+  h1 {
+    font-size: var(--text-xl);
+  }
+
+  .lead {
+    margin-block: var(--space-2) var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    h1 {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

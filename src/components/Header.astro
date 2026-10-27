@@ -1,0 +1,139 @@
+---
+// Favorites and History pages arrive in J14; links are in place already.
+const nav = [
+  { href: '/favorites', label: 'Favorites' },
+  { href: '/history', label: 'History' },
+];
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="/" aria-label="GrepMeIfYouCan, home">
+      <span class="prompt" aria-hidden="true">$</span>
+      <span>grep<span class="dim">me</span>if<span class="dim">you</span>can</span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        {
+          nav.map(({ href, label }) => (
+            <li>
+              <a href={href} aria-current={path === href ? 'page' : undefined}>
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme">
+      <!-- Sun shown in dark theme (action: go light), moon in light theme. -->
+      <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle>
+        <path
+          d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"></path>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path
+          d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  import './ThemeToggle';
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 3.5rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    margin-right: auto;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .prompt {
+    color: var(--color-accent);
+  }
+
+  .dim {
+    color: var(--color-text-muted);
+  }
+
+  nav ul {
+    display: flex;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a,
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap-min);
+    min-width: var(--tap-min);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--color-text);
+    background: var(--color-surface);
+  }
+
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--color-border-strong);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-text);
+    background: var(--color-surface);
+  }
+
+  /* Without JS the toggle cannot work: theme-init.js sets data-theme, so the
+     button stays hidden (but keeps its space) when it has not run. */
+  :global(html:not([data-theme])) .theme-toggle {
+    visibility: hidden;
+  }
+
+  :global([data-theme='light']) .icon-sun,
+  :global([data-theme='dark']) .icon-moon {
+    display: none;
+  }
+</style>
