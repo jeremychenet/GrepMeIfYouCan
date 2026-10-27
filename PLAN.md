@@ -89,7 +89,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 ## Phase B — Contenu
 
-### - [ ] J6 — Script d'import tldr-pages
+### - [x] J6 — Script d'import tldr-pages
 **Objectif** : générer des brouillons de fiches à partir de tldr, à un commit épinglé.
 **Fichiers**
 - `scripts/import-tldr.ts`
@@ -99,10 +99,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `Makefile` (`import-tldr`)
 
 **Validation**
-- [ ] Les tests vérifient, sur une page tldr de test, l'extraction titre, commande et placeholders `{{…}}`, ainsi que le champ `source` complet.
-- [ ] `make import-tldr` produit environ 50 brouillons par catégorie dans `content/drafts/`.
-- [ ] `content/drafts/` est exclu du build et de la validation stricte, mais vérifié par le lint de danger.
-- [ ] Relancer l'import ne crée ni doublon ni modification si le SHA est inchangé (idempotent).
+- [x] Les tests vérifient, sur une page tldr de test, l'extraction titre, commande et placeholders `{{…}}`, ainsi que le champ `source` complet.
+- [x] `make import-tldr` produit environ 50 brouillons par catégorie dans `content/drafts/`.
+- [x] `content/drafts/` est exclu du build et de la validation stricte, mais vérifié par le lint de danger.
+- [x] Relancer l'import ne crée ni doublon ni modification si le SHA est inchangé (idempotent).
 
 ### - [ ] J7 — Contenu : catégories `linux` + `containers`
 **Objectif** : environ 100 fiches publiables, revues une par une.

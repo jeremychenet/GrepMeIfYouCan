@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: aws-list-available-amis-amazon-machine-images
+title: List available AMIs (Amazon Machine Images)
+description: ""
+command: aws ec2 describe-images
+tool: aws
+category: cloud-iac
+tags: [ aws, ec2, compute ]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

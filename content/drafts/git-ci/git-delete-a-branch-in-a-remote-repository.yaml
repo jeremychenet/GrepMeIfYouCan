@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: git-delete-a-branch-in-a-remote-repository
+title: Delete a branch in a remote repository
+description: ""
+command: git push {{remote_name}} --delete {{remote_branch}}
+tool: git
+category: git-ci
+tags: [ remote, push ]
+danger: safe
+source:
+  type: tldr
+  page: common/git-push.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

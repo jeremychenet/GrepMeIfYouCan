@@ -2,7 +2,7 @@ COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 ARGS ?=
 
 .DEFAULT_GOAL := help
-.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage lint-content lint-danger
+.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage lint-content lint-danger import-tldr
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -42,3 +42,6 @@ lint-content: ## Validate every command card in content/commands (schema + dange
 
 lint-danger: ## Danger + unsafe-character lint only, e.g. make lint-danger ARGS=content/drafts
 	$(COMPOSE) run --rm --no-deps web npm run lint-danger -- $(ARGS)
+
+import-tldr: ## Regenerate drafts in content/drafts from tldr-pages at the pinned commit (ARGS=--force to overwrite)
+	$(COMPOSE) run --rm --no-deps web npm run import-tldr -- $(ARGS)

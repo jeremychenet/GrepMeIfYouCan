@@ -15,7 +15,8 @@
     "lint-content": "tsx scripts/validate-content.ts",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint-danger": "tsx scripts/lint-danger.ts"
+    "lint-danger": "tsx scripts/lint-danger.ts",
+    "import-tldr": "tsx scripts/import-tldr.ts"
   },
   "dependencies": {
     "astro": "7.4.2"

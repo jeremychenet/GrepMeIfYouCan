@@ -57,6 +57,7 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 
 ### 2.5 Variables éditables
 - Syntaxe dans les données : `{{nom}}` ou `{{nom:valeur_par_défaut}}`, compatible avec les placeholders tldr.
+  - Le nom s'arrête au **premier** `:` ; la valeur par défaut peut elle-même contenir `:` (ex. `{{url:https://example.com}}`). Le nom peut contenir `/` (ex. `{{path/to/file}}`, repris de tldr).
 - À l'affichage, chaque variable devient un champ inline. La commande copiée contient les valeurs saisies, ou la valeur par défaut.
 - `Tab` passe d'une variable à la suivante.
 - Les valeurs saisies sont injectées **telles quelles** comme texte, sans échappement shell automatique. Une info-bulle le rappelle.
@@ -151,10 +152,12 @@ source:
 
 ### 4.2 Import initial depuis tldr-pages
 - **Script d'import ponctuel** (`scripts/import-tldr.ts`) exécuté localement, pas au build :
-  1. Clone tldr-pages à un **commit épinglé**, pages en anglais (`pages/common`, `pages/linux`).
+  1. Lit tldr-pages à un **commit épinglé**, pages en anglais (`pages/common`, `pages/linux`). Seules les pages retenues sont téléchargées depuis `raw.githubusercontent.com/<repo>/<sha>/pages/…` (l'image Docker n'a pas `git`), avec un cache local `.cache/tldr/<sha>/` ignoré par git.
   2. Sélection d'une liste explicite d'outils par catégorie (voir §2.2) pour atteindre environ 50 exemples par catégorie.
   3. Chaque exemple tldr devient une fiche : texte de l'exemple tldr → `title`, ligne de code → `command`. Les placeholders `{{...}}` sont conservés. tldr ne fournit pas de phrase expliquant ce que fait la commande : la `description` est donc **rédigée pour chaque fiche importée** (brouillon possible, puis relue dans la PR d'import). Une fiche sans description valide ne passe pas la CI.
   4. Le `danger` est pré-rempli par le linter (voir §7.2), puis revu manuellement.
+  5. Conversion des placeholders tldr : `{{path/to/file}}` est conservé ; `{{[-r|--recursive]}}` et `{{[ps|container ls]}}` deviennent la forme longue écrite en dur ; une URL devient `{{url:<URL>}}` ; tout autre `:` dans un placeholder devient `_` (signalé à la relecture). Les exemples avec accolades échappées (`\{\{`), accolades ambiguës (`{{{`), caractères non ASCII ou invisibles sont écartés et listés dans le rapport.
+  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même page source + même commande) n'est pas recréée.
 - Le résultat est commité via **une PR relue** comme n'importe quelle contribution.
 - **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous une licence à choisir (MIT proposée).
 

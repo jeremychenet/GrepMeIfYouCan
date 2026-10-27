@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: aws-display-information-about-all-instances
+title: Display information about all instances
+description: ""
+command: aws ec2 describe-instances
+tool: aws
+category: cloud-iac
+tags: [ aws, ec2, compute ]
+danger: safe
+source:
+  type: tldr
+  page: common/aws-ec2.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

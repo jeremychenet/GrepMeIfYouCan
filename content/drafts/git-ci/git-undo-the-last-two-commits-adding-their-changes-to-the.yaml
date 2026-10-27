@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: git-undo-the-last-two-commits-adding-their-changes-to-the
+title: Undo the last two commits, adding their changes to the index, i.e. staged for commit
+description: ""
+command: git reset --soft HEAD~2
+tool: git
+category: git-ci
+tags: [ undo ]
+danger: safe
+source:
+  type: tldr
+  page: common/git-reset.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0

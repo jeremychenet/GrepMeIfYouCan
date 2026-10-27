@@ -49,6 +49,10 @@ jobs:
       - name: Validate content (schema + danger lint)
         run: npm run lint-content
 
+      # Drafts have no description yet: only the danger + character checks apply.
+      - name: Danger lint of drafts
+        run: npm run lint-danger -- content/drafts
+
       - name: Build
         run: npm run build
         env:

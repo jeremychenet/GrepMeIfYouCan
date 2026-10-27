@@ -1,0 +1,16 @@
+# Draft imported from tldr-pages: write the description, review danger and tags,
+# then move this file to content/commands/<category>/.
+
+id: git-show-only-commits-with-messages-that-include-a-specific
+title: Show only commits with messages that include a specific string, ignoring case
+description: ""
+command: git log --regexp-ignore-case --grep {{search_string}}
+tool: git
+category: git-ci
+tags: [ history ]
+danger: safe
+source:
+  type: tldr
+  page: common/git-log.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
