@@ -71,7 +71,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Aucun faux positif sur les 3 fiches existantes.
 - [x] La sortie indique le fichier, le pattern détecté et le niveau attendu.
 
-### - [ ] J5 — CI GitHub Actions (vérifications de PR)
+### - [x] J5 — CI GitHub Actions (vérifications de PR)
 **Objectif** : chaque PR est vérifiée automatiquement.
 **Fichiers**
 - `.github/workflows/ci.yml` : lint, typecheck, test + couverture (seuils bloquants, rapport en artefact), lint-content, build Astro, build de l'image Docker sans push
@@ -80,10 +80,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `.github/pull_request_template.md`
 
 **Validation**
-- [ ] Une PR de test avec une fiche invalide fait échouer la CI. La même PR corrigée passe au vert.
-- [ ] Une PR qui ajoute du code non testé dans `src/lib/` fait échouer la CI sur le seuil de couverture.
-- [ ] Le workflow tourne en moins de 5 minutes.
-- [ ] La protection de la branche `main` est activée : PR obligatoire, CI verte, approbation CODEOWNER.
+- [x] Une PR de test avec une fiche invalide fait échouer la CI. La même PR corrigée passe au vert.
+- [x] Une PR qui ajoute du code non testé dans `src/lib/` fait échouer la CI sur le seuil de couverture. Ce test a révélé que le seuil portait sur la moyenne : il est maintenant appliqué fichier par fichier.
+- [x] Le workflow tourne en moins de 5 minutes (≈ 30 s).
+- [x] La protection de la branche `main` est activée : PR obligatoire, CI verte. 0 approbation requise (mainteneur seul, voir SPEC §7.1).
 
 ---
 

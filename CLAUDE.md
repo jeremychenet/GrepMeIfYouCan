@@ -67,6 +67,8 @@ Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger level
 
 **Docker layout:** shared `compose.yaml` + `compose.dev.yaml` (bind mounts, `astro dev`, `node_modules` in a named volume, ports on 127.0.0.1 only) + `compose.prod.yaml` (GHCR images tagged by commit SHA, read-only, non-root, `cap_drop: ALL`). One `docker/web.Dockerfile` with `dev` and `prod` targets; the prod image is Nginx serving the static build and proxying `/stats`. Pin every image version (no `latest`).
 
+**CI** (`.github/workflows/ci.yml`): job `checks` runs Node from `.node-version` directly (not Docker: bind-mount permissions break on runners) → `npm ci`, typecheck, coverage, lint-content, build; job `docker` builds the dev image and runs `nginx -t`. `tests/config/node-version.test.ts` keeps `.node-version` equal to the Dockerfile's Node. Actions are pinned by commit SHA (resolve with `gh api repos/<owner>/<action>/commits/<tag> -q .sha`). `main` is protected: PR + green `checks`/`docker` on an up-to-date branch, no direct or force push (admins included), 0 required approvals. Never push to `main`; open a PR and let the maintainer merge.
+
 **Deploy:** merge to `main` → GitHub Actions builds the image, pushes to GHCR, scans with Trivy, then SSH to the server (forced command `deploy/deploy.sh`) → `docker compose pull && up -d` → healthcheck `/healthz`. Rollback = redeploy the previous SHA tag.
 
 ## Licensing

@@ -270,7 +270,14 @@ open http://localhost:8080
 ## 7. Sécurité
 
 ### 7.1 Intégrité du contenu (risque n° 1 : une commande piégée copiée en root)
-- **Revue humaine obligatoire** : branch protection sur `main`, PR obligatoire, approbation par le CODEOWNER, pas de push direct.
+- **Revue humaine obligatoire** : branch protection sur `main`.
+  - PR obligatoire pour tout le monde, admin compris.
+  - CI verte (`checks` + `docker`) sur une branche à jour.
+  - Conversations résolues avant fusion.
+  - Ni push direct, ni force-push, ni suppression de la branche.
+  - Seul le mainteneur peut fusionner. CODEOWNERS le désigne comme relecteur de chaque PR.
+  - **0 approbation requise** : GitHub interdit d'approuver sa propre PR, ce qui bloquerait un mainteneur seul. Les contributeurs externes ne peuvent pas fusionner, donc la revue humaine reste garantie.
+- Le dépôt GitHub est **public** : c'est nécessaire pour que les visiteurs puissent ouvrir des issues (§2.9).
 - Le contenu importé de tldr suit le même processus.
 
 ### 7.2 Lint de danger en CI
