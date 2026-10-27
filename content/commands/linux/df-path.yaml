@@ -1,0 +1,15 @@
+id: df-path
+title: Show which filesystem holds a path
+description: Shows the filesystem that contains the file or directory, with its size and free space.
+command: df -h {{path:.}}
+tool: df
+category: linux
+tags: [disk, filesystem]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: linux/df.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

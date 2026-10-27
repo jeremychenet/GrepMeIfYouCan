@@ -1,0 +1,15 @@
+id: grep-in-file
+title: Search for a pattern in a file
+description: Prints every line of the file that matches the regular expression, prefixed with its line number.
+command: grep -n "{{pattern}}" {{file}}
+tool: grep
+category: linux
+tags: [search, text]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/grep.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

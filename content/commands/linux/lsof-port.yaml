@@ -1,0 +1,11 @@
+id: lsof-port
+title: Find which process uses a port
+description: Lists the processes that have the network port open, with their PID, user and connection state.
+command: sudo lsof -i :{{port:8080}}
+tool: lsof
+category: linux
+tags: [network, ports, processes]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

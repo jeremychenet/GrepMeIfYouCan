@@ -1,0 +1,14 @@
+id: compose-down-volumes
+title: Remove a Compose project and its volumes
+description: Stops and removes the containers, networks and named volumes, deleting the data stored in those volumes.
+command: docker compose down -v
+tool: docker
+category: containers
+tags: [compose, volumes, cleanup]
+danger: destructive
+source:
+  type: tldr
+  page: common/docker-compose.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

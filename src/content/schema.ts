@@ -30,6 +30,8 @@ const tldrSource = z.strictObject({
   page: z.string().regex(/^[a-z0-9_-]+\/[^\s/]+\.md$/, 'expected "<platform>/<page>.md"'),
   commit: z.string().regex(SHA1, 'expected a full 40-char git SHA'),
   license: z.literal('CC-BY-4.0'),
+  /** 1-based number of the example in the tldr page; lets the import recognize a published card. */
+  example: z.number().int().positive().optional(),
 });
 
 const originalSource = z.strictObject({

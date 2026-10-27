@@ -1,0 +1,11 @@
+id: curl-status-code
+title: Print only the HTTP status code
+description: Requests the URL and prints just the HTTP status code it returns, discarding the body.
+command: curl -s -o /dev/null -w '%{http_code}\n' {{url:https://example.com}}
+tool: curl
+category: linux
+tags: [http, troubleshooting]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

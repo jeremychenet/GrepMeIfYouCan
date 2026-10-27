@@ -1,0 +1,15 @@
+id: find-excluding-path
+title: Find files while excluding a path
+description: Lists files matching a name pattern but skips everything whose path matches the excluded pattern.
+command: find {{path:.}} -name '{{pattern:*.py}}' -not -path '{{excluded:*/node_modules/*}}'
+tool: find
+category: linux
+tags: [files, search]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/find.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

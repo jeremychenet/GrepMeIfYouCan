@@ -1,0 +1,15 @@
+id: rsync-archive
+title: Copy a directory preserving permissions and times
+description: Recursively copies files while keeping permissions, ownership, timestamps and symlinks as they are.
+command: rsync -a {{source}} {{destination}}
+tool: rsync
+category: linux
+tags: [sync, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

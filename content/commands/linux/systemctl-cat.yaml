@@ -1,0 +1,15 @@
+id: systemctl-cat
+title: Show the unit file of a service
+description: Prints the unit file and every drop-in override that applies to it, each preceded by its path.
+command: systemctl cat {{service}}
+tool: systemctl
+category: linux
+tags: [systemd, services, config]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

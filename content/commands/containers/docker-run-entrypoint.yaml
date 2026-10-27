@@ -1,0 +1,14 @@
+id: docker-run-entrypoint
+title: Override the image entrypoint
+description: Starts the container with another program instead of the image's default entrypoint, which helps debug images.
+command: docker run --rm -it --entrypoint {{entrypoint:sh}} {{image}}
+tool: docker
+category: containers
+tags: [run, debug]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

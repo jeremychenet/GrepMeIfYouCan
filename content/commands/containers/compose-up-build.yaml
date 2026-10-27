@@ -1,0 +1,14 @@
+id: compose-up-build
+title: Rebuild and start a Compose project
+description: Rebuilds the service images from their Dockerfiles, then starts the containers in the background.
+command: docker compose up -d --build
+tool: docker
+category: containers
+tags: [compose, build]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-compose.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: docker-ps
+title: List running containers
+description: Shows running containers with their ID, image, status, published ports and name.
+command: docker ps
+tool: docker
+category: containers
+tags: [list]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-ls.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

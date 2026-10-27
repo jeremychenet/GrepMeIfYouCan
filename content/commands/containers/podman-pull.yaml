@@ -1,0 +1,14 @@
+id: podman-pull
+title: Pull an image with Podman
+description: Downloads the image from its registry into local Podman storage.
+command: podman pull {{image:docker.io/library/alpine}}
+tool: podman
+category: containers
+tags: [images]
+danger: safe
+source:
+  type: tldr
+  page: common/podman.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

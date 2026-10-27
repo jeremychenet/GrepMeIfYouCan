@@ -1,0 +1,14 @@
+id: docker-logs-since
+title: Show recent logs with timestamps
+description: Prints the log lines written since the given duration or date, each prefixed with its timestamp.
+command: docker logs -t --since {{since:10m}} {{container}}
+tool: docker
+category: containers
+tags: [logs]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-logs.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

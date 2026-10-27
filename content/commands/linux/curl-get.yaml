@@ -1,0 +1,15 @@
+id: curl-get
+title: Fetch a URL
+description: Sends a GET request and prints the response body to the terminal.
+command: curl {{url:https://example.com}}
+tool: curl
+category: linux
+tags: [http, network]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/curl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

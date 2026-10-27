@@ -1,0 +1,14 @@
+id: kubectl-apply-kustomize
+title: Apply a kustomization
+description: Builds the kustomization in the directory and applies the resulting resources to the cluster.
+command: kubectl apply -k {{path:.}}
+tool: kubectl
+category: containers
+tags: [kubernetes, deploy]
+danger: caution
+source:
+  type: tldr
+  page: common/kubectl-apply.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

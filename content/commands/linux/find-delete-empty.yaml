@@ -1,0 +1,15 @@
+id: find-delete-empty
+title: Delete empty files and directories
+description: Deletes every empty file and empty directory under the path and prints each one it removes.
+command: find {{path}} -empty -delete -print
+tool: find
+category: linux
+tags: [files, cleanup]
+danger: destructive
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/find.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

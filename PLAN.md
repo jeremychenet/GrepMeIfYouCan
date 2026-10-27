@@ -110,8 +110,8 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `content/commands/linux/*.yaml`, `content/commands/containers/*.yaml` (déplacées depuis `content/drafts/`)
 
 **Validation**
-- [ ] Au moins 45 fiches par catégorie, toutes avec une description rédigée et un niveau de danger relu.
-- [ ] `make lint-content` passe.
+- [x] Au moins 45 fiches par catégorie, toutes avec une description rédigée et un niveau de danger relu.
+- [x] `make lint-content` passe.
 - [ ] Revue manuelle d'un échantillon de 10 fiches : chaque commande est correcte et sa description explique ce qu'elle fait.
 
 ### - [ ] J8 — Contenu : catégories `cloud-iac` + `git-ci`

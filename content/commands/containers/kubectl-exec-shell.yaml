@@ -1,0 +1,10 @@
+id: kubectl-exec-shell
+title: Open a shell in a pod
+description: Opens an interactive shell in the main container of the pod.
+command: kubectl exec -it {{pod}} -- {{shell:sh}}
+tool: kubectl
+category: containers
+tags: [kubernetes, shell, debug]
+danger: safe
+source:
+  type: original

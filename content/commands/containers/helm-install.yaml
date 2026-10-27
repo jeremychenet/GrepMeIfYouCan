@@ -1,0 +1,14 @@
+id: helm-install
+title: Install a Helm chart
+description: Deploys the chart to the cluster as a new release with the given name.
+command: helm install {{release}} {{chart:bitnami/nginx}} -n {{namespace:default}}
+tool: helm
+category: containers
+tags: [kubernetes, charts, deploy]
+danger: caution
+source:
+  type: tldr
+  page: common/helm.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

@@ -1,0 +1,14 @@
+id: docker-run-interactive
+title: Run a throwaway interactive container
+description: Opens a shell in a new container that is deleted as soon as you exit.
+command: docker run --rm -it {{image:alpine}} {{shell:sh}}
+tool: docker
+category: containers
+tags: [run, shell]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

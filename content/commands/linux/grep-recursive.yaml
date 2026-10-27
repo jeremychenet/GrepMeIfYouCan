@@ -1,0 +1,15 @@
+id: grep-recursive
+title: Search recursively in a directory
+description: Searches every file under the directory, skipping binary files, and prints matches with file name and line number.
+command: grep -rnI "{{pattern}}" {{path:.}}
+tool: grep
+category: linux
+tags: [search, text, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/grep.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

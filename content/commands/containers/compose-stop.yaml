@@ -1,0 +1,14 @@
+id: compose-stop
+title: Stop a Compose project
+description: Stops the containers of the project without removing them, so they can be started again.
+command: docker compose stop
+tool: docker
+category: containers
+tags: [compose]
+danger: caution
+source:
+  type: tldr
+  page: common/docker-compose.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

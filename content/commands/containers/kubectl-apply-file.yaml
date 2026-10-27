@@ -1,0 +1,14 @@
+id: kubectl-apply-file
+title: Apply a manifest
+description: Creates or updates the resources declared in the manifest so the cluster matches the file.
+command: kubectl apply -f {{file:manifest.yaml}}
+tool: kubectl
+category: containers
+tags: [kubernetes, deploy]
+danger: caution
+source:
+  type: tldr
+  page: common/kubectl-apply.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

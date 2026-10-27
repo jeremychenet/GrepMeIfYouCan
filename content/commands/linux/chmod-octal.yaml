@@ -1,0 +1,15 @@
+id: chmod-octal
+title: Set permissions with an octal mode
+description: Replaces the permissions of the file with the octal mode, such as 644 for owner write and read for everyone.
+command: chmod {{mode:644}} {{file}}
+tool: chmod
+category: linux
+tags: [permissions, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/chmod.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

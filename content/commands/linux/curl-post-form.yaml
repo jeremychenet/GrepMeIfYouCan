@@ -1,0 +1,15 @@
+id: curl-post-form
+title: Send a POST request with form data
+description: Posts URL-encoded form fields to the URL, as an HTML form would.
+command: curl -d '{{data:name=bob}}' {{url:https://example.com/form}}
+tool: curl
+category: linux
+tags: [http, api]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/curl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

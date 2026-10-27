@@ -1,0 +1,15 @@
+id: ss-port-connections
+title: Show connections on a local port
+description: Lists TCP connections whose local side uses the port, with numeric addresses.
+command: ss -tn src :{{port:443}}
+tool: ss
+category: linux
+tags: [network, ports]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/ss.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

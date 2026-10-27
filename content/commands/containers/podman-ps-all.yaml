@@ -1,0 +1,14 @@
+id: podman-ps-all
+title: List all Podman containers
+description: Shows every Podman container, running or stopped, with its status and image.
+command: podman ps -a
+tool: podman
+category: containers
+tags: [list]
+danger: safe
+source:
+  type: tldr
+  page: common/podman.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

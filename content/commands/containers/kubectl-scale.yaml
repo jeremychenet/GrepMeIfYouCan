@@ -1,0 +1,10 @@
+id: kubectl-scale
+title: Scale a deployment
+description: Sets the number of pods the deployment runs, creating or removing pods to match it.
+command: kubectl scale deployment/{{deployment}} --replicas={{replicas:3}}
+tool: kubectl
+category: containers
+tags: [kubernetes, deploy]
+danger: caution
+source:
+  type: original

@@ -1,0 +1,15 @@
+id: chmod-executable
+title: Make a file executable
+description: Adds execute permission so the file can be run as a program or script.
+command: chmod +x {{file}}
+tool: chmod
+category: linux
+tags: [permissions, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/chmod.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

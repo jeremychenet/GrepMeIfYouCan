@@ -1,0 +1,11 @@
+id: find-modified-recently
+title: Find files modified in the last days
+description: Recursively lists regular files whose content changed within the given number of days.
+command: find {{path:.}} -type f -mtime -{{days:1}}
+tool: find
+category: linux
+tags: [files, search]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

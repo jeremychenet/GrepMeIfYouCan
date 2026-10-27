@@ -1,0 +1,10 @@
+id: kubectl-top-pods
+title: Show CPU and memory usage of pods
+description: Shows the current CPU and memory usage of each pod, which requires metrics-server in the cluster.
+command: kubectl top pods -n {{namespace:default}}
+tool: kubectl
+category: containers
+tags: [kubernetes, monitoring]
+danger: safe
+source:
+  type: original

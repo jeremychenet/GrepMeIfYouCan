@@ -1,0 +1,15 @@
+id: systemctl-list-running
+title: List running services
+description: Lists only the service units that are currently active and running.
+command: systemctl list-units --type=service --state=running
+tool: systemctl
+category: linux
+tags: [systemd, services]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

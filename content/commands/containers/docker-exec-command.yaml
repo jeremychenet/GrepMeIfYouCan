@@ -1,0 +1,14 @@
+id: docker-exec-command
+title: Run a command in a running container
+description: Runs a one-off command inside the running container and prints its output.
+command: docker exec {{container}} {{command}}
+tool: docker
+category: containers
+tags: [debug]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-exec.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

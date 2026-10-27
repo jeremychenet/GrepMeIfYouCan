@@ -1,0 +1,15 @@
+id: systemctl-failed
+title: List failed units
+description: Shows every systemd unit whose last start or run ended in an error.
+command: systemctl --failed
+tool: systemctl
+category: linux
+tags: [systemd, services, troubleshooting]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

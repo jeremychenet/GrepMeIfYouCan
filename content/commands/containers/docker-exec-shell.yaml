@@ -1,0 +1,14 @@
+id: docker-exec-shell
+title: Open a shell in a running container
+description: Starts an interactive shell inside the running container without restarting it.
+command: docker exec -it {{container}} {{shell:sh}}
+tool: docker
+category: containers
+tags: [shell, debug]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-exec.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

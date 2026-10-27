@@ -1,0 +1,10 @@
+id: kubectl-describe-node
+title: Describe a node
+description: Shows the node's capacity, allocated resources, conditions and the pods running on it.
+command: kubectl describe node {{node}}
+tool: kubectl
+category: containers
+tags: [kubernetes, debug]
+danger: safe
+source:
+  type: original

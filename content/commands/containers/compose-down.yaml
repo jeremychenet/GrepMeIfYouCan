@@ -1,0 +1,10 @@
+id: compose-down
+title: Stop and remove a Compose project
+description: Stops and removes the containers and networks of the project while keeping its volumes.
+command: docker compose down
+tool: docker
+category: containers
+tags: [compose]
+danger: caution
+source:
+  type: original

@@ -1,0 +1,15 @@
+id: systemctl-status
+title: Check the status of a service
+description: Shows whether the service is running, its main PID, memory use and its most recent log lines.
+command: systemctl status {{service}}
+tool: systemctl
+category: linux
+tags: [systemd, services]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

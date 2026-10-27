@@ -1,0 +1,10 @@
+id: kubectl-get-pods-wide
+title: List pods with their node and IP
+description: Lists pods with extra columns such as their IP address and the node they run on.
+command: kubectl get pods -o wide -n {{namespace:default}}
+tool: kubectl
+category: containers
+tags: [kubernetes, list]
+danger: safe
+source:
+  type: original

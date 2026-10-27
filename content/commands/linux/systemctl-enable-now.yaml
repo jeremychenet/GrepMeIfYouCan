@@ -1,0 +1,15 @@
+id: systemctl-enable-now
+title: Enable a service at boot and start it
+description: Configures the service to start automatically at boot and starts it right away.
+command: sudo systemctl enable --now {{service}}
+tool: systemctl
+category: linux
+tags: [systemd, services, boot]
+danger: caution
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

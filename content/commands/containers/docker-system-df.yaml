@@ -1,0 +1,10 @@
+id: docker-system-df
+title: Show Docker disk usage
+description: Shows how much space images, containers, volumes and build cache take, and how much of it is reclaimable.
+command: docker system df
+tool: docker
+category: containers
+tags: [disk, cleanup]
+danger: safe
+source:
+  type: original

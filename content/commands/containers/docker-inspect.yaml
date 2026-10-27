@@ -1,0 +1,10 @@
+id: docker-inspect
+title: Inspect a container
+description: Prints the full low-level configuration and state of the container as JSON.
+command: docker inspect {{container}}
+tool: docker
+category: containers
+tags: [debug]
+danger: safe
+source:
+  type: original

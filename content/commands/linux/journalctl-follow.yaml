@@ -1,0 +1,15 @@
+id: journalctl-follow
+title: Follow the system log
+description: Prints the most recent log lines and keeps streaming new entries as they arrive.
+command: journalctl -n {{lines:100}} -f
+tool: journalctl
+category: linux
+tags: [logs, systemd]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/journalctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

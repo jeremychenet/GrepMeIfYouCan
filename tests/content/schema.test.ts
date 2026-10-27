@@ -40,6 +40,11 @@ describe('commandSchema', () => {
     ).toEqual({});
   });
 
+  it('accepts the optional tldr example number', () => {
+    const source = { type: 'tldr', page: 'common/find.md', commit: 'a'.repeat(40), license: 'CC-BY-4.0', example: 3 };
+    expect(errorsFor({ ...valid, source })).toEqual({});
+  });
+
   describe('description', () => {
     it('is required', () => {
       expect(errorsFor({ ...valid, description: '   ' }).description).toContain('is required');
@@ -85,6 +90,7 @@ describe('commandSchema', () => {
     ['source.page', { source: { type: 'tldr', page: 'find', commit: 'a'.repeat(40), license: 'CC-BY-4.0' } }],
     ['source.license', { source: { type: 'tldr', page: 'common/find.md', commit: 'a'.repeat(40), license: 'MIT' } }],
     ['source.type', { source: { type: 'blog' } }],
+    ['source.example', { source: { type: 'tldr', page: 'common/find.md', commit: 'a'.repeat(40), license: 'CC-BY-4.0', example: 0 } }],
   ])('rejects an invalid %s', (field, patch) => {
     expect(errorsFor({ ...valid, ...patch })[field]).toBeDefined();
   });

@@ -1,0 +1,14 @@
+id: docker-run-env
+title: Run a container with an environment variable
+description: Starts a container with the variable set in its environment.
+command: docker run -e {{variable:APP_ENV}}={{value:production}} {{image}}
+tool: docker
+category: containers
+tags: [run, config]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

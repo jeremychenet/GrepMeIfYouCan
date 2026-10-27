@@ -1,0 +1,10 @@
+id: kubectl-delete-pod
+title: Delete a pod
+description: Deletes the pod, and its controller such as a deployment creates a replacement if one manages it.
+command: kubectl delete pod {{pod}} -n {{namespace}}
+tool: kubectl
+category: containers
+tags: [kubernetes, troubleshooting]
+danger: destructive
+source:
+  type: original

@@ -1,0 +1,10 @@
+id: helm-list
+title: List Helm releases
+description: Lists the releases installed in every namespace with their chart, app version and status.
+command: helm list -A
+tool: helm
+category: containers
+tags: [kubernetes, charts, list]
+danger: safe
+source:
+  type: original

@@ -1,0 +1,10 @@
+id: kubectl-rollout-restart
+title: Restart the pods of a deployment
+description: Replaces the deployment's pods one by one, for example to pick up a changed config map or secret.
+command: kubectl rollout restart deployment/{{deployment}}
+tool: kubectl
+category: containers
+tags: [kubernetes, deploy]
+danger: caution
+source:
+  type: original

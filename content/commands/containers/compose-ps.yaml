@@ -1,0 +1,14 @@
+id: compose-ps
+title: List a Compose project's containers
+description: Shows the containers of the project with their service, state and published ports.
+command: docker compose ps
+tool: docker
+category: containers
+tags: [compose, list]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-compose.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

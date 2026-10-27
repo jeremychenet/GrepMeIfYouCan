@@ -1,0 +1,15 @@
+id: ssh-jump-host
+title: Connect through a jump host
+description: Reaches a server that is only accessible from a bastion by hopping through the bastion first.
+command: ssh -J {{user}}@{{jump_host}} {{user}}@{{host}}
+tool: ssh
+category: linux
+tags: [remote, bastion]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/ssh.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

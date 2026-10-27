@@ -1,0 +1,14 @@
+id: docker-ps-filter-status
+title: List containers by status
+description: Lists containers in the given state, such as exited, running or paused.
+command: docker ps -a --filter "status={{status:exited}}"
+tool: docker
+category: containers
+tags: [list, troubleshooting]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-ls.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

@@ -1,0 +1,10 @@
+id: helm-uninstall
+title: Uninstall a Helm release
+description: Removes every Kubernetes resource created by the release from the cluster.
+command: helm uninstall {{release}} -n {{namespace}}
+tool: helm
+category: containers
+tags: [kubernetes, charts]
+danger: destructive
+source:
+  type: original

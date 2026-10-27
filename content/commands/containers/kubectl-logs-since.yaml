@@ -1,0 +1,14 @@
+id: kubectl-logs-since
+title: Show recent logs of a pod
+description: Prints only the log lines written during the given recent period, such as 10m or 1h.
+command: kubectl logs --since={{duration:1h}} {{pod}}
+tool: kubectl
+category: containers
+tags: [kubernetes, logs]
+danger: safe
+source:
+  type: tldr
+  page: common/kubectl-logs.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

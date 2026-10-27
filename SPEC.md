@@ -141,6 +141,7 @@ source:
   page: common/find.md
   commit: <sha tldr épinglé>
   license: CC-BY-4.0
+  example: 1            # optionnel : numéro de l'exemple dans la page tldr (à partir de 1)
 ```
 - Le schéma est validé au build (Zod ou JSON Schema). Tout fichier invalide fait échouer la CI.
 - `id` est unique et sert de slug d'URL.
@@ -148,6 +149,13 @@ source:
   - « Une phrase » : refusée si elle contient `.`, `!` ou `?` suivi d'un espace puis d'une majuscule. Les abréviations (« e.g. ») et les versions (« v1.2 ») restent acceptées.
   - « Identique au titre » : comparaison insensible à la casse et à la ponctuation finale.
 - `id` doit être égal au nom du fichier, et `category` au nom du dossier. Les champs inconnus sont refusés.
+- **Règles de rédaction** (appliquées depuis J7) :
+  - `title` : le besoin, ≈ 60 caractères ; `id` : court et lisible (`grep-recursive`), pas dérivé mécaniquement du titre tldr.
+  - `description` : une phrase au présent, 3e personne (« Lists… », « Deletes… »), qui dit ce que fait la commande et ses effets de bord.
+  - `command` : options courtes idiomatiques (`du -sh`, `grep -rn`, `tar -xzf`) car les formes longues GNU échouent sur macOS ; forme longue seulement si elle est plus claire et peu connue en court (`--dry-run`, `--tail`). `sudo` quand la commande l'exige sur un système standard.
+  - Variables : noms courts en snake_case (`{{path:.}}`, `{{lines:100}}`), valeur par défaut seulement si elle est évidente et sans risque ; **jamais de valeur par défaut pour la cible d'une commande destructive**.
+  - `platforms` : `[linux]` pour ce qui est propre à Linux (systemd, `ss`, options GNU), `[linux, macos]` seulement si la commande a été vérifiée sur macOS ; omis pour les catégories hors `linux`.
+  - Fiche adaptée d'un exemple tldr : `source.type: tldr` avec `example`. Fiche écrite sans exemple tldr : `source.type: original`.
 - La validation tourne avant chaque build (`npm run build` = `lint-content` + `astro build`), et Astro revalide aussi chaque fiche avec le même schéma Zod.
 
 ### 4.2 Import initial depuis tldr-pages
@@ -157,7 +165,7 @@ source:
   3. Chaque exemple tldr devient une fiche : texte de l'exemple tldr → `title`, ligne de code → `command`. Les placeholders `{{...}}` sont conservés. tldr ne fournit pas de phrase expliquant ce que fait la commande : la `description` est donc **rédigée pour chaque fiche importée** (brouillon possible, puis relue dans la PR d'import). Une fiche sans description valide ne passe pas la CI.
   4. Le `danger` est pré-rempli par le linter (voir §7.2), puis revu manuellement.
   5. Conversion des placeholders tldr : `{{path/to/file}}` est conservé ; `{{[-r|--recursive]}}` et `{{[ps|container ls]}}` deviennent la forme longue écrite en dur ; une URL devient `{{url:<URL>}}` ; tout autre `:` dans un placeholder devient `_` (signalé à la relecture). Les exemples avec accolades échappées (`\{\{`), accolades ambiguës (`{{{`), caractères non ASCII ou invisibles sont écartés et listés dans le rapport.
-  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même page source + même commande) n'est pas recréée.
+  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même `source.page` + `source.example`) n'est pas recréée, même si son titre et sa commande ont été réécrits. Un exemple écarté à la relecture est aussi retiré de `scripts/tldr-selection.yaml`.
 - Le résultat est commité via **une PR relue** comme n'importe quelle contribution.
 - **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous une licence à choisir (MIT proposée).
 
@@ -286,8 +294,9 @@ open http://localhost:8080
 ### 7.2 Lint de danger en CI
 - Le linter détecte des patterns à risque : `rm -rf`, `dd `, `mkfs`, `> /dev/sd*`, `chmod -R 777`, `curl|wget … | (sh|bash)`, `base64 -d | sh`, `:(){ :|:& };:`, `--force`, `terraform destroy`, `kubectl delete`, `git push --force`, `git reset --hard`…
 - Chaque règle a un **niveau minimum** : `caution` ou `destructive`. Si le niveau déclaré est inférieur → **échec de la CI et du build**. Un niveau plus élevé que nécessaire est toujours accepté.
-  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall` et tout `--force…` (caution).
+  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive`, `rsync --delete…`/`--remove-source-files`, `docker compose down -v`/`docker volume rm` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall` et tout `--force…` (caution).
   - Le `-f` court n'est détecté que là où il est dangereux (`git push -f`, `git clean -f`, `rm -rf`), pour éviter les faux positifs sur `tail -f` ou `ls -f`.
+  - Les placeholders sont analysés tels qu'ils seront copiés : `{{nom:défaut}}` est remplacé par sa valeur par défaut, `{{nom}}` par son nom, et un `|` à l'intérieur (alternatives tldr comme `{{f|d}}`) n'est pas lu comme un pipe.
   - **Aucune dérogation** : en cas de faux positif, on monte le niveau.
   - `suggestDanger()` pré-remplit le niveau des brouillons importés (§4.2).
 - Caractères :

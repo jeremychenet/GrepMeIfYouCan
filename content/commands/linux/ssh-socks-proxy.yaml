@@ -1,0 +1,15 @@
+id: ssh-socks-proxy
+title: Open a SOCKS proxy through a server
+description: Starts a local SOCKS proxy on the port that routes traffic through the remote server, without opening a shell.
+command: ssh -D {{local_port:1080}} -N {{user}}@{{host}}
+tool: ssh
+category: linux
+tags: [remote, tunnel, proxy]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/ssh.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

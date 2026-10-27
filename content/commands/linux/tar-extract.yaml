@@ -1,0 +1,15 @@
+id: tar-extract
+title: Extract an archive in the current directory
+description: Unpacks a tar archive, compressed or not, into the current directory and lists each extracted file.
+command: tar -xvf {{archive}}
+tool: tar
+category: linux
+tags: [archive, compression]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/tar.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

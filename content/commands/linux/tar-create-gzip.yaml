@@ -1,0 +1,15 @@
+id: tar-create-gzip
+title: Create a gzipped archive
+description: Packs the given files and directories into a single gzip-compressed tar archive.
+command: tar -czf {{archive:archive.tar.gz}} {{paths}}
+tool: tar
+category: linux
+tags: [archive, compression]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/tar.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

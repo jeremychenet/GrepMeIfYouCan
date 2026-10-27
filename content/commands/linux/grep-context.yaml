@@ -1,0 +1,15 @@
+id: grep-context
+title: Show lines around each match
+description: Prints each matching line together with the given number of lines before and after it.
+command: grep -C {{lines:3}} "{{pattern}}" {{file}}
+tool: grep
+category: linux
+tags: [search, text]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/grep.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

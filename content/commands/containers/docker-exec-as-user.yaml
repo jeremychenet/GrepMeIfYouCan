@@ -1,0 +1,14 @@
+id: docker-exec-as-user
+title: Run a command in a container as another user
+description: Runs the command inside the container as the given user, for example root to install a debugging tool.
+command: docker exec -it -u {{user:root}} {{container}} {{command:sh}}
+tool: docker
+category: containers
+tags: [shell, debug]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-exec.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

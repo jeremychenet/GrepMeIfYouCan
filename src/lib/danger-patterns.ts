@@ -23,9 +23,20 @@ export interface Parsed {
   segments: string[][];
 }
 
+/**
+ * Replaces each `{{name}}` / `{{name:default}}` placeholder by what gets copied
+ * (its default value, else its name), with "|" turned into a space: the "|" of
+ * tldr alternatives like `{{f|d}}` must not be read as a pipe.
+ */
+const expandPlaceholders = (command: string) =>
+  command.replace(/\{\{(.+?)\}\}/g, (_, inner: string) => {
+    const colon = inner.indexOf(':');
+    return (colon === -1 ? inner : inner.slice(colon + 1)).replace(/\|/g, ' ');
+  });
+
 /** Splits a one-line shell command into simple commands made of tokens (quotes stripped). */
 export function parse(command: string): Parsed {
-  const raw = command.replace(/\s+/g, ' ').trim();
+  const raw = expandPlaceholders(command).replace(/\s+/g, ' ').trim();
   const segments = raw
     .replace(/\$\(|<\(|[`()]/g, ' ; ')
     .split(/\|\||&&|[|;&]/)
@@ -111,6 +122,20 @@ export const RULES: DangerRule[] = [
     test: runs('git', (a) => has(a, 'clean') && (has(a, '--force') || shortFlag(a, 'f'))),
   },
   { id: 'docker-prune', label: 'docker prune', level: 'destructive', test: runs('docker', (a) => has(a, 'prune')) },
+  {
+    id: 'rsync-delete',
+    label: 'rsync --delete / --remove-source-files',
+    level: 'destructive',
+    test: runs('rsync', (a) => a.some((t) => t.startsWith('--delete') || t === '--remove-source-files')),
+  },
+  {
+    id: 'docker-volume-remove',
+    label: 'docker volume removal (compose down -v, volume rm)',
+    level: 'destructive',
+    test: (p) =>
+      runs('docker', (a) => (has(a, 'volume') && has(a, 'rm')) || (has(a, 'compose') && has(a, 'down') && has(a, '-v', '--volumes')))(p) ||
+      runs('docker-compose', (a) => has(a, 'down') && has(a, '-v', '--volumes'))(p),
+  },
   {
     id: 'aws-s3-rm-recursive',
     label: 'aws s3 rm --recursive',

@@ -1,0 +1,11 @@
+id: free-memory
+title: Show memory usage
+description: Displays total, used and available RAM and swap in human-readable units.
+command: free -h
+tool: free
+category: linux
+tags: [memory, monitoring]
+danger: safe
+platforms: [linux]
+source:
+  type: original

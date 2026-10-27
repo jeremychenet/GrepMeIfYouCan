@@ -1,0 +1,15 @@
+id: ssh-identity
+title: Connect with a specific private key
+description: Opens a session using the given private key file instead of the default ones.
+command: ssh -i {{key:~/.ssh/id_ed25519}} {{user}}@{{host}}
+tool: ssh
+category: linux
+tags: [remote, keys]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/ssh.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

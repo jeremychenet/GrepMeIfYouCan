@@ -1,0 +1,14 @@
+id: docker-run-bind-mount
+title: Run a container with a mounted directory
+description: Shares a host directory with the container, so changes made on either side are visible to both.
+command: docker run -v {{host_path:$PWD}}:{{container_path:/data}} {{image}}
+tool: docker
+category: containers
+tags: [run, volumes]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5
