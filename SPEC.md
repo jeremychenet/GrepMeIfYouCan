@@ -64,6 +64,9 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 - À l'affichage, chaque variable devient un champ inline. La commande copiée contient les valeurs saisies, ou la valeur par défaut.
 - `Tab` passe d'une variable à la suivante.
 - Les valeurs saisies sont injectées **telles quelles** comme texte, sans échappement shell automatique. Une info-bulle le rappelle.
+- Une variable utilisée plusieurs fois dans la commande n'a qu'une valeur : modifier un champ met à jour les autres.
+- Champ vide sans valeur par défaut : la commande copiée contient le nom de la variable, sauf sur une fiche `destructive`, où la copie est bloquée tant que le champ est vide (« Fill in <name> first »).
+- Les caractères invisibles et bidi saisis ou collés sont retirés ; les retours à la ligne, tabulations et caractères de contrôle deviennent une espace.
 
 ### 2.6 Copie en un clic
 - Bouton Copier, et `Entrée` sur le résultat sélectionné.
@@ -313,7 +316,8 @@ open http://localhost:8080
 ### 7.3 Copie sécurisée
 - Le texte copié est **exactement** celui affiché, à partir de la donnée et non du DOM : pas de texte caché, pas de caractère invisible.
 - Aucun `\n` final, pour que la commande ne s'exécute pas au collage dans un terminal.
-- Confirmation au premier copier d'une commande `destructive` dans la session.
+- Confirmation au premier copier de **chaque** commande `destructive` dans la session (dialogue qui montre le texte exact, mémorisé dans `sessionStorage` ; si le stockage est indisponible, la confirmation est demandée à chaque fois).
+- La copie passe par `navigator.clipboard.writeText` ; en cas d'échec, un toast l'indique (pas de repli qui lirait le DOM).
 
 ### 7.4 Web
 - En-têtes Nginx :

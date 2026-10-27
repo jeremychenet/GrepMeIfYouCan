@@ -1,0 +1,41 @@
+---
+// Status message after a copy (SPEC §2.6). Always in the page so screen
+// readers announce each new message (aria-live); src/components/Toast.ts fills it.
+---
+
+<div class="toast" role="status" aria-live="polite" aria-atomic="true" data-toast></div>
+
+<style>
+  .toast {
+    position: fixed;
+    inset-inline: 0;
+    bottom: var(--space-6);
+    z-index: 20;
+    width: fit-content;
+    max-width: calc(100% - 2 * var(--space-4));
+    margin-inline: auto;
+    padding: var(--space-2) var(--space-4);
+    color: var(--color-bg);
+    background: var(--color-text);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+  }
+
+  .toast.is-visible {
+    opacity: 1;
+  }
+
+  .toast:empty {
+    padding: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toast {
+      transition: none;
+    }
+  }
+</style>

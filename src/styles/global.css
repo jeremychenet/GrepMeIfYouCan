@@ -152,3 +152,28 @@ pre {
 .muted {
   color: var(--color-text-muted);
 }
+
+/* Editable command variable (src/components/CommandTemplate.ts): the
+   default (placeholder) in accent color, a typed value in text color. */
+.var-input {
+  min-width: 2ch;
+  max-width: 100%;
+  padding: 0 0.125rem;
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed currentColor;
+  border-radius: 0;
+  font: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.var-input::placeholder {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.var-input[aria-invalid='true'] {
+  border-bottom: 2px solid var(--color-destructive);
+}
