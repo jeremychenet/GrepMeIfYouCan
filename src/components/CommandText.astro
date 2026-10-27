@@ -1,0 +1,46 @@
+---
+// A command with its template variables highlighted (read-only until J12).
+// Variables show their default value when they have one, else their name.
+// `scroll`: long commands scroll inside the block (card page); the block is
+// then focusable so keyboard users can scroll it (WCAG 2.1.1). Otherwise
+// they wrap, which keeps lists free of extra tab stops.
+import { parseTemplate } from '../lib/template';
+
+interface Props {
+  command: string;
+  scroll?: boolean;
+}
+
+const { command, scroll = false } = Astro.props;
+const segments = parseTemplate(command);
+---
+
+<pre
+  class:list={['command', { wrap: !scroll }]}
+  tabindex={scroll ? 0 : undefined}
+  aria-label={scroll ? 'Command' : undefined}><code>{
+  segments.map((s) =>
+    s.type === 'text' ? (
+      s.value
+    ) : (
+      <var data-var={s.name} title={s.name}>{s.default ?? s.name}</var>
+    ),
+  )
+}</code></pre>
+
+<style>
+  .command {
+    margin: 0;
+  }
+
+  .wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  var {
+    font-style: normal;
+    color: var(--color-accent);
+    border-bottom: 1px dashed currentColor;
+  }
+</style>

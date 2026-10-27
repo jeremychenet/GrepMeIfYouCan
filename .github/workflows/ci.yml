@@ -58,6 +58,10 @@ jobs:
         env:
           ASTRO_TELEMETRY_DISABLED: '1'
 
+      # One page per card/tool/category, title + description + canonical, danger, sitemap.
+      - name: Check built site
+        run: npm run check-dist
+
   docker:
     name: docker
     runs-on: ubuntu-24.04

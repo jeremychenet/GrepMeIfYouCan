@@ -1,0 +1,65 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import CardList from '../../components/CardList.astro';
+import CommandCard from '../../components/CommandCard.astro';
+import Base from '../../layouts/Base.astro';
+import type { Command } from '../../content/schema';
+import { CATEGORY_LABELS, categoryPageMeta, groupBy, toolPath } from '../../lib/pages';
+
+export const getStaticPaths = (async () => {
+  const cards = (await getCollection('commands')).map((e) => e.data);
+  return [...groupBy(cards, (c) => c.category)].map(([category, list]) => ({
+    params: { category },
+    props: { category: category as Command['category'], cards: list },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category, cards } = Astro.props;
+const meta = categoryPageMeta(category, cards);
+const byTool = groupBy(cards, (c) => c.tool);
+---
+
+<Base title={meta.title} description={meta.description}>
+  <h1>{CATEGORY_LABELS[category]}</h1>
+  <p class="muted count">
+    {cards.length} commands across {byTool.size} tools
+  </p>
+  {
+    [...byTool].map(([tool, list]) => (
+      <section aria-labelledby={`tool-${tool}`}>
+        <h2 id={`tool-${tool}`}>
+          <a href={toolPath(tool)}>
+            <code>{tool}</code>
+          </a>
+        </h2>
+        <CardList>
+          {list.map((card) => (
+            <li>
+              <CommandCard card={card} level={3} />
+            </li>
+          ))}
+        </CardList>
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  h1 {
+    font-size: var(--text-xl);
+  }
+
+  .count {
+    margin-block: var(--space-1) var(--space-6);
+  }
+
+  section + section {
+    margin-top: var(--space-8);
+  }
+
+  h2 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-lg);
+  }
+</style>

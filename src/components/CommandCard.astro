@@ -1,0 +1,194 @@
+---
+// A command card (SPEC §2.4). `full` is the /c/<id> page; `compact` is a
+// list item on tool and category pages, linking to the card page.
+// Copy / Favorite / Report actions arrive in J12, J14 and J15.
+import type { Command } from '../content/schema';
+import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, toolPath } from '../lib/pages';
+import CommandText from './CommandText.astro';
+import DangerBadge from './DangerBadge.astro';
+
+interface Props {
+  card: Command;
+  variant?: 'full' | 'compact';
+  /** Heading level of a compact card, so pages keep a correct outline. */
+  level?: 2 | 3;
+}
+
+const { card, variant = 'compact', level = 2 } = Astro.props;
+const full = variant === 'full';
+const Heading = full ? 'h1' : (`h${level}` as const);
+const source = sourceUrl(card);
+---
+
+<article class:list={['card', `card--${variant}`]} data-card={card.id} data-danger={card.danger}>
+  <div class="head">
+    <Heading class="title">
+      {full ? card.title : <a href={cardPath(card.id)}>{card.title}</a>}
+    </Heading>
+    <DangerBadge level={card.danger} />
+  </div>
+
+  <p class="description">{card.description}</p>
+
+  {
+    full && card.danger === 'destructive' && (
+      <p class="danger-note" role="note">
+        <strong>Destructive:</strong> this command can permanently delete data. Check every value
+        before running it.
+      </p>
+    )
+  }
+
+  <CommandText command={card.command} scroll={full} />
+
+  {
+    full && (
+      <dl class="meta">
+        <div>
+          <dt>Tool</dt>
+          <dd>
+            <a href={toolPath(card.tool)}>{card.tool}</a>
+          </dd>
+        </div>
+        <div>
+          <dt>Category</dt>
+          <dd>
+            <a href={categoryPath(card.category)}>{CATEGORY_LABELS[card.category]}</a>
+          </dd>
+        </div>
+        {card.platforms && (
+          <div>
+            <dt>Platforms</dt>
+            <dd>{card.platforms.join(', ')}</dd>
+          </div>
+        )}
+        <div>
+          <dt>Tags</dt>
+          <dd>
+            <ul class="tags">
+              {card.tags.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    )
+  }
+
+  {
+    full && source && card.source.type === 'tldr' && (
+      <p class="attribution muted">
+        Adapted from <a href={source}>tldr-pages ({card.source.page})</a>, licensed under{' '}
+        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+      </p>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .card--compact {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .card--compact :global(pre) {
+    background: var(--color-bg);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .card--full .title {
+    font-size: var(--text-xl);
+  }
+
+  .card--compact .title {
+    font-size: var(--text-base);
+  }
+
+  .title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .title a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .card--compact .description {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .danger-note {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-destructive);
+    background: var(--color-destructive-bg);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-md);
+  }
+
+  .meta {
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .meta div {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  dt {
+    flex: none;
+    width: 6rem;
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tags li {
+    padding: 0 var(--space-2);
+    background: var(--color-surface-2);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.75;
+  }
+
+  .attribution {
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 640px) {
+    .card--full .title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

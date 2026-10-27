@@ -1,0 +1,60 @@
+---
+// Danger badge (SPEC §2.7): nothing for `safe`, orange for `caution`,
+// red for `destructive`. Icon + text, so color is never the only signal.
+import type { Command } from '../content/schema';
+
+interface Props {
+  level: Command['danger'];
+}
+
+const { level } = Astro.props;
+const label = level === 'destructive' ? 'Destructive' : 'Caution';
+---
+
+{
+  level !== 'safe' && (
+    <span class:list={['badge', `badge--${level}`]} data-danger={level}>
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path
+          d="M8 1.5 15 14H1L8 1.5Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linejoin="round"
+        />
+        <path d="M8 6v3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        <circle cx="8" cy="11.75" r="0.9" fill="currentColor" />
+      </svg>
+      {label}
+    </span>
+  )
+}
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.125rem var(--space-2);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    line-height: var(--leading-normal);
+    white-space: nowrap;
+  }
+
+  .badge svg {
+    flex: none;
+  }
+
+  .badge--caution {
+    color: var(--color-caution);
+    background: var(--color-caution-bg);
+  }
+
+  .badge--destructive {
+    color: var(--color-destructive);
+    background: var(--color-destructive-bg);
+  }
+</style>
