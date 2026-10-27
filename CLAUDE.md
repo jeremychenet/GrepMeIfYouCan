@@ -22,9 +22,10 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 
 | Target | Purpose |
 |---|---|
-| `make up` / `make down` / `make logs` | Dev stack (`proxy` + `web`), site at http://localhost:8080 |
+| `make up` / `make down` / `make logs` | Dev stack. Until J2: `web` only at http://localhost:4321; from J2: `proxy` + `web` at http://localhost:8080 |
 | `make up-analytics` | Adds `db` (PostgreSQL) + `umami` (Compose profile `analytics`) |
-| `make npm <args>` / `make sh` | Run npm / a shell inside the `web` container |
+| `make npm ARGS="<args>"` / `make sh` | Run npm / a shell inside the `web` container (e.g. `make npm ARGS="run typecheck"`) |
+| `make clean` | `down -v`: drops the `node_modules` volume (forces a fresh `npm ci`) |
 | `make test` | Vitest unit tests |
 | `make coverage` | Vitest with coverage thresholds (same check as CI) |
 | `make e2e` | Playwright E2E (official Playwright image, Compose profile `test`) |
@@ -32,7 +33,9 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 | `make import-tldr` | Regenerate drafts from tldr-pages at the pinned SHA |
 | `make prod-local` | Run the production images locally |
 
-Single test: `make npm -- exec vitest run tests/lib/search.test.ts` (or `-t "<name>"`); Playwright: `make e2e -- tests/e2e/keyboard.spec.ts`. Keep these docs in sync with the real Makefile once it exists.
+Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up down logs sh npm clean`).
+
+Dev container mechanics (`docker/web-entrypoint.sh`): dependencies are reinstalled with `npm ci` only when the sha256 of `package-lock.json` differs from `node_modules/.lock-hash`; the stale Astro lock `.astro/dev.json` is removed at each start (otherwise a restart fails with "Another astro dev server is already running"). To add a dependency: `make npm ARGS="install -E <pkg>@<version>"` (exact versions only). `@astrojs/check` caps TypeScript at 6.x. Astro telemetry and npm update notices are disabled in the image.
 
 ## Architecture (v1)
 

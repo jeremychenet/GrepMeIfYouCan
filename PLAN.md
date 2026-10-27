@@ -12,7 +12,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 ## Phase A — Fondations
 
-### - [ ] J1 — Squelette Astro conteneurisé
+### - [x] J1 — Squelette Astro conteneurisé
 **Objectif** : un projet Astro + TypeScript qui démarre en local avec `make up`, sans rien installer sur le Mac.
 **Fichiers**
 - `package.json`, `package-lock.json`, `astro.config.mjs`, `tsconfig.json`
@@ -23,10 +23,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `.env.example`, `.gitignore`, `.dockerignore`, `.editorconfig`, `README.md`
 
 **Validation**
-- [ ] `make up` puis `curl -s localhost:4321` renvoie la page « Hello ».
-- [ ] Modifier `index.astro` met la page à jour sans redémarrer le conteneur (rechargement à chaud).
-- [ ] `node_modules` est dans un volume nommé, absent du dossier du Mac.
-- [ ] Le conteneur tourne en non-root (`docker compose exec web id -u` ≠ 0).
+- [x] `make up` puis `curl -s localhost:4321` renvoie la page « Hello ».
+- [x] Modifier `index.astro` met la page à jour sans redémarrer le conteneur (rechargement à chaud).
+- [x] `node_modules` est dans un volume nommé. Côté Mac, il ne reste qu'un dossier vide (point de montage créé par Docker, ignoré par Git).
+- [x] Le conteneur tourne en non-root (`docker compose exec web id -u` ≠ 0).
 
 ### - [ ] J2 — Proxy Nginx local + en-têtes de sécurité
 **Objectif** : une URL unique `http://localhost:8080`, qui sert le site avec les mêmes en-têtes qu'en production.
