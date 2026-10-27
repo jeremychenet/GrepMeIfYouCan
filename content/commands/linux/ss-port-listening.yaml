@@ -1,0 +1,15 @@
+id: ss-port-listening
+title: Check if a port is listening
+description: Shows the TCP socket listening on the local port, or nothing if no process listens there.
+command: ss -ltn src :{{port:8080}}
+tool: ss
+category: linux
+tags: [network, ports, troubleshooting]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/ss.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

@@ -1,0 +1,10 @@
+id: helm-upgrade-install
+title: Upgrade or install a Helm release
+description: Upgrades the release with the chart and values file, or installs it when it does not exist yet.
+command: helm upgrade --install {{release}} {{chart}} -f {{values:values.yaml}}
+tool: helm
+category: containers
+tags: [kubernetes, charts, deploy]
+danger: caution
+source:
+  type: original

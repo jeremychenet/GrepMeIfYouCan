@@ -1,0 +1,14 @@
+id: docker-ps-filter-name
+title: Find containers by name
+description: Lists containers, running or not, whose name contains the given text.
+command: docker ps -a --filter "name={{name}}"
+tool: docker
+category: containers
+tags: [list, search]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-ls.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

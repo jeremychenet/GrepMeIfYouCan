@@ -1,0 +1,10 @@
+id: docker-build
+title: Build and tag an image
+description: Builds an image from the Dockerfile in the directory and gives it the name and tag.
+command: docker build -t {{image:myapp}}:{{tag:latest}} {{path:.}}
+tool: docker
+category: containers
+tags: [images, build]
+danger: safe
+source:
+  type: original

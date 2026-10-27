@@ -1,0 +1,15 @@
+id: chmod-recursive-read
+title: Give everyone read access to a directory tree
+description: Recursively grants read to all users, plus execute on directories and on files that are already executable.
+command: chmod -R a+rX {{path}}
+tool: chmod
+category: linux
+tags: [permissions, files]
+danger: caution
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/chmod.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

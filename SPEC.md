@@ -149,6 +149,13 @@ source:
   - « Une phrase » : refusée si elle contient `.`, `!` ou `?` suivi d'un espace puis d'une majuscule. Les abréviations (« e.g. ») et les versions (« v1.2 ») restent acceptées.
   - « Identique au titre » : comparaison insensible à la casse et à la ponctuation finale.
 - `id` doit être égal au nom du fichier, et `category` au nom du dossier. Les champs inconnus sont refusés.
+- **Règles de rédaction** (appliquées depuis J7) :
+  - `title` : le besoin, ≈ 60 caractères ; `id` : court et lisible (`grep-recursive`), pas dérivé mécaniquement du titre tldr.
+  - `description` : une phrase au présent, 3e personne (« Lists… », « Deletes… »), qui dit ce que fait la commande et ses effets de bord.
+  - `command` : options courtes idiomatiques (`du -sh`, `grep -rn`, `tar -xzf`) car les formes longues GNU échouent sur macOS ; forme longue seulement si elle est plus claire et peu connue en court (`--dry-run`, `--tail`). `sudo` quand la commande l'exige sur un système standard.
+  - Variables : noms courts en snake_case (`{{path:.}}`, `{{lines:100}}`), valeur par défaut seulement si elle est évidente et sans risque ; **jamais de valeur par défaut pour la cible d'une commande destructive**.
+  - `platforms` : `[linux]` pour ce qui est propre à Linux (systemd, `ss`, options GNU), `[linux, macos]` seulement si la commande a été vérifiée sur macOS ; omis pour les catégories hors `linux`.
+  - Fiche adaptée d'un exemple tldr : `source.type: tldr` avec `example`. Fiche écrite sans exemple tldr : `source.type: original`.
 - La validation tourne avant chaque build (`npm run build` = `lint-content` + `astro build`), et Astro revalide aussi chaque fiche avec le même schéma Zod.
 
 ### 4.2 Import initial depuis tldr-pages

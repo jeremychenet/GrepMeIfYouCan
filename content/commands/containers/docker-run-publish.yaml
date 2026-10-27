@@ -1,0 +1,14 @@
+id: docker-run-publish
+title: Run a container with a published port
+description: Starts the container in the background and forwards the host port to the container port.
+command: docker run -d -p {{host_port:8080}}:{{container_port:80}} {{image:nginx}}
+tool: docker
+category: containers
+tags: [run, network, ports]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-container-run.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

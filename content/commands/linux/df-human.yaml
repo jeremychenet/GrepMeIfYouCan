@@ -1,0 +1,15 @@
+id: df-human
+title: Show free disk space
+description: Lists every mounted filesystem with its size, used and available space in human-readable units.
+command: df -h
+tool: df
+category: linux
+tags: [disk, filesystem]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: linux/df.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

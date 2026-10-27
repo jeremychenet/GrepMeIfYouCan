@@ -1,0 +1,15 @@
+id: tar-extract-to-dir
+title: Extract an archive into a directory
+description: Unpacks the archive into the target directory, which must already exist.
+command: tar -xf {{archive}} -C {{path}}
+tool: tar
+category: linux
+tags: [archive, compression]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/tar.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

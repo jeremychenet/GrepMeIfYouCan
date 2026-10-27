@@ -1,0 +1,10 @@
+id: compose-exec
+title: Open a shell in a Compose service
+description: Starts an interactive shell in the running container of the service.
+command: docker compose exec {{service}} {{shell:sh}}
+tool: docker
+category: containers
+tags: [compose, shell]
+danger: safe
+source:
+  type: original

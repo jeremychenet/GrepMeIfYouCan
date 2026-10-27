@@ -1,0 +1,15 @@
+id: rsync-progress
+title: Copy with compression and progress
+description: Transfers files compressed over the network, shows progress and keeps partial files so an interrupted copy can resume.
+command: rsync -azhP {{source}} {{destination}}
+tool: rsync
+category: linux
+tags: [sync, transfer]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: kubectl-describe-pod
+title: Describe a pod
+description: Shows the pod's configuration, container states and recent events such as scheduling or image pull errors.
+command: kubectl describe pod {{pod}} -n {{namespace:default}}
+tool: kubectl
+category: containers
+tags: [kubernetes, debug]
+danger: safe
+source:
+  type: tldr
+  page: common/kubectl-describe.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

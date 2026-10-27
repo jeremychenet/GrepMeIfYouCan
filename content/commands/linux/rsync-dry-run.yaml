@@ -1,0 +1,11 @@
+id: rsync-dry-run
+title: Preview what rsync would copy
+description: Lists the files that would be transferred without copying or changing anything.
+command: rsync -av --dry-run {{source}} {{destination}}
+tool: rsync
+category: linux
+tags: [sync, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

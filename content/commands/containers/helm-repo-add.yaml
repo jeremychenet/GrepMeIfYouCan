@@ -1,0 +1,14 @@
+id: helm-repo-add
+title: Add a Helm chart repository
+description: Registers a chart repository under a local name so that its charts can be installed.
+command: helm repo add {{name:bitnami}} {{url:https://charts.bitnami.com/bitnami}}
+tool: helm
+category: containers
+tags: [kubernetes, charts]
+danger: safe
+source:
+  type: tldr
+  page: common/helm.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

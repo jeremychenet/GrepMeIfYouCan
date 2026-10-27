@@ -1,0 +1,10 @@
+id: docker-system-prune
+title: Remove unused Docker data
+description: Deletes stopped containers, unused networks, dangling images and build cache after asking for confirmation.
+command: docker system prune
+tool: docker
+category: containers
+tags: [disk, cleanup]
+danger: destructive
+source:
+  type: original

@@ -1,0 +1,15 @@
+id: grep-only-matching
+title: Print only the matched text
+description: Outputs just the part of each line that matches, one match per line, instead of the whole line.
+command: grep -o "{{pattern}}" {{file}}
+tool: grep
+category: linux
+tags: [search, text]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/grep.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

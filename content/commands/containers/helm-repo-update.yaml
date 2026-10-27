@@ -1,0 +1,14 @@
+id: helm-repo-update
+title: Update Helm repositories
+description: Downloads the latest chart index of every added repository.
+command: helm repo update
+tool: helm
+category: containers
+tags: [kubernetes, charts]
+danger: safe
+source:
+  type: tldr
+  page: common/helm.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

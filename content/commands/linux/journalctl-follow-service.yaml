@@ -1,0 +1,15 @@
+id: journalctl-follow-service
+title: Follow the logs of a service
+description: Shows the latest log entries of the service and keeps streaming new ones as they are written.
+command: journalctl -u {{service}} -f
+tool: journalctl
+category: linux
+tags: [logs, systemd, services]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/journalctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

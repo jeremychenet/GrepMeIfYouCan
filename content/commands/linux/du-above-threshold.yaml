@@ -1,0 +1,15 @@
+id: du-above-threshold
+title: List items above a size threshold
+description: Lists files and directories under the path whose size is at least the threshold.
+command: du -ah -t {{size:1G}} {{path:.}}
+tool: du
+category: linux
+tags: [disk, usage, cleanup]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: common/du.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

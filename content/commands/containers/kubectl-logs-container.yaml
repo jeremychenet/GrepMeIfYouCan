@@ -1,0 +1,14 @@
+id: kubectl-logs-container
+title: Show the logs of one container in a pod
+description: Prints the logs of a single container in a pod that runs several containers.
+command: kubectl logs {{pod}} -c {{container}}
+tool: kubectl
+category: containers
+tags: [kubernetes, logs]
+danger: safe
+source:
+  type: tldr
+  page: common/kubectl-logs.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

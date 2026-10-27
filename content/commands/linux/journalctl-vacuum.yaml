@@ -1,0 +1,15 @@
+id: journalctl-vacuum
+title: Delete old journal logs
+description: Removes archived journal files older than the given age to free disk space.
+command: sudo journalctl --vacuum-time={{age:2d}}
+tool: journalctl
+category: linux
+tags: [logs, disk, cleanup]
+danger: caution
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/journalctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

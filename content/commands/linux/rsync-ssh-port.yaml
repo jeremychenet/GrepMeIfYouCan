@@ -1,0 +1,15 @@
+id: rsync-ssh-port
+title: Copy to a remote host over SSH on a custom port
+description: Transfers files to a remote machine through an SSH server listening on a non-default port.
+command: rsync -a -e 'ssh -p {{port:2222}}' {{source}} {{user}}@{{host}}:{{destination}}
+tool: rsync
+category: linux
+tags: [sync, transfer, remote]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 8

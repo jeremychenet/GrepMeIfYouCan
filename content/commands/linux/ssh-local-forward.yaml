@@ -1,0 +1,15 @@
+id: ssh-local-forward
+title: Forward a local port to a remote service
+description: Makes a service reachable from the server available on a local port, through the SSH tunnel.
+command: ssh -L {{local_port:8080}}:{{target_host:localhost}}:{{target_port:80}} -N {{user}}@{{host}}
+tool: ssh
+category: linux
+tags: [remote, tunnel]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/ssh.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 6

@@ -1,0 +1,14 @@
+id: docker-images
+title: List local images
+description: Shows downloaded images with their repository, tag, ID, age and size.
+command: docker images
+tool: docker
+category: containers
+tags: [images, list]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-image-ls.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

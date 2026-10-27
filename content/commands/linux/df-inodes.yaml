@@ -1,0 +1,15 @@
+id: df-inodes
+title: Show inode usage
+description: Shows used and free inodes per filesystem, which explains "no space left" errors on a disk that still has free bytes.
+command: df -i
+tool: df
+category: linux
+tags: [disk, filesystem, troubleshooting]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: linux/df.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4

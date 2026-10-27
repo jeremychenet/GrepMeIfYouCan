@@ -1,0 +1,10 @@
+id: docker-stats
+title: Show live resource usage of containers
+description: Displays a live view of CPU, memory, network and disk I/O for each running container.
+command: docker stats
+tool: docker
+category: containers
+tags: [monitoring]
+danger: safe
+source:
+  type: original

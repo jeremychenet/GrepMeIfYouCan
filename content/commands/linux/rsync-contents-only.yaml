@@ -1,0 +1,15 @@
+id: rsync-contents-only
+title: Copy a directory's contents, not the directory
+description: Copies everything inside the source directory into the destination, without creating a source subfolder there.
+command: rsync -a {{source}}/ {{destination}}
+tool: rsync
+category: linux
+tags: [sync, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

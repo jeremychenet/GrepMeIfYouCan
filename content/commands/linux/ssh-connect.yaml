@@ -1,0 +1,15 @@
+id: ssh-connect
+title: Connect to a remote server
+description: Opens an interactive shell on the remote machine as the given user.
+command: ssh {{user}}@{{host}}
+tool: ssh
+category: linux
+tags: [remote, network]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/ssh.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

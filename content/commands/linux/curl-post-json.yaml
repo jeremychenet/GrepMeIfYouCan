@@ -1,0 +1,11 @@
+id: curl-post-json
+title: Send a JSON POST request
+description: Sends the JSON body in a POST request with the matching Content-Type header.
+command: "curl -H 'Content-Type: application/json' -d '{{json}}' {{url:https://example.com/api}}"
+tool: curl
+category: linux
+tags: [http, api]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

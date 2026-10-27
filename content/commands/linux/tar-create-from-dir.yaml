@@ -1,0 +1,15 @@
+id: tar-create-from-dir
+title: Archive a directory's contents with relative paths
+description: Compresses everything inside the directory so that paths in the archive start at its root instead of the full path.
+command: tar -czf {{archive:archive.tar.gz}} -C {{path}} .
+tool: tar
+category: linux
+tags: [archive, compression]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/tar.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,11 @@
+id: ssh-copy-id
+title: Install your public key on a server
+description: Appends your public key to the remote authorized_keys file so later logins use the key instead of a password.
+command: ssh-copy-id -i {{key:~/.ssh/id_ed25519.pub}} {{user}}@{{host}}
+tool: ssh-copy-id
+category: linux
+tags: [remote, keys]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

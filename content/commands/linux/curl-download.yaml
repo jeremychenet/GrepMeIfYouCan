@@ -1,0 +1,15 @@
+id: curl-download
+title: Download a file
+description: Saves the file in the current directory under its name from the URL, following redirects and failing on HTTP errors.
+command: curl -fLO {{url:https://example.com/file.tar.gz}}
+tool: curl
+category: linux
+tags: [http, download]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/curl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

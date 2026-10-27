@@ -1,0 +1,15 @@
+id: systemctl-daemon-reload
+title: Reload systemd unit files
+description: Makes systemd reread unit files after you create or edit one, without restarting any service.
+command: sudo systemctl daemon-reload
+tool: systemctl
+category: linux
+tags: [systemd, services]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/systemctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

@@ -1,0 +1,15 @@
+id: find-size-range
+title: Find files within a size range
+description: Recursively lists regular files bigger than the minimum and smaller than the maximum size.
+command: find {{path:.}} -type f -size +{{min:500k}} -size -{{max:10M}}
+tool: find
+category: linux
+tags: [files, disk]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/find.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 5

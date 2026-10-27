@@ -1,0 +1,15 @@
+id: ss-listening
+title: List listening ports with their process
+description: Shows every TCP and UDP socket waiting for connections, with numeric ports and the process that owns it.
+command: sudo ss -tulpn
+tool: ss
+category: linux
+tags: [network, ports]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/ss.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 1

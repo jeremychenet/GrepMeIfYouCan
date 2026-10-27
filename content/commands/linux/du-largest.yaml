@@ -1,0 +1,11 @@
+id: du-largest
+title: List the biggest items in a directory
+description: Shows the largest files and directories under the path, biggest first.
+command: du -ah {{path:.}} | sort -rh | head -n {{count:20}}
+tool: du
+category: linux
+tags: [disk, usage, cleanup]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

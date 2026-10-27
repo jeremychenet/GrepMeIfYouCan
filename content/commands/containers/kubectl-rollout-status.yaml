@@ -1,0 +1,10 @@
+id: kubectl-rollout-status
+title: Watch a deployment rollout
+description: Waits and reports progress until the latest rollout of the deployment succeeds or fails.
+command: kubectl rollout status deployment/{{deployment}}
+tool: kubectl
+category: containers
+tags: [kubernetes, deploy]
+danger: safe
+source:
+  type: original

@@ -1,0 +1,15 @@
+id: journalctl-errors-previous-boot
+title: Show errors from the previous boot
+description: Lists messages of priority error or worse logged during the boot before the current one.
+command: journalctl -b -1 -p err
+tool: journalctl
+category: linux
+tags: [logs, systemd, troubleshooting]
+danger: safe
+platforms: [linux]
+source:
+  type: tldr
+  page: linux/journalctl.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

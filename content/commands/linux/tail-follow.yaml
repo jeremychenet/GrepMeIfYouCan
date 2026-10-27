@@ -1,0 +1,11 @@
+id: tail-follow
+title: Follow a log file
+description: Prints the last lines of the file and keeps showing new lines as they are appended.
+command: tail -f {{file:/var/log/syslog}}
+tool: tail
+category: linux
+tags: [logs, files]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: original

@@ -1,0 +1,11 @@
+id: pgrep-by-name
+title: Find processes by name
+description: Lists the PID and full command line of every process whose command line matches the pattern.
+command: pgrep -af {{pattern}}
+tool: pgrep
+category: linux
+tags: [processes]
+danger: safe
+platforms: [linux]
+source:
+  type: original

@@ -1,0 +1,10 @@
+id: kubectl-port-forward
+title: Forward a local port to a service
+description: Forwards a local port to the pod or service so that you can reach it from your machine.
+command: kubectl port-forward {{resource:svc/my-service}} {{local_port:8080}}:{{remote_port:80}}
+tool: kubectl
+category: containers
+tags: [kubernetes, network, debug]
+danger: safe
+source:
+  type: original

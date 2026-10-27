@@ -1,0 +1,10 @@
+id: kubectl-use-context
+title: Switch to another cluster
+description: Makes kubectl send its next commands to the cluster and user of the given kubeconfig context.
+command: kubectl config use-context {{context}}
+tool: kubectl
+category: containers
+tags: [kubernetes, config]
+danger: caution
+source:
+  type: original

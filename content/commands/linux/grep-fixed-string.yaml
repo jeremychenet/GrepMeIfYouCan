@@ -1,0 +1,15 @@
+id: grep-fixed-string
+title: Search for a literal string
+description: Prints lines containing the exact text, treating regex characters such as dots and brackets literally.
+command: grep -F "{{text}}" {{file}}
+tool: grep
+category: linux
+tags: [search, text]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/grep.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 2

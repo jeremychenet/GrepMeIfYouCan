@@ -13,15 +13,15 @@ tldr:
 categories:
   linux:
     - { page: common/find.md, tool: find, tags: [files, search], examples: [1, 3, 4, 5, 8] }
-    - { page: common/grep.md, tool: grep, tags: [search, text], examples: [1, 2, 3, 4, 6, 7, 8] }
+    - { page: common/grep.md, tool: grep, tags: [search, text], examples: [1, 2, 3, 4, 6, 7] }
     - { page: common/tar.md, tool: tar, tags: [archive, compression], examples: [2, 3, 4, 5, 7] }
     - { page: common/rsync.md, tool: rsync, tags: [sync, transfer, files], examples: [2, 3, 5, 7, 8] }
     - { page: common/ssh.md, tool: ssh, tags: [remote, network], examples: [1, 2, 5, 6, 7] }
-    - { page: linux/systemctl.md, tool: systemctl, tags: [services, systemd], examples: [1, 2, 3, 4, 5, 8] }
-    - { page: linux/journalctl.md, tool: journalctl, tags: [logs, systemd], examples: [1, 2, 3, 4, 5, 8] }
-    - { page: common/du.md, tool: du, tags: [disk, files], examples: [2, 3, 5, 7] }
+    - { page: linux/systemctl.md, tool: systemctl, tags: [services, systemd], examples: [2, 3, 4, 5, 7, 8] }
+    - { page: linux/journalctl.md, tool: journalctl, tags: [logs, systemd], examples: [1, 2, 3, 5, 8] }
+    - { page: common/du.md, tool: du, tags: [disk, files], examples: [3, 7] }
     - { page: linux/df.md, tool: df, tags: [disk, filesystem], examples: [2, 3, 4] }
-    - { page: linux/ss.md, tool: ss, tags: [network, sockets], examples: [1, 3, 4, 5] }
+    - { page: linux/ss.md, tool: ss, tags: [network, sockets], examples: [1, 3, 4] }
     - { page: common/chmod.md, tool: chmod, tags: [permissions, files], examples: [1, 7, 8] }
     - { page: common/curl.md, tool: curl, tags: [http, network], examples: [1, 2, 3, 4] }
 
@@ -31,13 +31,13 @@ categories:
     - { page: common/docker-container-logs.md, tool: docker, tags: [logs], examples: [2, 3, 4] }
     - { page: common/docker-container-exec.md, tool: docker, tags: [shell, debug], examples: [1, 2, 6] }
     - { page: common/docker-image-ls.md, tool: docker, tags: [images, list], examples: [1, 4] }
-    - { page: common/docker-compose.md, tool: docker, tags: [compose], examples: [2, 3, 4, 5, 6, 8] }
+    - { page: common/docker-compose.md, tool: docker, tags: [compose], examples: [1, 2, 3, 4, 5, 6, 8] }
     - { page: common/kubectl-get.md, tool: kubectl, tags: [kubernetes, list], examples: [3, 4, 5, 7, 8] }
     - { page: common/kubectl-logs.md, tool: kubectl, tags: [kubernetes, logs], examples: [2, 4, 5, 7] }
-    - { page: common/kubectl-describe.md, tool: kubectl, tags: [kubernetes, debug], examples: [1, 3, 5] }
-    - { page: common/kubectl-apply.md, tool: kubectl, tags: [kubernetes, deploy], examples: [1, 2, 3] }
-    - { page: common/helm.md, tool: helm, tags: [kubernetes, charts], examples: [1, 2, 4, 5, 6, 8] }
-    - { page: common/podman.md, tool: podman, tags: [containers], examples: [1, 2, 4, 6, 8] }
+    - { page: common/kubectl-describe.md, tool: kubectl, tags: [kubernetes, debug], examples: [3] }
+    - { page: common/kubectl-apply.md, tool: kubectl, tags: [kubernetes, deploy], examples: [1, 2] }
+    - { page: common/helm.md, tool: helm, tags: [kubernetes, charts], examples: [2, 4, 6] }
+    - { page: common/podman.md, tool: podman, tags: [containers], examples: [1, 4, 6] }
 
   cloud-iac:
     - { page: common/terraform.md, tool: terraform, tags: [iac] }

@@ -1,0 +1,15 @@
+id: rsync-mirror
+title: Mirror a directory, deleting extra files
+description: Makes the destination an exact copy of the source, deleting destination files that no longer exist in the source.
+command: rsync -a --delete {{source}}/ {{destination}}
+tool: rsync
+category: linux
+tags: [sync, backup]
+danger: destructive
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/rsync.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

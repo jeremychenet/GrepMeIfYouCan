@@ -1,0 +1,15 @@
+id: du-directory-total
+title: Show the total size of a directory
+description: Prints a single human-readable total for the directory and everything inside it.
+command: du -sh {{path:.}}
+tool: du
+category: linux
+tags: [disk, usage]
+danger: safe
+platforms: [linux, macos]
+source:
+  type: tldr
+  page: common/du.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 3

@@ -1,0 +1,14 @@
+id: kubectl-logs-deployment
+title: Show the logs of a deployment
+description: Prints the logs of one pod picked from the deployment, so you do not need to look up a pod name.
+command: kubectl logs deployment/{{deployment}}
+tool: kubectl
+category: containers
+tags: [kubernetes, logs]
+danger: safe
+source:
+  type: tldr
+  page: common/kubectl-logs.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 7

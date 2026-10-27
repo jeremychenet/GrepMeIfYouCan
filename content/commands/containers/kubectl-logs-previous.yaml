@@ -1,0 +1,10 @@
+id: kubectl-logs-previous
+title: Show the logs of a crashed container
+description: Prints the logs of the container's previous run, which shows why it crashed before being restarted.
+command: kubectl logs {{pod}} --previous
+tool: kubectl
+category: containers
+tags: [kubernetes, logs, troubleshooting]
+danger: safe
+source:
+  type: original

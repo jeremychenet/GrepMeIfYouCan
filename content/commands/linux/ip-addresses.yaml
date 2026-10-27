@@ -1,0 +1,11 @@
+id: ip-addresses
+title: Show IP addresses
+description: Lists each network interface on one line with its state and IPv4 and IPv6 addresses.
+command: ip -br addr
+tool: ip
+category: linux
+tags: [network]
+danger: safe
+platforms: [linux]
+source:
+  type: original

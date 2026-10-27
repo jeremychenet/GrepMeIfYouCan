@@ -1,0 +1,11 @@
+id: chown-recursive
+title: Change the owner of a directory tree
+description: Recursively sets the owning user and group of the directory and of everything inside it.
+command: sudo chown -R {{user}}:{{group}} {{path}}
+tool: chown
+category: linux
+tags: [permissions, files]
+danger: caution
+platforms: [linux, macos]
+source:
+  type: original

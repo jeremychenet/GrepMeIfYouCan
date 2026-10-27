@@ -1,0 +1,14 @@
+id: compose-file-project
+title: Use another Compose file and project name
+description: Starts the services from the given compose file under a custom project name.
+command: docker compose -p {{project}} -f {{file:compose.prod.yaml}} up -d
+tool: docker
+category: containers
+tags: [compose, config]
+danger: safe
+source:
+  type: tldr
+  page: common/docker-compose.md
+  commit: d7b9f2143e12f36efd46a71a08645e2392dc9c0f
+  license: CC-BY-4.0
+  example: 4
