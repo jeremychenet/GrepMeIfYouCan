@@ -11,6 +11,9 @@ export default defineConfig({
       include: ['src/lib/**/*.ts', 'src/content/*.ts', 'scripts/**/*.ts'],
       reporter: ['text', 'html', 'json-summary'],
       thresholds: {
+        // Checked for each file, not on the average: a small untested file
+        // would otherwise hide behind well-tested ones.
+        perFile: true,
         lines: 80,
         functions: 80,
         branches: 80,

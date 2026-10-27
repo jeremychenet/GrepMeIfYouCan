@@ -328,6 +328,7 @@ open http://localhost:8080
 - **Bug** : on écrit d'abord un test qui reproduit le bug et échoue, puis on corrige.
 - **Pertinence de la recherche** : chaque requête signalée comme mal classée devient un cas de test du type « la fiche X est dans le top 3 pour la requête Y ».
 - **Seuils de couverture** (Vitest, provider `v8`, vérifiés en CI ; une PR qui passe sous le seuil échoue) :
+  - **seuils vérifiés fichier par fichier** (`perFile`), et non sur la moyenne : un petit fichier non testé ne peut pas se cacher derrière les autres ;
   - `src/lib/**` et `scripts/**` : **≥ 80 %** lignes, fonctions et branches ;
   - modules critiques pour la sécurité, **≥ 95 %** lignes et branches : `src/lib/copy.ts`, `src/lib/template.ts`, `src/lib/danger-patterns.ts`, `src/lib/store.ts`, `src/content/schema.ts`, `scripts/lint-danger.ts`.
   - Composants `.astro` et CSS exclus de la couverture unitaire : ils sont couverts par Playwright.
