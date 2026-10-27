@@ -17,6 +17,9 @@ export default defineConfig({
         statements: 80,
         // Security-critical modules (more are added as they are created).
         'src/content/schema.ts': CRITICAL,
+        'src/lib/danger-patterns.ts': CRITICAL,
+        'src/lib/unsafe-chars.ts': CRITICAL,
+        'scripts/lint-danger.ts': CRITICAL,
       },
     },
   },

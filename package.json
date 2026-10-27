@@ -14,7 +14,8 @@
     "typecheck": "astro check",
     "lint-content": "tsx scripts/validate-content.ts",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "lint-danger": "tsx scripts/lint-danger.ts"
   },
   "dependencies": {
     "astro": "7.4.2"

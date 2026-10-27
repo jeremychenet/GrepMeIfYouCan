@@ -275,8 +275,16 @@ open http://localhost:8080
 
 ### 7.2 Lint de danger en CI
 - Le linter détecte des patterns à risque : `rm -rf`, `dd `, `mkfs`, `> /dev/sd*`, `chmod -R 777`, `curl|wget … | (sh|bash)`, `base64 -d | sh`, `:(){ :|:& };:`, `--force`, `terraform destroy`, `kubectl delete`, `git push --force`, `git reset --hard`…
-- Pattern détecté et `danger: safe` déclaré → **échec de la CI**.
-- Rejet des caractères Unicode suspects dans `command` : caractères invisibles, bidi, homoglyphes, retours à la ligne non intentionnels.
+- Chaque règle a un **niveau minimum** : `caution` ou `destructive`. Si le niveau déclaré est inférieur → **échec de la CI et du build**. Un niveau plus élevé que nécessaire est toujours accepté.
+  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall` et tout `--force…` (caution).
+  - Le `-f` court n'est détecté que là où il est dangereux (`git push -f`, `git clean -f`, `rm -rf`), pour éviter les faux positifs sur `tail -f` ou `ls -f`.
+  - **Aucune dérogation** : en cas de faux positif, on monte le niveau.
+  - `suggestDanger()` pré-remplit le niveau des brouillons importés (§4.2).
+- Caractères :
+  - **`command` : ASCII imprimable uniquement, sur une seule ligne.** Cette règle bloque les homoglyphes, le tiret long `–`, les guillemets typographiques, les espaces insécables, les caractères invisibles et bidi, et les retours à la ligne.
+  - `title` / `description` : caractères invisibles, de contrôle, bidi et retours à la ligne refusés. La typographie normale reste permise.
+  - Ces contrôles portent sur les valeurs brutes du YAML, avant que le schéma ne retire les espaces de début et de fin.
+- `make lint-danger ARGS=<dossier>` applique uniquement ces contrôles, par exemple aux brouillons `content/drafts/`, qui n'ont pas encore de description.
 
 ### 7.3 Copie sécurisée
 - Le texte copié est **exactement** celui affiché, à partir de la donnée et non du DOM : pas de texte caché, pas de caractère invisible.

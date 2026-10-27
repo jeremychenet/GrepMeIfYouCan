@@ -1,3 +1,5 @@
+import { LEVELS, underDeclared, type DangerLevel } from '../lib/danger-patterns';
+import { describeUnsafe, findUnsafeChars } from '../lib/unsafe-chars';
 import { commandSchema, type Command } from './schema';
 
 /** A card as read from disk, before validation. */
@@ -18,6 +20,39 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
+const isLevel = (v: unknown): v is DangerLevel => LEVELS.includes(v as DangerLevel);
+
+/**
+ * Safety checks shared by lint-content and lint-danger (drafts too). Runs on
+ * the raw YAML values: the schema trims strings, which would hide trailing
+ * invisible characters and newlines.
+ */
+export function checkSafety(file: string, data: unknown): ValidationError[] {
+  if (typeof data !== 'object' || data === null) return [];
+  const card = data as Record<string, unknown>;
+  const errors: ValidationError[] = [];
+
+  for (const field of ['command', 'title', 'description'] as const) {
+    const value = card[field];
+    if (typeof value !== 'string') continue;
+    const unsafe = findUnsafeChars(value, { asciiOnly: field === 'command' });
+    if (unsafe.length) {
+      errors.push({ file, field, message: `unsafe characters: ${describeUnsafe(unsafe)}` });
+    }
+  }
+
+  if (typeof card.command === 'string' && isLevel(card.danger)) {
+    for (const rule of underDeclared(card.command, card.danger)) {
+      errors.push({
+        file,
+        field: 'danger',
+        message: `declared "${card.danger}" but matches "${rule.label}" [${rule.id}], requires "${rule.level}"`,
+      });
+    }
+  }
+  return errors;
+}
+
 const baseName = (file: string) => file.split('/').pop()!.replace(/\.ya?ml$/, '');
 const folder = (file: string) => {
   const parts = file.split('/');
@@ -25,7 +60,8 @@ const folder = (file: string) => {
 };
 
 /**
- * Validates every card against the schema, then the rules spanning files:
+ * Validates every card: safety checks (danger level, unsafe characters), the
+ * schema, then the rules spanning files:
  * id == file name, category == folder, ids unique across the whole site.
  */
 export function validateEntries(entries: RawEntry[]): ValidationResult {
@@ -34,6 +70,7 @@ export function validateEntries(entries: RawEntry[]): ValidationResult {
   const seen = new Map<string, string>();
 
   for (const { file, data } of entries) {
+    errors.push(...checkSafety(file, data));
     const parsed = commandSchema.safeParse(data);
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {

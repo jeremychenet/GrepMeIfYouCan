@@ -44,6 +44,12 @@ export function main(root = DEFAULT_ROOT, log = console.log, error = console.err
   return 0;
 }
 
+/** Command-line entry: `tsx scripts/validate-content.ts [root]` (default: content/commands). */
+export function cli(args: string[]): number {
+  return main(args[0]);
+}
+
+/* v8 ignore next 3 -- process entry point, its logic is covered through cli() */
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
-  process.exitCode = main(process.argv[2]);
+  process.exitCode = cli(process.argv.slice(2));
 }

@@ -58,7 +58,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Le build Astro (`make npm ARGS="run build"`) échoue si une fiche est invalide.
 - [x] `make coverage` génère le rapport, et baisser artificiellement la couverture de `schema.ts` sous 95 % fait échouer la commande.
 
-### - [ ] J4 — Lint de danger + Unicode suspect
+### - [x] J4 — Lint de danger + Unicode suspect
 **Objectif** : empêcher la publication d'une commande dangereuse mal étiquetée ou piégée.
 **Fichiers**
 - `scripts/lint-danger.ts`, `src/lib/danger-patterns.ts`
@@ -66,10 +66,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `Makefile` (`lint-content` appelle aussi le lint de danger)
 
 **Validation**
-- [ ] Chaque pattern de la SPEC §7.2 déclenche une erreur s'il est étiqueté `safe` (un cas de test par pattern).
-- [ ] Les caractères invisibles, bidi (U+202E…), à chasse nulle et les retours à la ligne dans `command` sont rejetés.
-- [ ] Aucun faux positif sur les 3 fiches existantes.
-- [ ] La sortie indique le fichier, le pattern détecté et le niveau attendu.
+- [x] Chaque pattern de la SPEC §7.2 déclenche une erreur s'il est étiqueté `safe` (un cas de test par pattern).
+- [x] Les caractères invisibles, bidi (U+202E…), à chasse nulle et les retours à la ligne dans `command` sont rejetés.
+- [x] Aucun faux positif sur les 3 fiches existantes.
+- [x] La sortie indique le fichier, le pattern détecté et le niveau attendu.
 
 ### - [ ] J5 — CI GitHub Actions (vérifications de PR)
 **Objectif** : chaque PR est vérifiée automatiquement.

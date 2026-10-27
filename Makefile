@@ -2,7 +2,7 @@ COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 ARGS ?=
 
 .DEFAULT_GOAL := help
-.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage lint-content
+.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage lint-content lint-danger
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -37,5 +37,8 @@ test: ## Run unit tests (Vitest)
 coverage: ## Run unit tests with coverage thresholds (same check as CI)
 	$(COMPOSE) run --rm --no-deps web npm run coverage
 
-lint-content: ## Validate every command card in content/commands
+lint-content: ## Validate every command card in content/commands (schema + danger + characters)
 	$(COMPOSE) run --rm --no-deps web npm run lint-content
+
+lint-danger: ## Danger + unsafe-character lint only, e.g. make lint-danger ARGS=content/drafts
+	$(COMPOSE) run --rm --no-deps web npm run lint-danger -- $(ARGS)
