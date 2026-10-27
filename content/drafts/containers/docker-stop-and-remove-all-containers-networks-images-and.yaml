@@ -8,7 +8,7 @@ command: docker compose down --rmi all --volumes
 tool: docker
 category: containers
 tags: [ compose ]
-danger: safe
+danger: destructive
 source:
   type: tldr
   page: common/docker-compose.md

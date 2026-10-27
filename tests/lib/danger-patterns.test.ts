@@ -6,7 +6,7 @@ const ids = (command: string) => detectDanger(command).map((r) => r.id);
 // One or more commands per rule. Every rule must be listed here (checked below).
 const POSITIVE: Record<string, string[]> = {
   'rm-recursive': ['rm -rf /tmp/x', 'sudo rm -fr {{path}}', 'rm -R dir', 'rm --recursive dir', 'rm -f -r dir', '/bin/rm -r x', 'find . -name "*.log" -exec rm -r {} +', 'ls | xargs rm -rf'],
-  'find-delete': ['find {{path}} -mtime +30 -delete'],
+  'find-delete': ['find {{path}} -mtime +30 -delete', 'find {{path}} -type {{f|d}} -empty -delete -print'],
   'dd-write': ['dd if=image.iso of=/dev/sdb bs=4M', 'sudo dd if=/dev/zero of={{device}}'],
   mkfs: ['mkfs.ext4 /dev/sdb1', 'sudo mkfs -t xfs {{device}}'],
   wipefs: ['wipefs -a /dev/sdb'],
@@ -22,6 +22,8 @@ const POSITIVE: Record<string, string[]> = {
   'git-reset-hard': ['git reset --hard HEAD~1'],
   'git-clean-force': ['git clean -fd', 'git clean --force'],
   'docker-prune': ['docker system prune -a', 'docker volume prune'],
+  'rsync-delete': ['rsync -a --delete src/ dst/', 'rsync -r --delete-after {{src}} {{dst}}', 'rsync -a --remove-source-files a b'],
+  'docker-volume-remove': ['docker compose down --volumes', 'docker compose down -v --rmi all', 'docker-compose down -v', 'docker volume rm {{volume}}'],
   'aws-s3-rm-recursive': ['aws s3 rm s3://bucket/ --recursive', 'aws s3 rb s3://bucket --force'],
   rm: ['rm file.txt', 'docker rm {{container}}'],
   'chmod-777': ['chmod -R 777 /var/www', 'chmod 0777 file'],
@@ -52,6 +54,9 @@ const SAFE = [
   'kill {{pid}}',
   'aws s3 ls s3://bucket --recursive',
   'dd --help',
+  'docker compose down',
+  'docker run -v /data:/data {{image}}',
+  'rsync -av {{src}} {{dst}}',
 ];
 
 describe('danger rules', () => {
@@ -90,6 +95,17 @@ describe('underDeclared', () => {
 
   it('accepts a level higher than needed', () => {
     expect(underDeclared('ls', 'destructive')).toEqual([]);
+  });
+});
+
+describe('placeholders', () => {
+  it('a "|" inside a placeholder does not split the command', () => {
+    expect(parse('find . -type {{f|d}} -delete').segments).toEqual([['find', '.', '-type', 'f', 'd', '-delete']]);
+  });
+
+  it('checks the default value, which is what gets copied', () => {
+    expect(ids('{{cmd:rm -rf /tmp/x}}')).toContain('rm-recursive');
+    expect(ids('echo {{url:https://example.com}}')).toEqual([]);
   });
 });
 

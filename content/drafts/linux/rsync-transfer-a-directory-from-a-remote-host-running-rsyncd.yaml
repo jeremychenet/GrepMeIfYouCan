@@ -8,7 +8,7 @@ command: rsync --recursive --delete rsync://{{host}}:{{path/to/source}} {{path/t
 tool: rsync
 category: linux
 tags: [ sync, transfer, files ]
-danger: safe
+danger: destructive
 source:
   type: tldr
   page: common/rsync.md

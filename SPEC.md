@@ -287,8 +287,9 @@ open http://localhost:8080
 ### 7.2 Lint de danger en CI
 - Le linter détecte des patterns à risque : `rm -rf`, `dd `, `mkfs`, `> /dev/sd*`, `chmod -R 777`, `curl|wget … | (sh|bash)`, `base64 -d | sh`, `:(){ :|:& };:`, `--force`, `terraform destroy`, `kubectl delete`, `git push --force`, `git reset --hard`…
 - Chaque règle a un **niveau minimum** : `caution` ou `destructive`. Si le niveau déclaré est inférieur → **échec de la CI et du build**. Un niveau plus élevé que nécessaire est toujours accepté.
-  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall` et tout `--force…` (caution).
+  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive`, `rsync --delete…`/`--remove-source-files`, `docker compose down -v`/`docker volume rm` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall` et tout `--force…` (caution).
   - Le `-f` court n'est détecté que là où il est dangereux (`git push -f`, `git clean -f`, `rm -rf`), pour éviter les faux positifs sur `tail -f` ou `ls -f`.
+  - Les placeholders sont analysés tels qu'ils seront copiés : `{{nom:défaut}}` est remplacé par sa valeur par défaut, `{{nom}}` par son nom, et un `|` à l'intérieur (alternatives tldr comme `{{f|d}}`) n'est pas lu comme un pipe.
   - **Aucune dérogation** : en cas de faux positif, on monte le niveau.
   - `suggestDanger()` pré-remplit le niveau des brouillons importés (§4.2).
 - Caractères :

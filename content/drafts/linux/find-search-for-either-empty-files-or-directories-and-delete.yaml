@@ -8,7 +8,7 @@ command: find {{path/to/directory}} -type {{f|d}} -empty -delete -print
 tool: find
 category: linux
 tags: [ files, search ]
-danger: safe
+danger: destructive
 source:
   type: tldr
   page: common/find.md
