@@ -1,9 +1,21 @@
+# Major upgrades of the runtime stack are done on purpose, in a dedicated PR,
+# never by Dependabot:
+#   - Node stays on the LTS line (24); .node-version, the Dockerfile and
+#     @types/node must move together (tests/config/node-version.test.ts).
+#   - TypeScript is capped by @astrojs/check (^5 || ^6).
+#   - nginx stays on the stable branch (even minor); odd minors are mainline,
+#     so minor bumps are ignored and only stable patches come through.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
@@ -11,10 +23,16 @@ updates:
     directory: /docker
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: node
+        update-types: [version-update:semver-major]
   - package-ecosystem: docker-compose
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: nginxinc/nginx-unprivileged
+        update-types: [version-update:semver-major, version-update:semver-minor]
   - package-ecosystem: github-actions
     directory: /
     schedule:
