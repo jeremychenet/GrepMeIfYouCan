@@ -2,7 +2,7 @@ COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 ARGS ?=
 
 .DEFAULT_GOAL := help
-.PHONY: help up down logs sh npm clean check-headers nginx-test
+.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage lint-content
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -30,3 +30,12 @@ check-headers: ## Check the security headers served on http://localhost:8080
 
 nginx-test: ## Validate the Nginx configuration
 	$(COMPOSE) run --rm --no-deps proxy nginx -t
+
+test: ## Run unit tests (Vitest)
+	$(COMPOSE) run --rm --no-deps web npm test
+
+coverage: ## Run unit tests with coverage thresholds (same check as CI)
+	$(COMPOSE) run --rm --no-deps web npm run coverage
+
+lint-content: ## Validate every command card in content/commands
+	$(COMPOSE) run --rm --no-deps web npm run lint-content

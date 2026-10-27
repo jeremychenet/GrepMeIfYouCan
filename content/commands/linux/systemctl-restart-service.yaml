@@ -1,0 +1,11 @@
+id: systemctl-restart-service
+title: Restart a systemd service
+description: Stops the service and starts it again, briefly interrupting it for its clients.
+command: sudo systemctl restart {{service}}
+tool: systemctl
+category: linux
+tags: [systemd, services]
+danger: caution
+platforms: [linux]
+source:
+  type: original

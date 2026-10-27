@@ -1,0 +1,11 @@
+id: du-directory-sizes
+title: Show the size of each subdirectory
+description: Prints the disk usage of every direct subdirectory in human-readable units, sorted from smallest to largest.
+command: du -h --max-depth=1 {{path:.}} | sort -h
+tool: du
+category: linux
+tags: [disk, usage, cleanup]
+danger: safe
+platforms: [linux]
+source:
+  type: original

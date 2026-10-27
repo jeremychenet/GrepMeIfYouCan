@@ -143,7 +143,11 @@ source:
 ```
 - Le schéma est validé au build (Zod ou JSON Schema). Tout fichier invalide fait échouer la CI.
 - `id` est unique et sert de slug d'URL.
-- `description` est **obligatoire** : une seule phrase courte (≤ 140 caractères) qui explique ce que fait la commande, et pas seulement le besoin. La CI rejette une description vide, trop longue, de plus d'une phrase ou identique au titre.
+- `description` est **obligatoire** : une seule phrase courte (≤ 180 caractères) qui explique ce que fait la commande, et pas seulement le besoin. La CI rejette une description vide, trop longue, de plus d'une phrase ou identique au titre.
+  - « Une phrase » : refusée si elle contient `.`, `!` ou `?` suivi d'un espace puis d'une majuscule. Les abréviations (« e.g. ») et les versions (« v1.2 ») restent acceptées.
+  - « Identique au titre » : comparaison insensible à la casse et à la ponctuation finale.
+- `id` doit être égal au nom du fichier, et `category` au nom du dossier. Les champs inconnus sont refusés.
+- La validation tourne avant chaque build (`npm run build` = `lint-content` + `astro build`), et Astro revalide aussi chaque fiche avec le même schéma Zod.
 
 ### 4.2 Import initial depuis tldr-pages
 - **Script d'import ponctuel** (`scripts/import-tldr.ts`) exécuté localement, pas au build :

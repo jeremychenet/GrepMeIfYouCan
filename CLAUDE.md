@@ -29,13 +29,13 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 | `make npm ARGS="<args>"` / `make sh` | Run npm / a shell inside the `web` container (e.g. `make npm ARGS="run typecheck"`) |
 | `make clean` | `down -v`: drops the `node_modules` volume (forces a fresh `npm ci`) |
 | `make test` | Vitest unit tests |
-| `make coverage` | Vitest with coverage thresholds (same check as CI) |
+| `make coverage` | Vitest with coverage thresholds (same check as CI). Add each new security-critical module to `thresholds` in `vitest.config.ts` |
 | `make e2e` | Playwright E2E (official Playwright image, Compose profile `test`) |
 | `make lint-content` | Schema validation + danger lint of `content/commands/**` |
 | `make import-tldr` | Regenerate drafts from tldr-pages at the pinned SHA |
 | `make prod-local` | Run the production images locally |
 
-Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up down logs sh npm clean check-headers nginx-test`).
+Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up down logs sh npm clean check-headers nginx-test test coverage lint-content`).
 
 Dev container mechanics (`docker/web-entrypoint.sh`): dependencies are reinstalled with `npm ci` only when the sha256 of `package-lock.json` differs from `node_modules/.lock-hash`; the stale Astro lock `.astro/dev.json` is removed at each start (otherwise a restart fails with "Another astro dev server is already running"). To add a dependency: `make npm ARGS="install -E <pkg>@<version>"` (exact versions only). `@astrojs/check` caps TypeScript at 6.x. Astro telemetry and npm update notices are disabled in the image.
 
@@ -45,8 +45,8 @@ Dev container mechanics (`docker/web-entrypoint.sh`): dependencies are reinstall
 
 **Content pipeline** — the core of the project:
 1. `scripts/import-tldr.ts` reads tldr-pages at a pinned commit (`scripts/tldr-selection.yaml`) and writes **drafts** to `content/drafts/<category>/`. One tldr *example* becomes one card (not one card per tool).
-2. A human writes the mandatory one-sentence `description` (≤ 140 chars, explains what the command does, ≠ title), reviews `danger`, and moves the file to `content/commands/<category>/<id>.yaml`. Drafts are excluded from the build.
-3. `src/content/schema.ts` (Zod) validates cards at build and in CI; `scripts/lint-danger.ts` fails CI when a risky pattern (SPEC §7.2) is labeled `safe`, or when a command contains invisible/bidi Unicode or newlines.
+2. A human writes the mandatory one-sentence `description` (≤ 180 chars, explains what the command does, ≠ title), reviews `danger`, and moves the file to `content/commands/<category>/<id>.yaml`. Drafts are excluded from the build.
+3. `src/content/schema.ts` (Zod from `astro/zod`, never a separate `zod` dependency) validates each card; `src/content/validate.ts` adds cross-file rules (unique id, id == file name, category == folder); `scripts/validate-content.ts` is the CLI and runs before every `npm run build`. Invalid-card fixtures live in `tests/fixtures/invalid/<rule>/<category>/<id>.yaml`, and a test asserts each folder has an expected message; `scripts/lint-danger.ts` fails CI when a risky pattern (SPEC §7.2) is labeled `safe`, or when a command contains invisible/bidi Unicode or newlines.
 4. At build, Astro produces `/c/<id>`, `/tools/<tool>`, `/categories/<category>` pages plus `/search-index.json` consumed by client-side MiniSearch.
 
 Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger levels: `safe | caution | destructive`.

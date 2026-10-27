@@ -41,7 +41,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Le port 8080 n'écoute que sur 127.0.0.1 (`lsof -iTCP:8080`).
 - [x] La console du navigateur n'affiche aucune violation CSP.
 
-### - [ ] J3 — Schéma de contenu + validation
+### - [x] J3 — Schéma de contenu + validation
 **Objectif** : définir le format d'une fiche et refuser automatiquement toute fiche invalide.
 **Fichiers**
 - `src/content/schema.ts` (Zod : id, title, description, command, tool, category, tags, danger, platforms, source)
@@ -53,10 +53,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `Makefile` (`test`, `coverage`, `lint-content`)
 
 **Validation**
-- [ ] `make lint-content` passe sur les 3 fiches.
-- [ ] `make test` vérifie le rejet de chaque fixture invalide : description vide, de plus de 140 caractères, en deux phrases ou identique au titre ; id en double ; catégorie inconnue ; danger inconnu.
-- [ ] Le build Astro (`make npm run build`) échoue si une fiche est invalide.
-- [ ] `make coverage` génère le rapport, et baisser artificiellement la couverture de `schema.ts` sous 95 % fait échouer la commande.
+- [x] `make lint-content` passe sur les 3 fiches.
+- [x] `make test` vérifie le rejet de chaque fixture invalide : description vide, de plus de 180 caractères, en deux phrases ou identique au titre ; id en double ; catégorie inconnue ; danger inconnu.
+- [x] Le build Astro (`make npm ARGS="run build"`) échoue si une fiche est invalide.
+- [x] `make coverage` génère le rapport, et baisser artificiellement la couverture de `schema.ts` sous 95 % fait échouer la commande.
 
 ### - [ ] J4 — Lint de danger + Unicode suspect
 **Objectif** : empêcher la publication d'une commande dangereuse mal étiquetée ou piégée.
