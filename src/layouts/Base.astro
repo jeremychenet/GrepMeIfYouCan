@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import ConfirmDialog from '../components/ConfirmDialog.astro';
 import ShortcutsHelp from '../components/ShortcutsHelp.astro';
 import Toast from '../components/Toast.astro';
+import KeyBar from '../components/KeyBar.astro';
 import { canonicalUrl } from '../lib/site';
 
 interface Props {
@@ -33,12 +34,19 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <meta property="og:title" content={title ?? SITE} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="light dark" />
     <!-- Blocking on purpose: sets the theme before first paint (no flash). -->
     <script is:inline src="/theme-init.js"></script>
     <link
       rel="preload"
-      href="/fonts/jetbrains-mono-latin-wght-normal.woff2"
+      href="/fonts/dejavu-sans-mono.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/texgyreheros-regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -50,6 +58,7 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <main id="main" class="container" tabindex="-1">
       <slot />
     </main>
+    <KeyBar />
     <Footer />
     <p id="var-hint" class="visually-hidden">
       Values are inserted in the command as typed, without shell escaping.

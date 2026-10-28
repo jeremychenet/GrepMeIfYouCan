@@ -50,16 +50,26 @@ h3 {
   text-wrap: balance;
 }
 
+h1 {
+  font-family: var(--font-cond);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
 a {
-  color: var(--color-accent);
+  color: inherit;
+  text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-accent);
 }
 
 /* Visible focus for keyboard users, in both themes (SPEC §3.4). */
 :focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -72,29 +82,54 @@ a {
   }
 }
 
-/* ---- Layout (mobile-first; breakpoints 640px and 1024px, SPEC §3.3) ---- */
+/* ---- Layout: full-width bands with the same side gutter (SPEC §3.3) ---- */
 .container {
   width: 100%;
-  max-width: var(--content-max);
-  margin-inline: auto;
-  padding-inline: var(--space-4);
+  padding-inline: var(--gutter);
 }
 
-@media (min-width: 640px) {
-  .container {
-    padding-inline: var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding-inline: var(--space-8);
-  }
+/* A band that spans the whole width from inside .container. */
+.bleed {
+  margin-inline: calc(-1 * var(--gutter));
+  padding-inline: var(--gutter);
 }
 
 main {
   flex: 1;
-  padding-block: var(--space-6);
+  padding-bottom: var(--space-12);
+}
+
+/* Title band of a page: condensed heading, thick rule below. */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-8) var(--space-5);
+  border-bottom: var(--rule-width) solid var(--color-border-strong);
+}
+
+.page-head h1 {
+  font-size: var(--text-2xl);
+}
+
+.page-head h1 code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.page-head .count,
+.eyebrow {
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.page-head .lead {
+  flex: 0 0 100%;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
 }
 
 /* ---- Code: long commands scroll inside their block, never the page ---- */
@@ -102,17 +137,74 @@ code,
 kbd,
 pre {
   font-family: var(--font-mono);
-  font-size: 0.9375em;
+  font-size: 1em;
 }
 
 pre {
   max-width: 100%;
   overflow-x: auto;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   line-height: var(--leading-normal);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.75em;
+  padding: 0 0.375em;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  text-align: center;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+/* ---- Buttons: square, mono, uppercase (COPY, EXPORT…) ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.25rem;
+  padding: 0 var(--space-4);
+  color: var(--color-text);
+  background: transparent;
+  border: var(--rule-width) solid var(--color-border-strong);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn:hover {
+  color: var(--color-bg);
+  background: var(--color-text);
+}
+
+.btn--accent {
+  color: var(--color-on-accent);
+  background: var(--color-accent-fill);
+  border-color: var(--color-accent-fill);
+}
+
+.btn--accent:hover {
+  color: var(--color-on-accent);
+  background: var(--color-accent-fill);
+  border-color: var(--color-text);
+}
+
+.btn--danger {
+  color: var(--color-destructive);
+  border-color: currentColor;
+}
+
+/* Touch screens: every control is at least 44px (SPEC §3.3). */
+@media (pointer: coarse) {
+  .btn {
+    min-height: var(--tap-min);
+  }
 }
 
 /* ---- Utilities ---- */
@@ -139,9 +231,10 @@ pre {
   left: var(--space-2);
   z-index: 100;
   padding: var(--space-2) var(--space-4);
-  background: var(--color-accent);
   color: var(--color-on-accent);
-  border-radius: var(--radius-sm);
+  background: var(--color-accent-fill);
+  font-family: var(--font-mono);
+  font-weight: 700;
   transform: translateY(-200%);
 }
 
@@ -153,16 +246,16 @@ pre {
   color: var(--color-text-muted);
 }
 
-/* Editable command variable (src/components/CommandTemplate.ts): the
-   default (placeholder) in accent color, a typed value in text color. */
+/* Editable command variable (src/components/CommandTemplate.ts): a yellow
+   highlighted value; the default shows as placeholder, a typed value in ink. */
 .var-input {
+  box-sizing: content-box;
   min-width: 2ch;
   max-width: 100%;
-  padding: 0 0.125rem;
-  color: var(--color-text);
-  background: transparent;
+  padding: 0 0.3em;
+  color: var(--color-on-hl);
+  background: var(--color-hl);
   border: 0;
-  border-bottom: 1px dashed currentColor;
   border-radius: 0;
   font: inherit;
   line-height: inherit;
@@ -170,10 +263,16 @@ pre {
 }
 
 .var-input::placeholder {
-  color: var(--color-accent);
+  color: var(--color-on-hl-muted);
   opacity: 1;
 }
 
+.var-input:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 1px;
+}
+
 .var-input[aria-invalid='true'] {
-  border-bottom: 2px solid var(--color-destructive);
+  outline: var(--focus-width) solid var(--color-destructive);
+  outline-offset: 1px;
 }

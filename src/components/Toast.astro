@@ -9,17 +9,18 @@
   .toast {
     position: fixed;
     inset-inline: 0;
-    bottom: var(--space-6);
+    bottom: var(--space-12);
     z-index: 20;
     width: fit-content;
     max-width: calc(100% - 2 * var(--space-4));
     margin-inline: auto;
     padding: var(--space-2) var(--space-4);
-    color: var(--color-bg);
-    background: var(--color-text);
-    border-radius: var(--radius-md);
+    color: var(--color-term-text);
+    background: var(--color-term-bg);
+    border-left: 6px solid var(--color-accent-fill);
+    font-family: var(--font-mono);
     font-size: var(--text-sm);
-    font-weight: 600;
+    font-weight: 700;
     pointer-events: none;
     opacity: 0;
     transition: opacity 150ms ease-out;
@@ -31,6 +32,7 @@
 
   .toast:empty {
     padding: 0;
+    border: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {

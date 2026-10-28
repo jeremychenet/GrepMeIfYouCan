@@ -65,6 +65,7 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 - `Tab` passe d'une variable à la suivante.
 - Les valeurs saisies sont injectées **telles quelles** comme texte, sans échappement shell automatique. Une info-bulle le rappelle.
 - Une variable utilisée plusieurs fois dans la commande n'a qu'une valeur : modifier un champ met à jour les autres.
+- **Report entre fiches** : une valeur saisie pour une variable (ex. `path`) remplit la variable de même nom des autres fiches de la page, y compris les résultats affichés ensuite. Vider le champ la retire partout. Les valeurs restent en mémoire (jamais stockées). Les fiches `destructive` ne reçoivent **jamais** une valeur reportée : leurs valeurs se saisissent dans la fiche elle-même.
 - Champ vide sans valeur par défaut : la commande copiée contient le nom de la variable, sauf sur une fiche `destructive`, où la copie est bloquée tant que le champ est vide (« Fill in <name> first »).
 - Les caractères invisibles et bidi saisis ou collés sont retirés ; les retours à la ligne, tabulations et caractères de contrôle deviennent une espace.
 
@@ -104,13 +105,14 @@ Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par Gi
 
 ## 3. Design & UX
 
-### 3.1 Direction : « Terminal moderne »
-Références : Raycast, Warp, Linear.
-- **Thème sombre par défaut**, thème clair disponible. Le choix est mémorisé, et `prefers-color-scheme` est respecté au premier chargement.
-- Police monospace JetBrains Mono (auto-hébergée, woff2 variable, sous-ensemble latin) pour les commandes ; police système (`system-ui`) pour le reste, pour ne charger qu'un seul fichier de police.
-- Le thème est appliqué avant le premier affichage par un petit script externe bloquant (`/theme-init.js`), compatible CSP. Sans JavaScript, le site reste en thème sombre et le bouton de thème est masqué.
-- Interface dense : beaucoup de résultats visibles, peu de décor, pas d'effet rétro (pas de CRT ni de « vert matrix »).
-- Couleur d'accent sobre. Les couleurs de danger (orange, rouge) sont réservées au danger.
+### 3.1 Direction : « Terminal sur papier »
+Référence : maquette « oneliner » (fond papier, encre noire, accent orange, bandes de terminal noires).
+- **Thème clair (papier) par défaut**, thème sombre disponible (même palette : fond encre, texte papier, même orange, même jaune). Le choix est mémorisé, et `prefers-color-scheme: dark` est respecté au premier chargement.
+- Polices auto-hébergées en woff2 (sous-ensemble latin + flèches) : **DejaVu Sans Mono** pour les commandes et l'interface technique, **TeX Gyre Heros** pour le texte, **TeX Gyre Heros Cn** (gras) pour les titres. Licences libres (Bitstream Vera / DejaVu, GUST Font License), fournies dans `public/fonts/`.
+- Le thème est appliqué avant le premier affichage par un petit script externe bloquant (`/theme-init.js`), compatible CSP. Sans JavaScript, le site reste en thème clair et le bouton de thème est masqué.
+- Briques communes à toutes les pages : barre de recherche noire avec prompt `$` orange, chips carrées, **lignes numérotées** (`01`, `02`…) avec titre, commande et bouton `COPY`, valeurs éditables surlignées en jaune, barre de raccourcis noire en bas. Pas de coins arrondis, d'ombres, de dégradés ni d'emojis.
+- La ligne active (clavier) porte une barre orange à gauche, une commande plus grande, un rappel des touches et un bouton `COPY ↵` orange. Le bouton `COPY` d'une fiche `destructive` est rouge-orangé.
+- Couleurs : l'orange vif `#ff4a12` sert de fond (bouton, prompt, position) ; un orange plus foncé sert au texte et au focus pour respecter WCAG AA. Les couleurs de danger (ambre, rouge-orangé) sont réservées au danger.
 
 ### 3.2 Navigation clavier (desktop)
 | Touche | Action |
@@ -129,6 +131,7 @@ Références : Raycast, Warp, Linear.
 - `Esc` vide la recherche (puis en sort si elle est déjà vide). Depuis une variable, il revient à la liste, et depuis la liste à la recherche.
 - La copie au clavier suit les mêmes règles que le bouton Copier (confirmation des commandes destructives).
 - L'aide `?` est aussi ouverte par un bouton « Keyboard shortcuts » en pied de page, masqué sans JavaScript et sur écran tactile.
+- Une **barre de raccourcis** noire, collée en bas de l'écran, s'affiche tant qu'une liste de fiches est visible (≥ 640 px, jamais sur écran tactile) : position de la ligne active (`01/07`) et touches principales. Elle est décorative (`aria-hidden`) : l'aide `?` contient les mêmes informations.
 
 ### 3.3 Responsive
 - Conception **mobile-first**. Breakpoints : < 640 px (mobile), 640–1024 px (tablette), > 1024 px (desktop).

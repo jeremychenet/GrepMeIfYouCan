@@ -21,10 +21,10 @@ const byTool = groupBy(cards, (c) => c.tool);
 ---
 
 <Base title={meta.title} description={meta.description}>
-  <h1>{CATEGORY_LABELS[category]}</h1>
-  <p class="muted count">
-    {cards.length} commands across {byTool.size} tools
-  </p>
+  <header class="page-head">
+    <h1>{CATEGORY_LABELS[category]}</h1>
+    <p class="count">{cards.length} commands across {byTool.size} tools</p>
+  </header>
   {
     [...byTool].map(([tool, list]) => (
       <section aria-labelledby={`tool-${tool}`}>
@@ -46,20 +46,27 @@ const byTool = groupBy(cards, (c) => c.tool);
 </Base>
 
 <style>
-  h1 {
-    font-size: var(--text-xl);
-  }
-
-  .count {
-    margin-block: var(--space-1) var(--space-6);
-  }
-
-  section + section {
-    margin-top: var(--space-8);
-  }
-
   h2 {
-    margin-bottom: var(--space-3);
+    padding-block: var(--space-6) var(--space-3);
+    font-family: var(--font-mono);
     font-size: var(--text-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  h2 a {
+    text-decoration: none;
+  }
+
+  h2 a::after {
+    content: ' →';
+    color: var(--color-text-faint);
+  }
+
+  h2 a:hover {
+    color: var(--color-accent);
+  }
+
+  h2 code {
+    font-weight: 700;
   }
 </style>

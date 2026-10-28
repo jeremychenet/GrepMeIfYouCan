@@ -1,5 +1,6 @@
 ---
-// A command with its template variables highlighted (read-only until J12).
+// A command with its template variables highlighted in yellow (editable
+// fields once src/components/CommandTemplate.ts has run).
 // Variables show their default value when they have one, else their name.
 // `scroll`: long commands scroll inside the block (card page); the block is
 // then focusable so keyboard users can scroll it (WCAG 2.1.1). Otherwise
@@ -31,6 +32,9 @@ const segments = parseTemplate(command);
 <style>
   .command {
     margin: 0;
+    color: var(--color-text);
+    font-size: 1em;
+    line-height: 1.6;
   }
 
   .wrap {
@@ -38,9 +42,11 @@ const segments = parseTemplate(command);
     overflow-wrap: anywhere;
   }
 
+  /* A value to adapt, before CommandTemplate.ts turns it into a field. */
   var {
+    padding: 0 0.3em;
+    color: var(--color-on-hl);
+    background: var(--color-hl);
     font-style: normal;
-    color: var(--color-accent);
-    border-bottom: 1px dashed currentColor;
   }
 </style>

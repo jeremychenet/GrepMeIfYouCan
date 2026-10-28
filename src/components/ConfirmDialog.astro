@@ -12,8 +12,8 @@
     </p>
     <pre class="command"><code data-confirm-command></code></pre>
     <div class="buttons">
-      <button type="submit" value="cancel" class="button" autofocus>Cancel</button>
-      <button type="submit" value="copy" class="button button--danger">Copy anyway</button>
+      <button type="submit" value="cancel" class="btn" autofocus>Cancel</button>
+      <button type="submit" value="copy" class="btn btn--danger">Copy anyway</button>
     </div>
   </form>
 </dialog>
@@ -22,31 +22,37 @@
   .confirm {
     /* The global reset removes the margin that centers a modal dialog. */
     margin: auto;
-    width: min(36rem, calc(100% - 2 * var(--space-4)));
-    padding: var(--space-6);
+    width: min(38rem, calc(100% - 2 * var(--space-4)));
+    padding: 0;
     color: var(--color-text);
-    background: var(--color-surface);
-    border: 1px solid var(--color-destructive);
-    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    border: var(--rule-width) solid var(--color-border-strong);
+    border-left: 6px solid var(--color-destructive);
+    border-radius: 0;
   }
 
   .confirm::backdrop {
-    background: rgb(0 0 0 / 60%);
+    background: rgb(21 21 19 / 70%);
   }
 
   form {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    padding: var(--space-6);
   }
 
   h2 {
     color: var(--color-destructive);
-    font-size: var(--text-lg);
+    font-family: var(--font-cond);
+    font-size: var(--text-xl);
   }
 
   .command {
     margin: 0;
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-term-text);
+    background: var(--color-term-bg);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
@@ -56,23 +62,5 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--space-3);
-  }
-
-  .button {
-    min-height: var(--tap-min);
-    padding: 0 var(--space-4);
-    color: var(--color-text);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .button--danger {
-    color: var(--color-destructive);
-    background: var(--color-destructive-bg);
-    border-color: currentColor;
   }
 </style>

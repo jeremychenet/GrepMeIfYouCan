@@ -4,6 +4,7 @@ import {
   TOUCH_QUERY,
   isTouchOnly,
   moveIndex,
+  positionLabel,
   resolveKey,
   type KeyContext,
   type KeyPress,
@@ -131,5 +132,23 @@ describe('SHORTCUTS', () => {
     const keys = SHORTCUTS.flatMap((s) => s.keys);
     for (const k of ['/', 'Ctrl K', '↑', '↓', 'Enter', 'Tab', 'o', 'f', 'Esc', '?']) expect(keys).toContain(k);
     for (const s of SHORTCUTS) expect(s.label.length).toBeGreaterThan(0);
+  });
+});
+
+describe('positionLabel', () => {
+  it('shows the active row and the row count on two digits', () => {
+    expect(positionLabel(0, 7)).toBe('01/07');
+    expect(positionLabel(6, 7)).toBe('07/07');
+    expect(positionLabel(11, 50)).toBe('12/50');
+  });
+
+  it('shows dashes when no row is active', () => {
+    expect(positionLabel(-1, 7)).toBe('--/07');
+    expect(positionLabel(-1, 0)).toBe('--/00');
+    expect(positionLabel(9, 3)).toBe('--/03');
+  });
+
+  it('grows past two digits', () => {
+    expect(positionLabel(99, 120)).toBe('100/120');
   });
 });
