@@ -74,7 +74,7 @@ export function sourceUrl(card: Command): string | null {
 }
 
 /** Pages that do not depend on the content (favorites and history are filled in the browser). */
-export const STATIC_PAGES = ['/favorites', '/history'] as const;
+export const STATIC_PAGES = ['/about', '/favorites', '/history', '/privacy'] as const;
 
 /** Every page the build must produce, sorted (home, static pages, cards, categories, tools). */
 export function expectedPages(cards: readonly Command[]): string[] {

@@ -1,0 +1,65 @@
+name: Suggest a command
+description: Propose a shell command for GrepMeIfYouCan.
+title: 'Suggest a command: '
+labels: [suggestion]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping! Every suggestion is reviewed before it is published.
+        Use `{{name}}` or `{{name:default}}` for the values to adapt, e.g. `find {{path:.}} -name '{{pattern}}'`.
+  - type: input
+    id: need
+    attributes:
+      label: What should the command do?
+      description: What you searched for, or the task in a few words.
+      placeholder: rotate nginx logs
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: One line, with `{{name}}` placeholders for the values to adapt.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: Description
+      description: One sentence explaining what the command does (180 characters max).
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Linux
+        - Containers
+        - Cloud & IaC
+        - Git & CI
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: A few keywords, separated by commas.
+      placeholder: logs, nginx, disk
+  - type: dropdown
+    id: danger
+    attributes:
+      label: Danger level
+      description: "`destructive` if it can delete or overwrite data, `caution` if it changes the system."
+      options:
+        - safe
+        - caution
+        - destructive
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Optional link to the documentation or where the command comes from.

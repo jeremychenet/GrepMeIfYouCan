@@ -3,7 +3,7 @@ Content license
 
 This license covers the command cards in `content/` (YAML files under
 `content/commands/` and `content/drafts/`). It does not cover the source
-code of the site, whose license is defined separately.
+code of the site, which is licensed under the MIT License (see LICENSE).
 
 Command cards
 -------------

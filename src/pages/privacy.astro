@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import { FAVORITES_MAX, HISTORY_MAX } from '../lib/store';
+---
+
+<Base title="Privacy" description="What GrepMeIfYouCan stores, where, and for how long. No account, no cookies.">
+  <header class="page-head">
+    <h1>Privacy</h1>
+    <p class="lead">No account, no cookies, no personal data on our servers.</p>
+  </header>
+
+  <div class="prose">
+    <h2 id="browser">Kept in your browser only</h2>
+    <p>These stay on your device. They are never sent to us or to anyone else.</p>
+    <ul>
+      <li>
+        <strong>Favorites</strong>: up to {FAVORITES_MAX} commands you starred (<code>gmiyc:v1:favorites</code>).
+      </li>
+      <li>
+        <strong>History</strong>: the last {HISTORY_MAX} commands you <em>copied</em> (<code>gmiyc:v1:history</code>). Your searches are never recorded.
+      </li>
+      <li><strong>Theme</strong>: light or dark (<code>gmiyc:v1:theme</code>).</li>
+      <li>
+        <strong>Destructive commands confirmed</strong> in this tab, so the confirmation is asked once per session (<code>gmiyc:v1:confirmed-destructive</code>, cleared when the tab closes).
+      </li>
+    </ul>
+    <p>
+      The values you type in commands are only kept while the page is open. You can export or
+      import favorites and history as a JSON file from the <a href="/favorites">Favorites</a> and <a href="/history">History</a> pages, clear the history there, or delete everything by
+      clearing this site's data in your browser.
+    </p>
+
+    <h2 id="analytics">Audience statistics</h2>
+    <p>
+      We count visits with <a href="https://umami.is" rel="noopener">Umami</a>, hosted on our own
+      server: no cookies, no tracking across sites, no personal data, so no consent banner. Besides
+      page views, it records three anonymous events: a search with no result (the query, cut to
+      100 characters, to know which commands are missing), a copy (the command id) and a favorite.
+      The site works the same if statistics are blocked.
+    </p>
+
+    <h2 id="logs">Server logs</h2>
+    <p>
+      Like any web server, ours keeps technical access logs (IP address, page, date) to keep the
+      site secure and working. They are deleted after 14 days.
+    </p>
+
+    <h2 id="contact">Questions</h2>
+    <p>
+      Open an issue on <a href="https://github.com/jeremychenet/GrepMeIfYouCan" rel="noopener">GitHub</a>.
+    </p>
+  </div>
+</Base>

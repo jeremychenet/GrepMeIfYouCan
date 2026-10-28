@@ -1,12 +1,31 @@
-// Links to the GitHub repository. Contributions go through issues (SPEC §5);
-// the prefilled issue forms arrive in J15.
+// Links to the GitHub repository. Contributions go through prefilled issue
+// forms (SPEC §2.9): .github/ISSUE_TEMPLATE/*.yml. GitHub fills a form field
+// from the query parameter named after its `id`; tests/lib/github.test.ts
+// checks those ids exist in the forms.
+import { sanitizeValue } from './copy';
+
 export const REPO_URL = 'https://github.com/jeremychenet/GrepMeIfYouCan';
+export const SUGGEST_TEMPLATE = 'suggest-command.yml';
+export const REPORT_TEMPLATE = 'report-issue.yml';
 
-const TITLE_QUERY_MAX = 100;
+const QUERY_MAX = 100;
 
-/** New issue suggesting a command for a search that found nothing. */
-export function suggestCommandUrl(query: string): string {
-  const q = query.trim().slice(0, TITLE_QUERY_MAX);
-  const params = new URLSearchParams({ title: q ? `Suggest a command: ${q}` : 'Suggest a command' });
-  return `${REPO_URL}/issues/new?${params}`;
+function newIssueUrl(fields: Record<string, string>): string {
+  return `${REPO_URL}/issues/new?${new URLSearchParams(fields)}`;
+}
+
+/**
+ * New command suggestion. From a search that found nothing, the query goes in
+ * the title and in the "need" field; without a query (global button), a
+ * blank form.
+ */
+export function suggestCommandUrl(query = ''): string {
+  const q = sanitizeValue(query).trim().slice(0, QUERY_MAX);
+  if (!q) return newIssueUrl({ template: SUGGEST_TEMPLATE, title: 'Suggest a command' });
+  return newIssueUrl({ template: SUGGEST_TEMPLATE, title: `Suggest a command: ${q}`, need: q });
+}
+
+/** Problem report about a card, from its page. */
+export function reportIssueUrl(cardId: string, pageUrl: string): string {
+  return newIssueUrl({ template: REPORT_TEMPLATE, title: `Report: ${cardId}`, card: cardId, page: pageUrl });
 }

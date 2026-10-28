@@ -1,6 +1,7 @@
 ---
-// About and Privacy pages arrive in J15; links are in place already.
-import { REPO_URL } from '../lib/github';
+// Site links, the global "Suggest a command" (prefilled GitHub issue form,
+// SPEC §2.9) and the tldr-pages attribution.
+import { REPO_URL, suggestCommandUrl } from '../lib/github';
 ---
 
 <footer class="site-footer">
@@ -10,6 +11,7 @@ import { REPO_URL } from '../lib/github';
         <li><a href="/about">About</a></li>
         <li><a href="/privacy">Privacy</a></li>
         <li><a href={REPO_URL} rel="noopener">GitHub</a></li>
+        <li><a href={suggestCommandUrl()} rel="noopener" data-suggest-global>Suggest a command</a></li>
       </ul>
     </nav>
     <button type="button" class="shortcuts-button" hidden data-shortcuts-open>
