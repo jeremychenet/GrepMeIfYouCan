@@ -2,7 +2,7 @@
 // wrong theme. Loaded as a blocking external script in <head>: the CSP
 // forbids inline scripts. Logic mirrors src/lib/theme.ts (same storage key).
 (function () {
-  var theme = 'dark';
+  var theme = 'light';
   var saved = null;
   try {
     saved = localStorage.getItem('gmiyc:v1:theme');
@@ -11,7 +11,7 @@
     theme = saved;
   } else {
     try {
-      if (matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+      if (matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
     } catch (e) {}
   }
   document.documentElement.dataset.theme = theme;

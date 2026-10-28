@@ -87,6 +87,13 @@ export function moveIndex(index: number, action: MoveAction, length: number): nu
   }
 }
 
+/** Position shown in the key bar, e.g. `01/07`; dashes when no row is active. */
+export function positionLabel(index: number, length: number): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const current = index >= 0 && index < length ? pad(index + 1) : '--';
+  return `${current}/${pad(length)}`;
+}
+
 /** Touch screens get no shortcuts and no help (SPEC §3.3). */
 export const TOUCH_QUERY = '(hover: none) and (pointer: coarse)';
 

@@ -1,7 +1,8 @@
 ---
 // A command card (SPEC §2.4). `full` is the /c/<id> page; `compact` is a
 // list item on tool and category pages and in search results, linking to the
-// card page. Tags link to the search filtered by that tag.
+// card page. Tags link to the search filtered by that tag. Lists show it as a
+// row: title, command, description and tags, then Favorite and Copy on the right.
 // src/components/ResultsList.ts fills a copy of this markup: keep them in sync.
 // The Copy button (J12) is hidden until src/components/CommandTemplate.ts
 // enables it, the Favorite button (J14) until FavoriteButton.ts does; Report
@@ -32,112 +33,159 @@ const hasVariables = variableNames(card.command).length > 0;
   data-danger={card.danger}
   data-command={card.command}
 >
-  <div class="head">
-    <Heading class="title">
-      {full ? card.title : <a href={cardPath(card.id)}>{card.title}</a>}
-    </Heading>
-    <DangerBadge level={card.danger} />
-    <button
-      type="button"
-      class="favorite"
-      hidden
-      data-favorite
-      aria-pressed="false"
-      aria-label={`Favorite: ${card.title}`}
-    >
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <path
-          d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linejoin="round"></path>
-      </svg>
-    </button>
+  <div class="body">
+    <div class="head">
+      <Heading class="title">
+        {full ? card.title : <a href={cardPath(card.id)}>{card.title}</a>}
+      </Heading>
+      <DangerBadge level={card.danger} />
+      {
+        full && (
+          <button
+            type="button"
+            class="favorite"
+            hidden
+            data-favorite
+            aria-pressed="false"
+            aria-label={`Favorite: ${card.title}`}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        )
+      }
+    </div>
+
+    {full && <p class="description">{card.description}</p>}
+
+    {
+      full && card.danger === 'destructive' && (
+        <p class="danger-note" role="note">
+          <strong>Destructive:</strong> this command can permanently delete data. Check every value
+          before running it.
+        </p>
+      )
+    }
+
+    <div class="command-row">
+      <CommandText command={card.command} scroll={full} />
+      {
+        full && (
+          <button type="button" class="btn copy" hidden data-copy aria-label={`Copy command: ${card.title}`}>
+            Copy
+          </button>
+        )
+      }
+    </div>
+
+    {
+      full && hasVariables && (
+        <p class="hint">Edit the highlighted values, then copy. They are inserted as typed, without shell escaping.</p>
+      )
+    }
+
+    {
+      !full && (
+        <div class="meta">
+          <p class="description">{card.description}</p>
+          <ul class="tags" aria-label="Tags">
+            {card.tags.map((t) => (
+              <li>
+                <a href={tagSearchPath(t)} data-tag={t}>
+                  {t}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
+    {
+      !full && (
+        <p class="keyhint" aria-hidden="true">
+          <span class="keyhint-vars">tab next value · </span>↵ copy · o open · f favorite
+        </p>
+      )
+    }
+
+    {
+      full && (
+        <dl class="meta">
+          <div>
+            <dt>Tool</dt>
+            <dd>
+              <a href={toolPath(card.tool)}>{card.tool}</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Category</dt>
+            <dd>
+              <a href={categoryPath(card.category)}>{CATEGORY_LABELS[card.category]}</a>
+            </dd>
+          </div>
+          {card.platforms && (
+            <div>
+              <dt>Platforms</dt>
+              <dd>{card.platforms.join(', ')}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Tags</dt>
+            <dd>
+              <ul class="tags">
+                {card.tags.map((t) => (
+                  <li>
+                    <a href={tagSearchPath(t)} data-tag={t}>
+                      {t}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+      )
+    }
+
+    {
+      full && source && card.source.type === 'tldr' && (
+        <p class="attribution">
+          Adapted from <a href={source}>tldr-pages ({card.source.page})</a>, licensed under{' '}
+          <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </p>
+      )
+    }
   </div>
-
-  <p class="description">{card.description}</p>
-
-  {
-    full && card.danger === 'destructive' && (
-      <p class="danger-note" role="note">
-        <strong>Destructive:</strong> this command can permanently delete data. Check every value
-        before running it.
-      </p>
-    )
-  }
-
-  <div class="command-row">
-    <CommandText command={card.command} scroll={full} />
-    <button type="button" class="copy" hidden data-copy aria-label={`Copy command: ${card.title}`}>
-      Copy
-    </button>
-  </div>
-
-  {
-    full && hasVariables && (
-      <p class="hint muted">Edit the highlighted values, then copy. They are inserted as typed, without shell escaping.</p>
-    )
-  }
 
   {
     !full && (
-      <ul class="tags" aria-label="Tags">
-        {card.tags.map((t) => (
-          <li>
-            <a href={tagSearchPath(t)} data-tag={t}>
-              {t}
-            </a>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-
-  {
-    full && (
-      <dl class="meta">
-        <div>
-          <dt>Tool</dt>
-          <dd>
-            <a href={toolPath(card.tool)}>{card.tool}</a>
-          </dd>
-        </div>
-        <div>
-          <dt>Category</dt>
-          <dd>
-            <a href={categoryPath(card.category)}>{CATEGORY_LABELS[card.category]}</a>
-          </dd>
-        </div>
-        {card.platforms && (
-          <div>
-            <dt>Platforms</dt>
-            <dd>{card.platforms.join(', ')}</dd>
-          </div>
-        )}
-        <div>
-          <dt>Tags</dt>
-          <dd>
-            <ul class="tags">
-              {card.tags.map((t) => (
-                <li>
-                  <a href={tagSearchPath(t)} data-tag={t}>
-                    {t}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </dd>
-        </div>
-      </dl>
-    )
-  }
-
-  {
-    full && source && card.source.type === 'tldr' && (
-      <p class="attribution muted">
-        Adapted from <a href={source}>tldr-pages ({card.source.page})</a>, licensed under{' '}
-        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
-      </p>
+      <div class="actions">
+        <button
+          type="button"
+          class="favorite"
+          hidden
+          data-favorite
+          aria-pressed="false"
+          aria-label={`Favorite: ${card.title}`}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path
+              d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <button type="button" class="btn copy" hidden data-copy aria-label={`Copy command: ${card.title}`}>
+          Copy
+        </button>
+      </div>
     )
   }
 </article>
@@ -148,56 +196,58 @@ const hasVariables = variableNames(card.command).length > 0;
 
 <style>
   .card {
+    min-width: 0;
+  }
+
+  .body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
     min-width: 0;
   }
 
-  .card--compact {
-    padding: var(--space-4);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-  }
-
-  .card--compact :global(pre) {
-    background: var(--color-bg);
-  }
-
-  .command-row {
+  .head {
     display: flex;
-    align-items: flex-start;
-    gap: var(--space-2);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .title {
     min-width: 0;
+    font-weight: 400;
   }
 
-  .command-row > :global(pre) {
-    flex: 1;
-    min-width: 0;
+  .title a {
+    text-decoration: none;
   }
 
-  .copy {
-    flex: none;
-    min-width: var(--tap-min);
-    min-height: var(--tap-min);
-    padding: 0 var(--space-3);
-    color: var(--color-on-accent);
-    background: var(--color-accent);
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-md);
-    font: inherit;
-    font-size: var(--text-sm);
-    font-weight: 600;
-    cursor: pointer;
+  .title a:hover {
+    text-decoration: underline;
   }
 
-  .copy:hover {
-    filter: brightness(1.1);
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
   }
 
-  .hint {
-    font-size: var(--text-sm);
+  .tags a {
+    display: inline-block;
+    color: var(--color-text-faint);
+    text-decoration: none;
+  }
+
+  .tags a::before {
+    content: '#';
+  }
+
+  .tags a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
   }
 
   .favorite {
@@ -205,14 +255,12 @@ const hasVariables = variableNames(card.command).length > 0;
     flex: none;
     align-items: center;
     justify-content: center;
-    min-width: var(--tap-min);
-    min-height: var(--tap-min);
-    margin-left: auto;
+    width: 2.25rem;
+    height: 2.25rem;
     padding: 0;
-    color: var(--color-text-muted);
+    color: var(--color-text-faint);
     background: none;
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border: 0;
     cursor: pointer;
   }
 
@@ -222,7 +270,6 @@ const hasVariables = variableNames(card.command).length > 0;
 
   .favorite:hover {
     color: var(--color-text);
-    border-color: var(--color-border-strong);
   }
 
   .favorite[aria-pressed='true'] {
@@ -233,65 +280,195 @@ const hasVariables = variableNames(card.command).length > 0;
     fill: currentColor;
   }
 
-  .head {
-    display: flex;
-    flex-wrap: wrap;
+  /* After a copy (CommandTemplate.ts): ink button for a moment. */
+  .copy[data-state='done'] {
+    color: var(--color-bg);
+    background: var(--color-text);
+    border-color: var(--color-text);
+  }
+
+  .card[data-danger='destructive'] .copy:not([data-state='done']) {
+    color: var(--color-destructive);
+    border-color: currentColor;
+  }
+
+  .card[data-danger='destructive'] .copy:not([data-state='done']):hover {
+    color: var(--color-bg);
+    background: var(--color-destructive);
+    border-color: var(--color-destructive);
+  }
+
+  @media (pointer: coarse) {
+    .favorite {
+      width: var(--tap-min);
+      height: var(--tap-min);
+    }
+  }
+
+  /* ---- Row in a list (compact) ---- */
+  .card--compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
     align-items: center;
-    gap: var(--space-2) var(--space-3);
-  }
-
-  /* The title shares its line with the star; the badge wraps below if needed. */
-  .head .title {
-    flex: 1 1 12rem;
-    min-width: 0;
-  }
-
-  .card--full .title {
-    font-size: var(--text-xl);
   }
 
   .card--compact .title {
-    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
   }
 
-  .title a {
-    color: var(--color-text);
-    text-decoration: none;
+  .card--compact .command-row {
+    margin-top: var(--space-1);
+    font-size: var(--text-cmd);
   }
 
-  .title a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
+  .card--compact .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-4);
+    margin-top: var(--space-2);
   }
 
   .card--compact .description {
-    color: var(--color-text-muted);
+    min-width: 0;
+    color: var(--color-text-faint);
     font-size: var(--text-sm);
+  }
+
+  .keyhint {
+    display: none;
+    margin-top: var(--space-2);
+    color: var(--color-text-faint);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .card:not(:has(var, .var-input)) .keyhint-vars {
+    display: none;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+
+  /* The active row of a keyboard list (CardList.astro): larger command,
+     key hint, orange Copy button. */
+  :global([aria-selected='true']) > .card--compact .command-row {
+    font-size: var(--text-xl);
+  }
+
+  :global([aria-selected='true']) > .card--compact .keyhint {
+    display: block;
+  }
+
+  :global([aria-selected='true']) > .card--compact .copy:not([data-state='done']) {
+    color: var(--color-on-accent);
+    background: var(--color-accent-fill);
+    border-color: var(--color-accent-fill);
+  }
+
+  :global([aria-selected='true']) > .card--compact .copy:not([data-state='done'])::after {
+    content: ' ↵';
+    content: ' ↵' / '';
+  }
+
+  @media (min-width: 640px) {
+    .card--compact {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-5);
+    }
+
+    .card--compact .description {
+      flex: 0 1 auto;
+    }
+  }
+
+  /* ---- Card page (full) ---- */
+  .card--full .body {
+    gap: var(--space-5);
+  }
+
+  .card--full .head {
+    padding-bottom: var(--space-2);
+  }
+
+  .card--full .title {
+    flex: 1 1 12rem;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+  }
+
+  .card--full .description {
+    max-width: var(--prose-max);
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .card--full .command-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--space-6) var(--gutter);
+    padding-left: calc(var(--gutter) - 6px);
+    background: var(--color-surface);
+    border-block: var(--rule-width) solid var(--color-border-strong);
+    border-left: 6px solid var(--color-focus);
+    font-size: var(--text-xl);
+  }
+
+  .card--full .command-row > :global(pre) {
+    flex: 1 1 20rem;
+    min-width: 0;
+  }
+
+  .card--full:not([data-danger='destructive']) .copy:not([data-state='done']) {
+    color: var(--color-on-accent);
+    background: var(--color-accent-fill);
+    border-color: var(--color-accent-fill);
+  }
+
+  .hint {
+    color: var(--color-text-faint);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
   }
 
   .danger-note {
+    max-width: var(--prose-max);
     padding: var(--space-3) var(--space-4);
     color: var(--color-destructive);
     background: var(--color-destructive-bg);
-    border: 1px solid currentColor;
-    border-radius: var(--radius-md);
+    border-left: 6px solid currentColor;
   }
 
-  .meta {
+  .card--full .meta {
     display: grid;
     gap: var(--space-2);
+    padding-top: var(--space-2);
+    font-family: var(--font-mono);
     font-size: var(--text-sm);
   }
 
-  .meta div {
+  .card--full .meta div {
     display: flex;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
   dt {
     flex: none;
     width: 6rem;
-    color: var(--color-text-muted);
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--text-xs);
+    line-height: 1.6rem;
   }
 
   dd {
@@ -299,38 +476,26 @@ const hasVariables = variableNames(card.command).length > 0;
     min-width: 0;
   }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-    padding: 0;
-    list-style: none;
-  }
-
-  .tags a {
-    display: block;
-    padding: 0 var(--space-2);
-    color: var(--color-text-muted);
-    background: var(--color-surface-2);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    line-height: 1.75;
-    text-decoration: none;
-  }
-
-  .tags a:hover {
+  dd a {
     color: var(--color-accent);
-    text-decoration: underline;
   }
 
-  .attribution {
+  .card--full dd .tags {
     font-size: var(--text-sm);
   }
 
-  @media (min-width: 640px) {
+  .attribution {
+    color: var(--color-text-faint);
+    font-size: var(--text-sm);
+  }
+
+  .attribution a {
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 1024px) {
     .card--full .title {
-      font-size: var(--text-2xl);
+      font-size: 2.75rem;
     }
   }
 </style>

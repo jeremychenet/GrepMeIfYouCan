@@ -5,23 +5,9 @@ import { HISTORY_MAX } from '../lib/store';
 ---
 
 <Base title="History" description="The commands you copied, kept in this browser only.">
-  <h1>History</h1>
-  <p class="muted lead">The last {HISTORY_MAX} commands you copied, kept in this browser only. Searches are never recorded.</p>
+  <header class="page-head">
+    <h1>History</h1>
+    <p class="lead">The last {HISTORY_MAX} commands you copied, kept in this browser only. Searches are never recorded.</p>
+  </header>
   <SavedList list="history" />
 </Base>
-
-<style>
-  h1 {
-    font-size: var(--text-xl);
-  }
-
-  .lead {
-    margin-block: var(--space-2) var(--space-6);
-  }
-
-  @media (min-width: 640px) {
-    h1 {
-      font-size: var(--text-2xl);
-    }
-  }
-</style>

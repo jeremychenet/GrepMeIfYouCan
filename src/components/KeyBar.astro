@@ -1,0 +1,74 @@
+---
+// Bottom key bar (SPEC §3.2): the active row (`01/07`) and the main keys.
+// Hidden by default; src/components/KeyboardNav.ts shows it on keyboard
+// devices for pages with a card list and keeps the position up to date.
+// The same keys are listed, for screen readers too, in the `?` help dialog.
+---
+
+<div class="keybar" hidden aria-hidden="true" data-keybar>
+  <span class="pos" data-key-position>--/00</span>
+  <span><b>↑↓</b> move</span>
+  <span><b>tab</b> edit values</span>
+  <span><b>↵</b> copy</span>
+  <span><b>o</b> open</span>
+  <span class="extra"><b>f</b> favorite</span>
+  <span class="extra"><b>?</b> help</span>
+  <span class="note">edited values carry over to the other commands</span>
+</div>
+
+<style>
+  .keybar {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: stretch;
+    color: var(--color-term-muted);
+    background: var(--color-term-bg);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+
+  span {
+    padding: var(--space-2) var(--space-4);
+  }
+
+  b {
+    color: var(--color-term-text);
+    font-weight: 400;
+  }
+
+  .pos {
+    padding-inline: var(--gutter) var(--space-4);
+    color: var(--color-on-accent);
+    background: var(--color-accent-fill);
+    font-weight: 700;
+  }
+
+  .note {
+    margin-left: auto;
+    padding-right: var(--gutter);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .extra,
+  .note {
+    display: none;
+  }
+
+  /* Keyboard bar only where there is room for it. */
+  @media (max-width: 639px) {
+    .keybar {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .extra,
+    .note {
+      display: inline;
+    }
+  }
+</style>

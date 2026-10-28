@@ -1,6 +1,7 @@
 ---
 // Favorites and History live in this browser only (SPEC §2.8).
 const nav = [
+  { href: '/', label: 'Search' },
   { href: '/favorites', label: 'Favorites' },
   { href: '/history', label: 'History' },
 ];
@@ -10,8 +11,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <header class="site-header">
   <div class="container bar">
     <a class="brand" href="/" aria-label="GrepMeIfYouCan, home">
-      <span class="prompt" aria-hidden="true">$</span>
-      <span>grep<span class="dim">me</span>if<span class="dim">you</span>can</span>
+      <span aria-hidden="true">grepmeifyoucan</span><b class="cursor" aria-hidden="true"></b>
     </a>
     <nav aria-label="Main">
       <ul>
@@ -58,34 +58,39 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     top: 0;
     z-index: 10;
     background: var(--color-bg);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: var(--rule-width) solid var(--color-border-strong);
   }
 
   .bar {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: 3.5rem;
+    min-height: var(--header-height);
   }
 
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
     min-height: var(--tap-min);
-    margin-right: auto;
     font-family: var(--font-mono);
+    font-size: var(--text-lg);
     font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--color-text);
     text-decoration: none;
   }
 
-  .prompt {
-    color: var(--color-accent);
+  .cursor {
+    display: inline-block;
+    width: 0.58em;
+    height: 1.05em;
+    margin-left: 0.15em;
+    background: var(--color-accent-fill);
   }
 
-  .dim {
-    color: var(--color-text-muted);
+  nav {
+    margin-right: auto;
+    margin-left: var(--space-4);
   }
 
   nav ul {
@@ -95,35 +100,43 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     list-style: none;
   }
 
-  nav a,
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    padding-inline: var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-md);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  nav a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-width);
+    text-underline-offset: 6px;
+  }
+
   .theme-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: var(--tap-min);
-    min-width: var(--tap-min);
-    padding-inline: var(--space-2);
-    border-radius: var(--radius-sm);
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    text-decoration: none;
-  }
-
-  nav a:hover,
-  nav a[aria-current='page'] {
+    width: var(--tap-min);
+    height: var(--tap-min);
+    padding: 0;
     color: var(--color-text);
-    background: var(--color-surface);
-  }
-
-  .theme-toggle {
     background: none;
-    border: 1px solid var(--color-border-strong);
+    border: 0;
     cursor: pointer;
   }
 
   .theme-toggle:hover {
-    color: var(--color-text);
-    background: var(--color-surface);
+    color: var(--color-bg);
+    background: var(--color-text);
   }
 
   /* Without JS the toggle cannot work: theme-init.js sets data-theme, so the
@@ -135,5 +148,36 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   :global([data-theme='light']) .icon-sun,
   :global([data-theme='dark']) .icon-moon {
     display: none;
+  }
+
+  /* Small phones: the wordmark alone, nav links stay reachable. */
+  @media (max-width: 479px) {
+    .brand span {
+      font-size: var(--text-base);
+    }
+
+    nav {
+      margin-left: var(--space-1);
+    }
+
+    /* The wordmark already leads to the search. */
+    nav li:first-child {
+      display: none;
+    }
+
+    nav a {
+      padding-inline: var(--space-1);
+      font-size: var(--text-sm);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    nav {
+      margin-left: var(--space-12);
+    }
+
+    nav ul {
+      gap: var(--space-4);
+    }
   }
 </style>

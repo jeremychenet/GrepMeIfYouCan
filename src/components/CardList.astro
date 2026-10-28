@@ -1,7 +1,8 @@
 ---
-// Responsive list of compact cards: one column on mobile, two from 1024px.
-// On keyboard devices, src/components/KeyboardNav.ts turns it into a listbox
-// (one option per card) navigated with the arrow keys.
+// List of compact cards as numbered rows (01, 02…), one per line, across the
+// whole width. On keyboard devices, src/components/KeyboardNav.ts turns it
+// into a listbox (one option per card) navigated with the arrow keys; the
+// active row gets the orange bar, the larger command and the key hint.
 interface Props {
   /** Accessible name of the list. */
   label?: string;
@@ -16,36 +17,60 @@ const { label = 'Commands' } = Astro.props;
 
 <style>
   .card-list {
-    display: grid;
-    gap: var(--space-3);
+    margin-inline: calc(-1 * var(--gutter));
     padding: 0;
     list-style: none;
+    counter-reset: row;
   }
 
   .card-list > :global(li) {
-    display: flex;
-    min-width: 0;
-    /* Keeps the active card clear of the sticky header when it scrolls. */
-    scroll-margin-block: 4.5rem var(--space-4);
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-5) var(--gutter);
+    border-bottom: 1px solid var(--color-border);
+    border-left: 6px solid transparent;
+    padding-left: calc(var(--gutter) - 6px);
+    counter-increment: row;
+    /* Keeps the active row clear of the sticky header and key bar. */
+    scroll-margin-block: calc(var(--header-height) + var(--space-2)) var(--space-12);
   }
 
-  .card-list > :global(li) > :global(*) {
-    flex: 1;
+  .card-list > :global(li)::before {
+    content: counter(row, decimal-leading-zero);
+    align-self: center;
+    color: var(--color-text-faint);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
   }
 
-  /* The focused listbox shows its active option instead of its own outline. */
+  /* The active row (keyboard): orange bar, tinted background. */
+  .card-list > :global([aria-selected='true']) {
+    background: var(--color-surface);
+    border-left-color: var(--color-focus);
+  }
+
+  .card-list > :global([aria-selected='true'])::before {
+    color: var(--color-accent);
+  }
+
+  /* The focused listbox shows its active row instead of its own outline. */
   .card-list[role='listbox']:focus {
     outline: none;
   }
 
-  .card-list[role='listbox']:focus > :global([aria-selected='true']) > :global(*) {
-    outline: var(--focus-width) solid var(--color-focus);
-    outline-offset: 2px;
+  /* Narrow screens: the number sits on the title line. */
+  @media (max-width: 639px) {
+    .card-list > :global(li)::before {
+      align-self: start;
+      padding-top: 0.125rem;
+    }
   }
 
   @media (min-width: 1024px) {
-    .card-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .card-list > :global(li) {
+      grid-template-columns: 3rem minmax(0, 1fr);
+      gap: var(--space-5);
     }
   }
 </style>

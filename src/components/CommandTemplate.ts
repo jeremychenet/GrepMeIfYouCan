@@ -2,7 +2,10 @@
 // Each <var> of the card's command becomes an inline field. Copying rebuilds
 // the text from the card's command template (data-command) and the field
 // values, through src/lib/copy.ts: never from the displayed text.
+// A value typed in one card fills the variable of the same name in the other
+// cards of the page (src/lib/shared-values.ts), except destructive ones.
 import { copyCard, sanitizeValue, type CopyCard } from '../lib/copy';
+import { createSharedValues, receivesSharedValues } from '../lib/shared-values';
 import { parseTemplate } from '../lib/template';
 import { confirmCopy } from './ConfirmDialog';
 import { enhanceFavorite } from './FavoriteButton';
@@ -12,7 +15,12 @@ import { showToast } from './Toast';
 /** Visually hidden note in Base.astro, referenced by every field. */
 const HINT_ID = 'var-hint';
 const HINT = 'Inserted as typed, without shell escaping';
-const MIN_WIDTH_CH = 2;
+const MIN_WIDTH_CH = 1;
+/** How long the Copy button shows "Copied". */
+const DONE_MS = 1500;
+
+/** Values typed on this page, shared by every card. */
+const shared = createSharedValues();
 
 const isDanger = (v: string | undefined): v is CopyCard['danger'] =>
   v === 'safe' || v === 'caution' || v === 'destructive';
@@ -21,7 +29,36 @@ const sessionStore = () => window.sessionStorage;
 
 function resize(input: HTMLInputElement): void {
   const chars = Math.max(input.value.length, input.placeholder.length, MIN_WIDTH_CH);
-  input.style.width = `${chars + 1}ch`;
+  // Monospace: one `ch` per character, plus room for the caret.
+  input.style.width = `calc(${chars}ch + 2px)`;
+}
+
+/** Fills the same variable in the other cards of the page that accept it. */
+function carryOver(from: HTMLElement, name: string, value: string): void {
+  for (const input of document.querySelectorAll<HTMLInputElement>('article[data-card] .var-input')) {
+    const article = input.closest<HTMLElement>('article[data-card]')!;
+    const danger = article.dataset['danger'];
+    if (article === from || input.dataset['var'] !== name || !isDanger(danger) || !receivesSharedValues(danger)) continue;
+    input.value = value;
+    input.removeAttribute('aria-invalid');
+    resize(input);
+  }
+}
+
+/** "Copied" on the button for a moment (the toast announces it too). */
+const doneTimers = new WeakMap<HTMLButtonElement, number>();
+
+function showDone(button: HTMLButtonElement): void {
+  window.clearTimeout(doneTimers.get(button));
+  button.dataset['state'] = 'done';
+  button.textContent = 'Copied';
+  doneTimers.set(
+    button,
+    window.setTimeout(() => {
+      delete button.dataset['state'];
+      button.textContent = 'Copy';
+    }, DONE_MS),
+  );
 }
 
 export function enhanceCard(article: HTMLElement): void {
@@ -52,6 +89,7 @@ export function enhanceCard(article: HTMLElement): void {
     input.setAttribute('aria-label', `Value for ${name}`);
     input.setAttribute('aria-describedby', HINT_ID);
     if (danger === 'destructive' && def === undefined) input.setAttribute('aria-required', 'true');
+    input.value = shared.valueFor(name, danger) ?? '';
     resize(input);
     v.replaceWith(input);
     fields.set(name, [...(fields.get(name) ?? []), input]);
@@ -69,6 +107,8 @@ export function enhanceCard(article: HTMLElement): void {
       other.removeAttribute('aria-invalid');
       resize(other);
     }
+    shared.set(name, clean);
+    carryOver(article, name, clean);
   });
 
   const button = article.querySelector<HTMLButtonElement>('[data-copy]');
@@ -91,6 +131,7 @@ export function enhanceCard(article: HTMLElement): void {
       // Only copies go to the history, never searches (SPEC §2.8).
       store.addHistory(id);
       showToast('Copied');
+      showDone(button);
     }
     else if (result.status === 'failed') showToast('Copy failed: select the command and copy it by hand');
     else if (result.status === 'missing') {

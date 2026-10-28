@@ -5,19 +5,34 @@
 // points to its active card with aria-activedescendant, so screen readers
 // announce it. Search results are re-rendered on every keystroke, so a
 // MutationObserver keeps their roles in place. Touch screens get none of this.
-import { isTouchOnly, moveIndex, resolveKey, type KeyAction, type KeyContext } from '../lib/keyboard';
+import { isTouchOnly, moveIndex, positionLabel, resolveKey, type KeyAction, type KeyContext } from '../lib/keyboard';
 import { openShortcutsHelp } from './ShortcutsHelp';
 
 const active = new WeakMap<HTMLElement, number>();
+let lists: HTMLElement[] = [];
+/** The list whose position the key bar shows (the last one used). */
+let barList: HTMLElement | undefined;
 
 function options(list: HTMLElement): HTMLElement[] {
   return [...list.children].filter((el): el is HTMLElement => el instanceof HTMLLIElement && el.getAttribute('role') === 'option');
 }
 
+/** Shows the key bar (KeyBar.astro) while a list is visible, with its `01/07` position. */
+function refreshBar(): void {
+  const bar = document.querySelector<HTMLElement>('[data-keybar]');
+  const position = bar?.querySelector<HTMLElement>('[data-key-position]');
+  if (!bar || !position) return;
+  const list = barList && isVisible(barList) ? barList : lists.find(isVisible);
+  bar.hidden = !list;
+  if (list) position.textContent = positionLabel(active.get(list) ?? -1, options(list).length);
+}
+
 function setActive(list: HTMLElement, index: number, scroll = true): void {
   const all = options(list);
   active.set(list, index);
+  if (index >= 0) barList = list;
   all.forEach((li, i) => li.setAttribute('aria-selected', String(i === index)));
+  refreshBar();
   const current = all[index];
   if (!current) {
     list.removeAttribute('aria-activedescendant');
@@ -63,8 +78,18 @@ function isVisible(el: HTMLElement): boolean {
 }
 
 function init(): void {
-  const lists = [...document.querySelectorAll<HTMLElement>('[data-card-list]')];
+  lists = [...document.querySelectorAll<HTMLElement>('[data-card-list]')];
   lists.forEach(setupList);
+  // The key bar follows the lists as they are shown or hidden (search
+  // results, favorites).
+  if (lists.length > 0) {
+    refreshBar();
+    new MutationObserver(refreshBar).observe(document.querySelector('main') ?? document.body, {
+      attributes: true,
+      attributeFilter: ['hidden'],
+      subtree: true,
+    });
+  }
   const search = document.querySelector<HTMLInputElement>('[data-search-input]');
 
   function contextOf(target: EventTarget | null): KeyContext {

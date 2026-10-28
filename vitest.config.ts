@@ -25,6 +25,7 @@ export default defineConfig({
         'src/lib/template.ts': CRITICAL,
         'src/lib/copy.ts': CRITICAL,
         'src/lib/store.ts': CRITICAL,
+        'src/lib/shared-values.ts': CRITICAL,
         'scripts/lint-danger.ts': CRITICAL,
       },
     },

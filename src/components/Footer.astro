@@ -15,7 +15,7 @@ import { REPO_URL } from '../lib/github';
     <button type="button" class="shortcuts-button" hidden data-shortcuts-open>
       Keyboard shortcuts <kbd>?</kbd>
     </button>
-    <p class="muted">
+    <p>
       Many examples are adapted from <a href="https://github.com/tldr-pages/tldr" rel="noopener"
         >tldr-pages</a
       >, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener"
@@ -27,7 +27,8 @@ import { REPO_URL } from '../lib/github';
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    border-top: var(--rule-width) solid var(--color-border-strong);
     font-size: var(--text-sm);
   }
 
@@ -41,9 +42,14 @@ import { REPO_URL } from '../lib/github';
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: var(--space-5);
     padding: 0;
     list-style: none;
+    font-family: var(--font-mono);
+  }
+
+  a {
+    color: var(--color-text);
   }
 
   ul a {
@@ -59,20 +65,22 @@ import { REPO_URL } from '../lib/github';
     gap: var(--space-2);
     min-height: var(--tap-min);
     padding: 0;
-    color: var(--color-accent);
+    color: var(--color-text);
     background: none;
     border: 0;
+    font-family: var(--font-mono);
     font-size: inherit;
     text-decoration: underline;
     text-underline-offset: 0.2em;
     cursor: pointer;
   }
 
-  kbd {
-    padding: 0 var(--space-1);
-    color: var(--color-text);
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-sm);
+  .shortcuts-button:hover {
+    color: var(--color-accent);
+  }
+
+  p {
+    max-width: var(--prose-max);
   }
 
   @media (min-width: 640px) {
@@ -82,9 +90,10 @@ import { REPO_URL } from '../lib/github';
 
     .inner {
       flex-direction: row;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: var(--space-6);
+      gap: var(--space-2) var(--space-6);
     }
   }
 </style>

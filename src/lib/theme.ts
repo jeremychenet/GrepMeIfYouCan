@@ -1,4 +1,4 @@
-// Theme preference (SPEC §3.1): dark by default, `prefers-color-scheme`
+// Theme preference (SPEC §3.1): light (paper) by default, `prefers-color-scheme`
 // respected on first visit, explicit choice kept in localStorage.
 // The first-paint logic lives in public/theme-init.js (it cannot be bundled
 // without becoming deferred); keep both in sync, tests cover each.
@@ -7,7 +7,7 @@ export const THEMES = ['dark', 'light'] as const;
 export type Theme = (typeof THEMES)[number];
 
 export const THEME_KEY = 'gmiyc:v1:theme';
-export const DEFAULT_THEME: Theme = 'dark';
+export const DEFAULT_THEME: Theme = 'light';
 
 interface StorageLike {
   getItem(key: string): string | null;

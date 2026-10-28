@@ -31,6 +31,7 @@ const BACKGROUNDS = ['--color-bg', '--color-surface', '--color-surface-2'];
 const TEXT = [
   '--color-text',
   '--color-text-muted',
+  '--color-text-faint',
   '--color-accent',
   '--color-caution',
   '--color-destructive',
@@ -71,9 +72,23 @@ describe.each(['dark', 'light'] as const)('%s theme', (theme) => {
     }
   }
 
-  it('text on the accent button >= 4.5', () => {
-    expect(contrast(get('--color-on-accent'), get('--color-accent'))).toBeGreaterThanOrEqual(4.5);
+  it('text on the accent fill (Copy button, position) >= 4.5', () => {
+    expect(contrast(get('--color-on-accent'), get('--color-accent-fill'))).toBeGreaterThanOrEqual(4.5);
   });
+
+  // Editable values: typed text and the default shown as placeholder.
+  for (const fg of ['--color-on-hl', '--color-on-hl-muted']) {
+    it(`${fg} on the value highlight >= 4.5`, () => {
+      expect(contrast(get(fg), get('--color-hl'))).toBeGreaterThanOrEqual(4.5);
+    });
+  }
+
+  // Black terminal bands (search prompt, key bar): the $ prompt is accent-fill.
+  for (const fg of ['--color-term-text', '--color-term-muted', '--color-accent-fill']) {
+    it(`${fg} on the terminal band >= 4.5`, () => {
+      expect(contrast(get(fg), get('--color-term-bg'))).toBeGreaterThanOrEqual(4.5);
+    });
+  }
 
   for (const level of ['caution', 'destructive']) {
     it(`${level} text on its tinted background >= 4.5`, () => {

@@ -19,19 +19,11 @@ const meta = toolPageMeta(tool, cards);
 ---
 
 <Base title={meta.title} description={meta.description}>
-  <h1><code>{tool}</code></h1>
-  <p class="muted count">{cards.length} {cards.length === 1 ? 'command' : 'commands'}</p>
+  <header class="page-head">
+    <h1><code>{tool}</code></h1>
+    <p class="count">{cards.length} {cards.length === 1 ? 'command' : 'commands'}</p>
+  </header>
   <CardList label={`${tool} commands`}>
     {cards.map((card) => <li><CommandCard card={card} level={2} /></li>)}
   </CardList>
 </Base>
-
-<style>
-  h1 {
-    font-size: var(--text-xl);
-  }
-
-  .count {
-    margin-block: var(--space-1) var(--space-6);
-  }
-</style>
