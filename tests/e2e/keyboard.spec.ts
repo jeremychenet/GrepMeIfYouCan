@@ -1,5 +1,5 @@
 import { devices, expect, test, type Page } from '@playwright/test';
-import { LARGE_FILES, LARGE_FILES_COMMAND, copied, readClipboard, results } from './helpers';
+import { LARGE_FILES, LARGE_FILES_COMMAND, copied, readClipboard, results, row } from './helpers';
 
 const search = (page: Page) => page.getByLabel('Search commands');
 
@@ -7,7 +7,7 @@ const search = (page: Page) => page.getByLabel('Search commands');
 async function searchFor(page: Page, query: string): Promise<void> {
   await expect(search(page)).toBeFocused();
   await page.keyboard.type(query);
-  await expect(results(page).getByRole('option').first()).toBeVisible();
+  await expect(results(page).locator('article').first()).toBeVisible();
 }
 
 test.describe('keyboard', () => {
@@ -36,8 +36,8 @@ test.describe('keyboard', () => {
     await page.keyboard.press('/');
     await searchFor(page, 'large files');
     await page.keyboard.press('ArrowDown');
-    await expect(results(page)).toBeFocused();
-    await expect(results(page).getByRole('option', { selected: true })).toHaveId(`option-${LARGE_FILES}`);
+    await expect(row(page, LARGE_FILES).locator('article')).toBeFocused();
+    await expect(row(page, LARGE_FILES)).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Enter');
     expect(await copied(page)).toBe(LARGE_FILES_COMMAND);
   });
@@ -48,34 +48,39 @@ test.describe('keyboard', () => {
     await expect(search(page)).toBeFocused();
   });
 
-  test('the listbox announces its active option', async ({ page }) => {
+  test('the arrows move the focus from card to card, each announced by its title', async ({ page }) => {
     await searchFor(page, 'large files');
     const list = results(page);
-    await expect(list).toHaveRole('listbox');
+    await expect(list).toHaveRole('list');
     await expect(list).toHaveAccessibleName('Search results');
-    await page.keyboard.press('ArrowDown');
-    const options = list.getByRole('option');
-    await expect(list).toHaveAttribute('aria-activedescendant', (await options.nth(0).getAttribute('id'))!);
+    const rows = list.locator('> li');
+    const card = (i: number) => rows.nth(i).locator('> article');
 
     await page.keyboard.press('ArrowDown');
-    const second = (await options.nth(1).getAttribute('id'))!;
-    await expect(list).toHaveAttribute('aria-activedescendant', second);
-    await expect(options.nth(1)).toHaveAttribute('aria-selected', 'true');
-    await expect(options.nth(0)).toHaveAttribute('aria-selected', 'false');
+    await expect(card(0)).toBeFocused();
+    await expect(card(0)).toHaveAccessibleName((await card(0).locator('.title').textContent())!.trim());
+    await expect(rows.nth(0)).toHaveAttribute('aria-current', 'true');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(card(1)).toBeFocused();
+    await expect(rows.nth(1)).toHaveAttribute('aria-current', 'true');
+    await expect(rows.nth(0)).not.toHaveAttribute('aria-current');
 
     await page.keyboard.press('ArrowUp');
-    await expect(options.nth(0)).toHaveAttribute('aria-selected', 'true');
+    await expect(card(0)).toBeFocused();
     await page.keyboard.press('End');
-    await expect(options.last()).toHaveAttribute('aria-selected', 'true');
+    await expect(rows.last().locator('> article')).toBeFocused();
     await page.keyboard.press('Home');
-    await expect(options.first()).toHaveAttribute('aria-selected', 'true');
+    await expect(card(0)).toBeFocused();
+    // One Tab stop per list: only the active card is in the tab order.
+    await expect(list.locator('article[tabindex="0"]')).toHaveCount(1);
   });
 
   test('Tab moves through the variables, Enter copies, Esc goes back', async ({ page }) => {
     await searchFor(page, 'large files');
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Tab');
-    const card = results(page).locator(`#option-${LARGE_FILES}`);
+    const card = row(page, LARGE_FILES).locator('article');
     await expect(card.getByLabel('Value for path')).toBeFocused();
     await page.keyboard.type('/srv');
     await page.keyboard.press('Tab');
@@ -85,8 +90,8 @@ test.describe('keyboard', () => {
     expect(await copied(page)).toBe('find /srv -type f -size +500M 2>/dev/null');
 
     await page.keyboard.press('Escape');
-    await expect(results(page)).toBeFocused();
-    await expect(card).toHaveAttribute('aria-selected', 'true');
+    await expect(card).toBeFocused();
+    await expect(row(page, LARGE_FILES)).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Escape');
     await expect(search(page)).toBeFocused();
   });
@@ -132,25 +137,28 @@ test.describe('keyboard', () => {
     await page.evaluate(() => navigator.clipboard.writeText('unchanged'));
     await searchFor(page, 'git stash clear');
     await page.keyboard.press('ArrowDown');
-    await expect(results(page).getByRole('option', { selected: true })).toHaveId('option-git-stash-clear');
+    const card = row(page, 'git-stash-clear').locator('article');
+    await expect(card).toBeFocused();
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'Copy a destructive command?' });
     await expect(dialog).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
-    await expect(results(page)).toBeFocused();
+    await expect(card).toBeFocused();
     expect(await readClipboard(page)).toBe('unchanged');
   });
 
   test('works on the card lists of tool pages', async ({ page }) => {
     await page.goto('/tools/find');
-    const list = page.getByRole('listbox', { name: 'find commands' });
-    await list.focus();
-    await expect(list.getByRole('option').first()).toHaveAttribute('aria-selected', 'true');
+    const list = page.getByRole('list', { name: 'find commands' });
+    const rows = list.locator('> li');
+    await rows.first().locator('> article').focus();
+    await expect(rows.first()).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('ArrowDown');
-    await expect(list.getByRole('option').nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(rows.nth(1).locator('> article')).toBeFocused();
+    await expect(rows.nth(1)).toHaveAttribute('aria-current', 'true');
     await page.keyboard.press('Home');
-    const id = (await list.getByRole('option').first().locator('article').getAttribute('data-card'))!;
+    const id = (await rows.first().locator('article').getAttribute('data-card'))!;
     await page.keyboard.press('o');
     await expect(page).toHaveURL(new RegExp(`/c/${id}$`));
   });
@@ -170,7 +178,7 @@ test.describe('keyboard on a touch screen', () => {
 
   test('hides and disables the shortcuts', async ({ page }) => {
     await page.goto('/tools/find');
-    await expect(page.getByRole('listbox')).toHaveCount(0);
+    await expect(page.locator('[data-card-list] article[tabindex]')).toHaveCount(0);
     await expect(page.getByRole('list', { name: 'find commands' })).toBeVisible();
     await expect(page.getByRole('button', { name: /Keyboard shortcuts/ })).toBeHidden();
     await page.keyboard.press('?');

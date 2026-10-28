@@ -47,10 +47,11 @@ test.describe('favorites and history', () => {
     await page.keyboard.type('large files');
     await expect(star(page)).toBeVisible();
     await page.keyboard.press('ArrowDown');
-    await expect(results(page)).toBeFocused();
+    const card = resultCard(page, LARGE_FILES);
+    await expect(card).toBeFocused();
     await page.keyboard.press('f');
     await expect(star(page)).toHaveAttribute('aria-pressed', 'true');
-    await expect(results(page)).toBeFocused();
+    await expect(card).toBeFocused();
     await page.keyboard.press('f');
     await expect(star(page)).toHaveAttribute('aria-pressed', 'false');
 

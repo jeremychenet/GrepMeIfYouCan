@@ -26,11 +26,11 @@ function formFieldIds(template: string): string[] {
 }
 
 describe('suggestCommandUrl', () => {
-  it('opens the suggestion form with the query in the title and in "need"', () => {
+  it('opens the suggestion form with the query in the title and in the card title', () => {
     const p = params(suggestCommandUrl('  rotate nginx logs '));
     expect(p.get('template')).toBe(SUGGEST_TEMPLATE);
     expect(p.get('title')).toBe('Suggest a command: rotate nginx logs');
-    expect(p.get('need')).toBe('rotate nginx logs');
+    expect(p.get('card-title')).toBe('rotate nginx logs');
   });
 
   it('encodes special characters and caps the query', () => {
@@ -38,20 +38,20 @@ describe('suggestCommandUrl', () => {
     expect(url).not.toContain('#');
     const p = params(url);
     expect(p.get('title')).toBe(`Suggest a command: a&b=#?${'x'.repeat(94)}`);
-    expect(p.get('need')).toHaveLength(100);
+    expect(p.get('card-title')).toHaveLength(100);
   });
 
   it('keeps non-ASCII text, but drops invisible characters', () => {
     const p = params(suggestCommandUrl(`trouver fichiers ${cp(0x00e9)}t${cp(0x00e9)}${cp(0x202e)}${cp(0x200b)}`));
-    expect(p.get('need')).toBe(`trouver fichiers ${cp(0x00e9)}t${cp(0x00e9)}`);
+    expect(p.get('card-title')).toBe(`trouver fichiers ${cp(0x00e9)}t${cp(0x00e9)}`);
   });
 
-  it('uses a generic title and no "need" for a blank query (global button)', () => {
+  it('uses a generic title and no card title for a blank query (global button)', () => {
     for (const q of [undefined, '', '   ']) {
       const p = params(suggestCommandUrl(q));
       expect(p.get('template')).toBe(SUGGEST_TEMPLATE);
       expect(p.get('title')).toBe('Suggest a command');
-      expect(p.has('need')).toBe(false);
+      expect(p.has('card-title')).toBe(false);
     }
   });
 });
@@ -73,8 +73,15 @@ describe('reportIssueUrl', () => {
 });
 
 describe('issue forms', () => {
+  it('never use `title` as a field id: it is the issue title parameter', () => {
+    expect(formFieldIds(SUGGEST_TEMPLATE)).not.toContain('title');
+    expect(formFieldIds(REPORT_TEMPLATE)).not.toContain('title');
+  });
+
   it('have the fields the site prefills', () => {
-    expect(formFieldIds(SUGGEST_TEMPLATE)).toEqual(expect.arrayContaining(['need', 'command']));
+    expect(formFieldIds(SUGGEST_TEMPLATE)).toEqual(
+      expect.arrayContaining(['card-title', 'command', 'description', 'category', 'tags', 'platforms', 'danger']),
+    );
     expect(formFieldIds(REPORT_TEMPLATE)).toEqual(expect.arrayContaining(['card', 'page']));
   });
 });

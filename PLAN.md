@@ -240,13 +240,13 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `src/styles/*` (ajustements responsive)
 - `tests/e2e/responsive.spec.ts` (viewports 375, 768, 1280 px)
 - `tests/e2e/a11y.spec.ts` (`@axe-core/playwright`)
-- `lighthouserc.json`, `.github/workflows/ci.yml` (étapes E2E + Lighthouse CI)
+- `lighthouserc.json`, `.github/workflows/ci.yml` (job `lighthouse`), cible `make lighthouse`
 
 **Validation**
-- [ ] Aucun scroll horizontal de la page à 375 px, et zones cliquables ≥ 44 px (test automatisé).
-- [ ] axe : 0 violation sérieuse ou critique sur l'accueil, une fiche, les favoris et la recherche vide.
-- [ ] Lighthouse mobile ≥ 95 sur les 4 axes, LCP < 1,5 s (Lighthouse CI dans la CI).
-- [ ] Test manuel sur un vrai téléphone (iOS Safari ou Chrome Android) : recherche, copie, favoris.
+- [x] Aucun scroll horizontal de la page à 375 px, et zones cliquables ≥ 44 px (test automatisé).
+- [x] axe : 0 violation sérieuse ou critique sur l'accueil, une fiche, les favoris et la recherche vide.
+- [x] Lighthouse mobile ≥ 95 sur les 4 axes, LCP < 1,5 s (Lighthouse CI dans la CI ; budget simulé 1,6 s, voir SPEC §8).
+- [ ] Test manuel sur un vrai téléphone (iOS Safari ou Chrome Android) : recherche, copie, favoris. *(à faire par le mainteneur, au plus tard en J20)*
 
 ---
 

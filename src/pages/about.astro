@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import NewTab from '../components/NewTab.astro';
 import { REPO_URL, suggestCommandUrl } from '../lib/github';
 
 const TLDR = 'https://github.com/tldr-pages/tldr';
@@ -42,7 +43,7 @@ const CC_BY = 'https://creativecommons.org/licenses/by/4.0/';
 
     <h2 id="contribute">Contribute</h2>
     <p>
-      Missing a command? <a href={suggestCommandUrl()} rel="noopener">Suggest a command</a>.
+      Missing a command? <a href={suggestCommandUrl()} target="_blank" rel="noopener">Suggest a command<NewTab /></a>.
       Something wrong on a command? Use <strong>Report an issue</strong> on its page. Both open a
       prefilled form on <a href={REPO_URL} rel="noopener">GitHub</a>. Nothing is published
       without a review: every change goes through a pull request.

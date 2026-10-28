@@ -1,7 +1,7 @@
 // Search state mirrored in the URL (SPEC §2.3): ?q=large+files&cat=linux&tag=disk.
 // Values from the URL are untrusted: unknown categories and malformed tags
 // are dropped, and the query is capped.
-import { CATEGORIES, TAGS_MAX } from '../content/schema';
+import { CATEGORIES, TAGS_MAX } from '../content/constants';
 
 type Category = (typeof CATEGORIES)[number];
 

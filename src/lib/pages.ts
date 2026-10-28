@@ -1,7 +1,7 @@
 // Helpers shared by the static pages and scripts/check-dist.ts:
 // public paths, grouping, and page titles/descriptions.
 import type { Command } from '../content/schema';
-import { CATEGORIES } from '../content/schema';
+import { CATEGORIES } from '../content/constants';
 
 type Category = (typeof CATEGORIES)[number];
 

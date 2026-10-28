@@ -57,6 +57,21 @@ const byTool = groupBy(cards, (c) => c.tool);
     text-decoration: none;
   }
 
+  /* Touch screens: links are at least 44px tall (SPEC §3.3). */
+  @media (pointer: coarse) {
+    h2 {
+      padding-top: var(--space-3);
+      padding-bottom: 0;
+    }
+
+    h2 a {
+      display: inline-flex;
+      align-items: center;
+      min-width: var(--tap-min);
+      min-height: var(--tap-min);
+    }
+  }
+
   h2 a::after {
     content: ' →';
     color: var(--color-text-faint);

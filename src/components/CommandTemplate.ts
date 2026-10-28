@@ -27,10 +27,15 @@ const isDanger = (v: string | undefined): v is CopyCard['danger'] =>
 
 const sessionStore = () => window.sessionStorage;
 
+// Where supported, CSS sizes the field to its text (`field-sizing: content`,
+// global.css), exactly like the <var> it replaces: no layout shift.
+const autoSized = typeof CSS !== 'undefined' && CSS.supports('field-sizing', 'content');
+
 function resize(input: HTMLInputElement): void {
+  if (autoSized) return;
+  // Monospace: one `ch` per character (padding comes from CSS).
   const chars = Math.max(input.value.length, input.placeholder.length, MIN_WIDTH_CH);
-  // Monospace: one `ch` per character, plus room for the caret.
-  input.style.width = `calc(${chars}ch + 2px)`;
+  input.style.width = `${chars}ch`;
 }
 
 /** Fills the same variable in the other cards of the page that accept it. */

@@ -42,9 +42,13 @@ const segments = parseTemplate(command);
     overflow-wrap: anywhere;
   }
 
-  /* A value to adapt, before CommandTemplate.ts turns it into a field. */
+  /* A value to adapt, before CommandTemplate.ts turns it into a field: the
+     same unbreakable box as the field (.var-input in global.css, including
+     its 2px for the caret), so lines do not rewrap when it is replaced (CLS). */
   var {
-    padding: 0 0.3em;
+    display: inline-block;
+    min-width: 1.5ch;
+    padding: 0 calc(0.3em + 2px) 0 0.3em;
     color: var(--color-on-hl);
     background: var(--color-hl);
     font-style: normal;

@@ -14,6 +14,7 @@ import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, tagSearchPath, tool
 import { canonicalUrl } from '../lib/site';
 import CommandText from './CommandText.astro';
 import DangerBadge from './DangerBadge.astro';
+import NewTab from './NewTab.astro';
 
 interface Props {
   card: Command;
@@ -159,10 +160,10 @@ const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin
     {
       full && (
         <p class="report">
-          <a href={reportUrl} rel="noopener" data-report>
-            Report an issue
+          <a href={reportUrl} target="_blank" rel="noopener" data-report>
+            Report an issue<NewTab />
           </a>{' '}
-          <span>wrong command, wrong danger level, typo… (opens GitHub)</span>
+          <span>wrong command, wrong danger level, typo… (on GitHub)</span>
         </p>
       )
     }
@@ -203,10 +204,6 @@ const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin
     )
   }
 </article>
-
-<script>
-  import './CommandTemplate';
-</script>
 
 <style>
   .card {
@@ -282,6 +279,15 @@ const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin
     fill: none;
   }
 
+  /* Before the script enables them, Copy and Favorite keep their place
+     (invisible, out of the tab order), so the rows do not jump (CLS). */
+  .actions > [hidden],
+  .command-row > [hidden],
+  .head > [hidden] {
+    display: inline-flex !important;
+    visibility: hidden;
+  }
+
   .favorite:hover {
     color: var(--color-text);
   }
@@ -312,19 +318,82 @@ const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin
     border-color: var(--color-destructive);
   }
 
+  /* Touch screens: links are at least 44px tall (SPEC §3.3). */
   @media (pointer: coarse) {
     .favorite {
       width: var(--tap-min);
       height: var(--tap-min);
     }
+
+    .title a,
+    .report a,
+    dd a {
+      display: inline-flex;
+      align-items: center;
+      min-width: var(--tap-min);
+      min-height: var(--tap-min);
+    }
+
+    dd .tags a {
+      justify-content: center;
+      min-width: var(--tap-min);
+    }
+
+    .card--full .meta div {
+      align-items: center;
+    }
   }
 
-  /* ---- Row in a list (compact) ---- */
+  /* ---- Row in a list (compact) ----
+     Mobile: title with Favorite and Copy on its right, then the command and
+     a two-line description; no tags. From 640px: body | buttons. */
   .card--compact {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-3);
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'head actions'
+      'cmd cmd'
+      'meta meta'
+      'hint hint';
+    column-gap: var(--space-2);
     align-items: center;
+  }
+
+  .card--compact .body {
+    display: contents;
+  }
+
+  .card--compact .head {
+    grid-area: head;
+  }
+
+  .card--compact .command-row {
+    grid-area: cmd;
+  }
+
+  .card--compact .meta {
+    grid-area: meta;
+  }
+
+  .card--compact .keyhint {
+    grid-area: hint;
+  }
+
+  .card--compact .actions {
+    grid-area: actions;
+    gap: 0;
+  }
+
+  .card--compact .tags {
+    display: none;
+  }
+
+  .card--compact .description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .card--compact .title {
@@ -372,33 +441,76 @@ const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin
 
   /* The active row of a keyboard list (CardList.astro): larger command,
      key hint, orange Copy button. */
-  :global([aria-selected='true']) > .card--compact .command-row {
+  :global([aria-current='true']) > .card--compact .command-row {
     font-size: var(--text-xl);
   }
 
-  :global([aria-selected='true']) > .card--compact .keyhint {
+  :global([aria-current='true']) > .card--compact .keyhint {
     display: block;
   }
 
-  :global([aria-selected='true']) > .card--compact .copy:not([data-state='done']) {
+  :global([aria-current='true']) > .card--compact .copy:not([data-state='done']) {
     color: var(--color-on-accent);
     background: var(--color-accent-fill);
     border-color: var(--color-accent-fill);
   }
 
-  :global([aria-selected='true']) > .card--compact .copy:not([data-state='done'])::after {
+  :global([aria-current='true']) > .card--compact .copy:not([data-state='done'])::after {
     content: ' ↵';
     content: ' ↵' / '';
   }
 
+  /* Touch screens: no keyboard hints, even if keyboard navigation started
+     (e.g. a desktop browser switched to device emulation). SPEC §3.3. */
+  @media (hover: none), (pointer: coarse) {
+    :global([aria-current='true']) > .card--compact .keyhint {
+      display: none;
+    }
+
+    :global([aria-current='true']) > .card--compact .copy:not([data-state='done'])::after {
+      content: none;
+    }
+
+    :global([aria-current='true']) > .card--compact .command-row {
+      font-size: var(--text-cmd);
+    }
+
+    :global([aria-current='true']) > .card--compact .copy:not([data-state='done']) {
+      color: var(--color-text);
+      background: transparent;
+      border-color: var(--color-border-strong);
+    }
+
+    :global([aria-current='true']) > .card--compact[data-danger='destructive'] .copy:not([data-state='done']) {
+      color: var(--color-destructive);
+      border-color: currentColor;
+    }
+  }
+
   @media (min-width: 640px) {
     .card--compact {
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: 'body actions';
       gap: var(--space-5);
     }
 
+    .card--compact .body {
+      display: flex;
+      grid-area: body;
+    }
+
+    .card--compact .actions {
+      gap: var(--space-2);
+    }
+
+    .card--compact .tags {
+      display: flex;
+    }
+
     .card--compact .description {
+      display: block;
       flex: 0 1 auto;
+      -webkit-line-clamp: none;
+      line-clamp: none;
     }
   }
 

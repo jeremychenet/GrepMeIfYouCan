@@ -1,7 +1,14 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { LARGE_FILES } from './helpers';
 
 const ISSUE_URL = 'https://github.com/jeremychenet/GrepMeIfYouCan/issues/new';
+
+// GitHub forms open in a new tab, so the visitor keeps the site open.
+async function opensInNewTab(link: Locator): Promise<void> {
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', /noopener/);
+  await expect(link).toContainText('(opens in a new tab)');
+}
 
 function issueParams(href: string | null): URLSearchParams {
   expect(href).not.toBeNull();
@@ -15,6 +22,7 @@ test.describe('contributions', () => {
   test('the footer suggests a command with a blank form', async ({ page }) => {
     await page.goto('/');
     const link = page.getByRole('contentinfo').getByRole('link', { name: 'Suggest a command' });
+    await opensInNewTab(link);
     const p = issueParams(await link.getAttribute('href'));
     expect(p.get('template')).toBe('suggest-command.yml');
     expect(p.get('title')).toBe('Suggest a command');
@@ -25,15 +33,18 @@ test.describe('contributions', () => {
     await page.getByLabel('Search commands').fill('zqxj & wvq #?');
     const link = page.getByRole('link', { name: 'Suggest this command' });
     await expect(link).toBeVisible();
+    await opensInNewTab(link);
     const p = issueParams(await link.getAttribute('href'));
     expect(p.get('template')).toBe('suggest-command.yml');
     expect(p.get('title')).toBe('Suggest a command: zqxj & wvq #?');
-    expect(p.get('need')).toBe('zqxj & wvq #?');
+    expect(p.get('card-title')).toBe('zqxj & wvq #?');
   });
 
   test('a command page reports an issue with its id', async ({ page }) => {
     await page.goto(`/c/${LARGE_FILES}`);
-    const p = issueParams(await page.getByRole('link', { name: 'Report an issue' }).getAttribute('href'));
+    const link = page.getByRole('link', { name: 'Report an issue' });
+    await opensInNewTab(link);
+    const p = issueParams(await link.getAttribute('href'));
     expect(p.get('template')).toBe('report-issue.yml');
     expect(p.get('title')).toBe(`Report: ${LARGE_FILES}`);
     expect(p.get('card')).toBe(LARGE_FILES);
