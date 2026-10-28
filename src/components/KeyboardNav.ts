@@ -152,6 +152,14 @@ function init(): void {
     const action = resolveKey(event, contextOf(target));
     if (action && run(action, target)) event.preventDefault();
   });
+
+  // Search first: the home page opens with the cursor in the search box,
+  // after any query restored from the URL. Not when the visitor already
+  // moved the focus, nor when the URL targets an anchor (#main).
+  if (search && document.activeElement === document.body && !location.hash) {
+    search.focus({ preventScroll: true });
+    search.setSelectionRange(search.value.length, search.value.length);
+  }
 }
 
 if (!isTouchOnly((q) => window.matchMedia(q).matches)) init();

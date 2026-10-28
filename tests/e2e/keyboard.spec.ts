@@ -3,8 +3,8 @@ import { LARGE_FILES, LARGE_FILES_COMMAND, copied, readClipboard, results } from
 
 const search = (page: Page) => page.getByLabel('Search commands');
 
+// The home page opens with the focus in the search box.
 async function searchFor(page: Page, query: string): Promise<void> {
-  await page.keyboard.press('/');
   await expect(search(page)).toBeFocused();
   await page.keyboard.type(query);
   await expect(results(page).getByRole('option').first()).toBeVisible();
@@ -15,7 +15,25 @@ test.describe('keyboard', () => {
     await page.goto('/');
   });
 
+  test('focuses the search on arrival, keeping a query from the URL', async ({ page }) => {
+    await expect(search(page)).toBeFocused();
+    await page.goto('/?q=large%20files');
+    await expect(search(page)).toBeFocused();
+    await page.keyboard.type(' big');
+    await expect(search(page)).toHaveValue('large files big');
+  });
+
+  test('does not steal the focus on an anchor or a page without search', async ({ page }) => {
+    await page.goto('/#main');
+    await expect(search(page)).not.toBeFocused();
+    await page.goto('/tools/find');
+    await expect(page.locator('body')).toBeFocused();
+  });
+
   test('/ then ↓ then Enter copies the first result', async ({ page }) => {
+    await page.keyboard.press('Escape');
+    await expect(search(page)).not.toBeFocused();
+    await page.keyboard.press('/');
     await searchFor(page, 'large files');
     await page.keyboard.press('ArrowDown');
     await expect(results(page)).toBeFocused();
@@ -93,6 +111,7 @@ test.describe('keyboard', () => {
 
   test('? shows the help, but is typed in the search box', async ({ page }) => {
     const help = page.getByRole('dialog', { name: 'Keyboard shortcuts' });
+    await page.keyboard.press('Escape');
     await page.keyboard.press('?');
     await expect(help).toBeVisible();
     await expect(help.getByText('Copy the selected command')).toBeVisible();
@@ -100,6 +119,7 @@ test.describe('keyboard', () => {
     await expect(help).toBeHidden();
 
     await page.keyboard.press('/');
+    await expect(search(page)).toBeFocused();
     await page.keyboard.type('?');
     await expect(search(page)).toHaveValue('?');
     await expect(help).toBeHidden();
@@ -141,6 +161,12 @@ const { defaultBrowserType: _, ...pixel } = devices['Pixel 7'];
 
 test.describe('keyboard on a touch screen', () => {
   test.use(pixel);
+
+  test('does not focus the search, which would open the on-screen keyboard', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByLabel('Search commands')).toBeVisible();
+    await expect(page.getByLabel('Search commands')).not.toBeFocused();
+  });
 
   test('hides and disables the shortcuts', async ({ page }) => {
     await page.goto('/tools/find');

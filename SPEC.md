@@ -121,6 +121,7 @@ Références : Raycast, Warp, Linear.
 | `Esc` | Effacer / quitter le champ |
 | `?` | Afficher l'aide des raccourcis |
 
+- À l'arrivée sur l'accueil, le curseur est dans la recherche (après une requête restaurée depuis l'URL), sauf si le visiteur a déjà déplacé le focus ou si l'URL vise une ancre. Jamais sur écran tactile : le clavier virtuel masquerait la page.
 - Chaque liste de fiches (résultats, pages outil et catégorie) est une `listbox` : elle prend le focus et désigne la fiche active par `aria-activedescendant`. Dans la recherche, `↓` entre dans les résultats sur la première fiche. Les lettres (`o`, `f`, `?`) restent donc tapables dans la recherche et dans les variables.
 - `Esc` vide la recherche (puis en sort si elle est déjà vide). Depuis une variable, il revient à la liste, et depuis la liste à la recherche.
 - La copie au clavier suit les mêmes règles que le bouton Copier (confirmation des commandes destructives).
