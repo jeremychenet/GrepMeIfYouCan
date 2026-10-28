@@ -135,6 +135,12 @@ function init(): void {
         field.focus();
         return true;
       }
+      case 'favorite': {
+        const button = list && activeOption(list)?.querySelector<HTMLButtonElement>('[data-favorite]');
+        if (!button || button.hidden) return false;
+        button.click();
+        return true;
+      }
       case 'open': {
         const link = list && activeOption(list)?.querySelector<HTMLAnchorElement>('.title a');
         if (!link) return false;

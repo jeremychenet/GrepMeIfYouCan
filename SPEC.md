@@ -83,10 +83,13 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 ### 2.8 Favoris & historique (stockage local uniquement)
 - **Pas de compte utilisateur en v1.** Favoris et historique sont stockés **uniquement dans le navigateur** (`localStorage`) et ne quittent jamais l'appareil.
 - Il n'y a donc pas de synchronisation entre appareils : le laptop et le téléphone ont chacun leurs propres favoris.
-- **Historique** : uniquement les **commandes copiées** (id de la fiche + date), au maximum 200 entrées (FIFO), avec un bouton « Clear history ». Les requêtes de recherche ne sont jamais historisées.
-- **Favoris** : maximum 1000.
+- **Historique** : uniquement les **commandes copiées** (id de la fiche + date), au maximum 100 entrées (FIFO), avec un bouton « Clear history » (avec confirmation). Recopier une fiche la remonte en tête, sans doublon. Les requêtes de recherche ne sont jamais historisées.
+- **Favoris** : maximum 500. Au-delà, l'ajout est refusé avec un message (aucun favori n'est supprimé).
 - Une vue dédiée « Favorites » et « History » est accessible depuis le header.
 - **Export / import JSON** des favoris et de l'historique : sauvegarde manuelle ou transfert vers un autre appareil.
+  - Format : `{ "format": "grepmeifyoucan", "version": 1, "exportedAt", "favorites": [{ "id", "at" }], "history": [{ "id", "at" }] }` (`at` en millisecondes).
+  - L'import **fusionne** avec les données présentes (union par id, date la plus récente gardée, tri du plus récent au plus ancien). Si la fusion dépasse les limites, les entrées les plus anciennes sont écartées et le message le signale.
+  - Un fichier de plus de 1 Mo, un JSON invalide, un autre format ou une autre version sont refusés avec un message clair, sans rien modifier. Les entrées invalides d'un export valide sont ignorées.
 - Robustesse :
   - lectures et écritures dans `try/catch` : le site fonctionne même si le stockage est indisponible (navigation privée, stockage plein) ;
   - format versionné (`gmiyc:v1:favorites`…) pour pouvoir migrer plus tard ;

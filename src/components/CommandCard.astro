@@ -4,7 +4,8 @@
 // card page. Tags link to the search filtered by that tag.
 // src/components/ResultsList.ts fills a copy of this markup: keep them in sync.
 // The Copy button (J12) is hidden until src/components/CommandTemplate.ts
-// enables it; Favorite and Report arrive in J14 and J15.
+// enables it, the Favorite button (J14) until FavoriteButton.ts does; Report
+// arrives in J15.
 import type { Command } from '../content/schema';
 import { variableNames } from '../lib/template';
 import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, tagSearchPath, toolPath } from '../lib/pages';
@@ -36,6 +37,22 @@ const hasVariables = variableNames(card.command).length > 0;
       {full ? card.title : <a href={cardPath(card.id)}>{card.title}</a>}
     </Heading>
     <DangerBadge level={card.danger} />
+    <button
+      type="button"
+      class="favorite"
+      hidden
+      data-favorite
+      aria-pressed="false"
+      aria-label={`Favorite: ${card.title}`}
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path
+          d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linejoin="round"></path>
+      </svg>
+    </button>
   </div>
 
   <p class="description">{card.description}</p>
@@ -183,11 +200,50 @@ const hasVariables = variableNames(card.command).length > 0;
     font-size: var(--text-sm);
   }
 
+  .favorite {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+    margin-left: auto;
+    padding: 0;
+    color: var(--color-text-muted);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+
+  .favorite path {
+    fill: none;
+  }
+
+  .favorite:hover {
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+  }
+
+  .favorite[aria-pressed='true'] {
+    color: var(--color-accent);
+  }
+
+  .favorite[aria-pressed='true'] path {
+    fill: currentColor;
+  }
+
   .head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2) var(--space-3);
+  }
+
+  /* The title shares its line with the star; the badge wraps below if needed. */
+  .head .title {
+    flex: 1 1 12rem;
+    min-width: 0;
   }
 
   .card--full .title {

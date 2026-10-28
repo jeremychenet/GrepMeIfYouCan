@@ -1,0 +1,105 @@
+---
+// The Favorites or History page body (SPEC §2.8). Both lists live in this
+// browser only, so the cards are rendered on the client by
+// src/components/SavedList.ts from /search-index.json.
+import type { StoreList } from '../lib/store';
+import CardList from './CardList.astro';
+import CardTemplates from './CardTemplates.astro';
+
+interface Props {
+  list: StoreList;
+}
+
+const { list } = Astro.props;
+const empty =
+  list === 'favorites'
+    ? 'No favorites yet. Use the star of a command (or press f on a selected one) to keep it here.'
+    : 'No copied command yet. The commands you copy appear here, newest first.';
+---
+
+<section class="saved" aria-label={list === 'favorites' ? 'Favorites' : 'History'} data-saved={list}>
+  <div class="actions" hidden data-saved-actions>
+    {
+      list === 'history' && (
+        <button type="button" class="button" data-clear-history>
+          Clear history
+        </button>
+      )
+    }
+    <button type="button" class="button" data-export>Export JSON</button>
+    <button type="button" class="button" data-import>Import JSON</button>
+    <input type="file" accept=".json,application/json" hidden data-import-file />
+  </div>
+  <p class="message" role="status" data-backup-message></p>
+
+  <p class="status muted" role="status" data-saved-status></p>
+  <div hidden data-saved-results>
+    <CardList label={list === 'favorites' ? 'Favorite commands' : 'Copied commands'} />
+  </div>
+  <p class="empty" hidden data-saved-empty>{empty}</p>
+  <noscript>
+    <p class="empty">This page needs JavaScript: your {list} are kept in this browser.</p>
+  </noscript>
+
+  <CardTemplates />
+</section>
+
+<script>
+  import './SavedList';
+</script>
+
+<style>
+  .saved {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .actions[hidden] {
+    display: none;
+  }
+
+  .button {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .button:hover {
+    border-color: var(--color-accent);
+  }
+
+  .button[hidden] {
+    display: none;
+  }
+
+  .message,
+  .status {
+    font-size: var(--text-sm);
+  }
+
+  .message:empty,
+  .status:empty {
+    display: none;
+  }
+
+  .empty {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+</style>

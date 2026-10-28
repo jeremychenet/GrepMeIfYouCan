@@ -5,6 +5,8 @@
 import { copyCard, sanitizeValue, type CopyCard } from '../lib/copy';
 import { parseTemplate } from '../lib/template';
 import { confirmCopy } from './ConfirmDialog';
+import { enhanceFavorite } from './FavoriteButton';
+import { store } from './LocalStore';
 import { showToast } from './Toast';
 
 /** Visually hidden note in Base.astro, referenced by every field. */
@@ -26,6 +28,7 @@ export function enhanceCard(article: HTMLElement): void {
   const { card: id, command, danger } = article.dataset;
   if (article.dataset['enhanced'] || !id || !command || !isDanger(danger)) return;
   article.dataset['enhanced'] = 'true';
+  enhanceFavorite(article);
   const card: CopyCard = { id, command, danger };
 
   const defaults = new Map<string, string | undefined>();
@@ -84,7 +87,11 @@ export function enhanceCard(article: HTMLElement): void {
       storage: sessionStore,
     });
     busy = false;
-    if (result.status === 'copied') showToast('Copied');
+    if (result.status === 'copied') {
+      // Only copies go to the history, never searches (SPEC §2.8).
+      store.addHistory(id);
+      showToast('Copied');
+    }
     else if (result.status === 'failed') showToast('Copy failed: select the command and copy it by hand');
     else if (result.status === 'missing') {
       for (const name of result.missing) for (const i of fields.get(name) ?? []) i.setAttribute('aria-invalid', 'true');

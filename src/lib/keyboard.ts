@@ -20,6 +20,7 @@ export type KeyAction =
   | 'copy'
   | 'edit'
   | 'open'
+  | 'favorite'
   | 'help';
 
 export type MoveAction = Extract<KeyAction, 'next' | 'prev' | 'first' | 'last'>;
@@ -41,6 +42,7 @@ const LIST_KEYS: Readonly<Record<string, KeyAction>> = {
   Enter: 'copy',
   Tab: 'edit',
   o: 'open',
+  f: 'favorite',
 };
 
 /** Keys that act anywhere except while typing in a text field. */
@@ -99,6 +101,7 @@ export const SHORTCUTS: readonly { keys: readonly string[]; label: string }[] = 
   { keys: ['Enter'], label: 'Copy the selected command' },
   { keys: ['Tab'], label: 'Edit the values of the selected command' },
   { keys: ['o'], label: 'Open the selected command page' },
+  { keys: ['f'], label: 'Add or remove the selected command from favorites' },
   { keys: ['Esc'], label: 'Clear the search, or leave the list' },
   { keys: ['?'], label: 'Show this help' },
 ];

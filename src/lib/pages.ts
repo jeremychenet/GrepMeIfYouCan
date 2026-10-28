@@ -73,9 +73,12 @@ export function sourceUrl(card: Command): string | null {
   return `https://github.com/tldr-pages/tldr/blob/${card.source.commit}/pages/${card.source.page}`;
 }
 
-/** Every page the build must produce, sorted (home, cards, categories, tools). */
+/** Pages that do not depend on the content (favorites and history are filled in the browser). */
+export const STATIC_PAGES = ['/favorites', '/history'] as const;
+
+/** Every page the build must produce, sorted (home, static pages, cards, categories, tools). */
 export function expectedPages(cards: readonly Command[]): string[] {
-  const paths = new Set<string>();
+  const paths = new Set<string>(STATIC_PAGES);
   for (const c of cards) {
     paths.add(cardPath(c.id));
     paths.add(toolPath(c.tool));

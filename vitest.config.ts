@@ -24,6 +24,7 @@ export default defineConfig({
         'src/lib/unsafe-chars.ts': CRITICAL,
         'src/lib/template.ts': CRITICAL,
         'src/lib/copy.ts': CRITICAL,
+        'src/lib/store.ts': CRITICAL,
         'scripts/lint-danger.ts': CRITICAL,
       },
     },

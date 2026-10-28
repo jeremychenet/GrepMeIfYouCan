@@ -1,0 +1,29 @@
+---
+// Markup copied by src/components/ResultsList.ts to render cards on the
+// client (search results, favorites, history): a real CommandCard, so these
+// cards look exactly like the cards of the tool and category pages.
+import type { Command } from '../content/schema';
+import CommandCard from './CommandCard.astro';
+import DangerBadge from './DangerBadge.astro';
+
+// Never shown: only its markup is copied (one variable, one tag, a badge).
+const prototype: Command = {
+  id: 'prototype',
+  title: 'Prototype',
+  description: 'Template for search results.',
+  command: 'x {{v}}',
+  tool: 'x',
+  category: 'linux',
+  tags: ['t'],
+  danger: 'destructive',
+  source: { type: 'original' },
+};
+---
+
+<template data-result-template>
+  <li><CommandCard card={prototype} /></li>
+</template>
+<template data-badge-template>
+  <DangerBadge level="caution" />
+  <DangerBadge level="destructive" />
+</template>

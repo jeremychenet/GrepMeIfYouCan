@@ -1,5 +1,5 @@
-// Renders search results by filling copies of the CommandCard <template>
-// (see SearchApp.astro). Card data is untrusted text: it only ever goes into
+// Renders a list of cards (search results, favorites, history) by filling
+// copies of the CommandCard <template> (see CardTemplates.astro). Card data is untrusted text: it only ever goes into
 // textContent and attributes, never innerHTML.
 import { cardPath, tagSearchPath } from '../lib/pages';
 import type { SearchDoc } from '../lib/search';
@@ -16,7 +16,7 @@ function required<T extends Element>(root: ParentNode, selector: string): T {
 }
 
 export function createResultsList(root: HTMLElement) {
-  const list = required<HTMLUListElement>(root, '[data-search-results] ul');
+  const list = required<HTMLUListElement>(root, '[data-card-list]');
   const cardTemplate = required<HTMLTemplateElement>(root, '[data-result-template]').content;
   const badges = required<HTMLTemplateElement>(root, '[data-badge-template]').content;
   // Prototypes taken from the rendered card, so copies keep its styles.
@@ -68,13 +68,14 @@ export function createResultsList(root: HTMLElement) {
     fillCommand(required<HTMLElement>(article, 'pre code'), doc.command);
     fillTags(required<HTMLElement>(article, '.tags'), doc.tags);
     required<HTMLButtonElement>(article, '[data-copy]').setAttribute('aria-label', `Copy command: ${doc.title}`);
+    required<HTMLButtonElement>(article, '[data-favorite]').setAttribute('aria-label', `Favorite: ${doc.title}`);
     enhanceCard(article);
     return item;
   }
 
   return {
-    render(docs: readonly SearchDoc[]): void {
-      list.replaceChildren(...docs.slice(0, RESULTS_MAX).map(renderCard));
+    render(docs: readonly SearchDoc[], max = RESULTS_MAX): void {
+      list.replaceChildren(...docs.slice(0, max).map(renderCard));
     },
   };
 }

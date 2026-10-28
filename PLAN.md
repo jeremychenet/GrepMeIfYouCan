@@ -203,21 +203,21 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Rôles ARIA `listbox` / `option` présents et option active annoncée.
 - [x] Raccourcis cachés sur un écran tactile (test Playwright en émulation mobile).
 
-### - [ ] J14 — Favoris & historique locaux + export/import
+### - [x] J14 — Favoris & historique locaux + export/import
 **Objectif** : retrouver ses commandes sans compte.
 **Fichiers**
-- `src/lib/store.ts` (couche unique, clés versionnées `gmiyc:v1:*`, `try/catch`, limites 1000 / 200)
+- `src/lib/store.ts` (couche unique, clés versionnées `gmiyc:v1:*`, `try/catch`, limites 500 / 100)
 - `src/pages/favorites.astro`, `src/pages/history.astro`
-- `src/components/FavoriteButton.ts`, `src/components/ExportImport.ts`
+- `src/components/FavoriteButton.ts`, `src/components/ExportImport.ts`, `src/components/SavedList.astro` + `.ts`, `src/components/LocalStore.ts`, `src/lib/backup.ts`
 - `tests/lib/store.test.ts`, `tests/e2e/favorites.spec.ts`
 
 **Validation**
-- [ ] Les favoris et l'historique persistent après rechargement. L'historique ne garde que les copies (FIFO 200).
-- [ ] `f` ajoute / retire la fiche sélectionnée des favoris (raccourci déplacé depuis le J13, ajouté à l'aide `?`).
-- [ ] « Clear history » vide l'historique.
-- [ ] L'export JSON puis l'import dans un navigateur vierge restituent les mêmes données. Un JSON malformé est refusé avec un message clair.
-- [ ] Avec `localStorage` indisponible (simulé), le site fonctionne sans erreur dans la console.
-- [ ] Les ids de fiches supprimées sont ignorés sans planter.
+- [x] Les favoris et l'historique persistent après rechargement. L'historique ne garde que les copies (FIFO 100, favoris limités à 500).
+- [x] `f` ajoute / retire la fiche sélectionnée des favoris (raccourci déplacé depuis le J13, ajouté à l'aide `?`).
+- [x] « Clear history » vide l'historique.
+- [x] L'export JSON puis l'import dans un navigateur vierge restituent les mêmes données. Un JSON malformé est refusé avec un message clair.
+- [x] Avec `localStorage` indisponible (simulé), le site fonctionne sans erreur dans la console.
+- [x] Les ids de fiches supprimées sont ignorés sans planter.
 
 ### - [ ] J15 — Contributions & pages légales
 **Objectif** : proposer ou signaler une commande en un clic, avec une attribution conforme.

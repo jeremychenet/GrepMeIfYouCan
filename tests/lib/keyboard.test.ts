@@ -54,12 +54,15 @@ describe('resolveKey', () => {
     expect(resolveKey(key('Enter'), 'list')).toBe('copy');
     expect(resolveKey(key('Tab'), 'list')).toBe('edit');
     expect(resolveKey(key('o'), 'list')).toBe('open');
+    expect(resolveKey(key('f'), 'list')).toBe('favorite');
     expect(resolveKey(key('?', { shiftKey: true }), 'list')).toBe('help');
   });
 
   it('keeps native Shift+Tab and modified keys in the list', () => {
     expect(resolveKey(key('Tab', { shiftKey: true }), 'list')).toBeNull();
     expect(resolveKey(key('o', { metaKey: true }), 'list')).toBeNull();
+    expect(resolveKey(key('f', { ctrlKey: true }), 'list')).toBeNull();
+    expect(resolveKey(key('F', { shiftKey: true }), 'list')).toBeNull();
     expect(resolveKey(key('Enter', { ctrlKey: true }), 'list')).toBeNull();
     expect(resolveKey(key('ArrowDown', { altKey: true }), 'list')).toBeNull();
     expect(resolveKey(key('x'), 'list')).toBeNull();
@@ -69,6 +72,7 @@ describe('resolveKey', () => {
     expect(resolveKey(key('Enter'), 'field')).toBe('copy');
     expect(resolveKey(key('Enter', { shiftKey: true }), 'field')).toBeNull();
     expect(resolveKey(key('o'), 'field')).toBeNull();
+    expect(resolveKey(key('f'), 'field')).toBeNull();
     expect(resolveKey(key('?'), 'field')).toBeNull();
   });
 
@@ -79,6 +83,8 @@ describe('resolveKey', () => {
 
   it('ignores list keys outside the list', () => {
     expect(resolveKey(key('o'), 'page')).toBeNull();
+    expect(resolveKey(key('f'), 'page')).toBeNull();
+    expect(resolveKey(key('f'), 'search')).toBeNull();
     expect(resolveKey(key('Enter'), 'page')).toBeNull();
     expect(resolveKey(key('Tab'), 'page')).toBeNull();
   });
@@ -123,7 +129,7 @@ describe('isTouchOnly', () => {
 describe('SHORTCUTS', () => {
   it('documents every key the help shows', () => {
     const keys = SHORTCUTS.flatMap((s) => s.keys);
-    for (const k of ['/', 'Ctrl K', '↑', '↓', 'Enter', 'Tab', 'o', 'Esc', '?']) expect(keys).toContain(k);
+    for (const k of ['/', 'Ctrl K', '↑', '↓', 'Enter', 'Tab', 'o', 'f', 'Esc', '?']) expect(keys).toContain(k);
     for (const s of SHORTCUTS) expect(s.label.length).toBeGreaterThan(0);
   });
 });

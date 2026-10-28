@@ -110,7 +110,7 @@ describe('sourceUrl', () => {
 });
 
 describe('expectedPages', () => {
-  it('lists home, one page per card, per tool and per category', () => {
+  it('lists home, the static pages, one page per card, per tool and per category', () => {
     expect(expectedPages(cards)).toEqual([
       '/',
       '/c/a',
@@ -118,6 +118,8 @@ describe('expectedPages', () => {
       '/c/c',
       '/categories/git-ci',
       '/categories/linux',
+      '/favorites',
+      '/history',
       '/tools/git',
       '/tools/ls',
     ]);
