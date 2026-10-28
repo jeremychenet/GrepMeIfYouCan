@@ -148,7 +148,9 @@ test.describe('favorites and history', () => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => {
-      if (m.type() === 'error') errors.push(m.text());
+      // Umami may be down (analytics.spec.ts covers it): its failed loads are expected.
+      const stats = m.location().url.includes('/stats/') || m.text().includes('/stats/');
+      if (m.type() === 'error' && !stats) errors.push(m.text());
     });
 
     await searchLargeFiles(page);

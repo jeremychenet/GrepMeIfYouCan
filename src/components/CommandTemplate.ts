@@ -10,6 +10,7 @@ import { parseTemplate } from '../lib/template';
 import { confirmCopy } from './ConfirmDialog';
 import { enhanceFavorite } from './FavoriteButton';
 import { store } from './LocalStore';
+import { trackEvent } from './Stats';
 import { showToast } from './Toast';
 
 /** Visually hidden note in Base.astro, referenced by every field. */
@@ -135,6 +136,7 @@ export function enhanceCard(article: HTMLElement): void {
     if (result.status === 'copied') {
       // Only copies go to the history, never searches (SPEC §2.8).
       store.addHistory(id);
+      trackEvent('copy', { id });
       showToast('Copied');
       showDone(button);
     }

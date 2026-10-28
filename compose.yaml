@@ -18,6 +18,47 @@ services:
       timeout: 3s
       retries: 3
 
+  # Analytics (SPEC §6.4), Compose profile `analytics` (`make up-analytics`).
+  # Secrets come from .env (see .env.example). The database only sits on the
+  # internal `analytics` network; Umami also joins the default one so that the
+  # proxy can reach it. Only /stats/script.js and /stats/api/send go through
+  # the proxy: the Umami admin is never public.
+  db:
+    image: postgres:18.4-alpine3.24
+    profiles: [analytics]
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-}
+    volumes:
+      # Postgres 18+ keeps its data in a versioned folder under this path.
+      - db-data:/var/lib/postgresql
+    networks: [analytics]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  umami:
+    image: ghcr.io/umami-software/umami:3.4.1
+    profiles: [analytics]
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:-}@db:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET:-}
+      DISABLE_TELEMETRY: "1"
+      DISABLE_UPDATES: "1"
+    networks: [default, analytics]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/api/heartbeat >/dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
   # End-to-end tests (`make e2e`). Shares the proxy's network namespace, so
   # the site is http://localhost:8080 (accepted by Vite's host check). The
   # image tag must match @playwright/test in package.json (tests/config).
@@ -31,3 +72,10 @@ services:
     environment:
       E2E_BASE_URL: http://localhost:8080
     command: ["npx", "playwright", "test"]
+
+networks:
+  analytics:
+    internal: true
+
+volumes:
+  db-data:

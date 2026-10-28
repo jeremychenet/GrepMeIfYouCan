@@ -2,6 +2,7 @@
 // and the results list. The state lives in the URL (?q=…&cat=…&tag=…), so a
 // search can be shared and survives a reload. The index is fetched once, on
 // first interaction or when the browser is idle.
+import { createNoResultReporter } from '../lib/analytics';
 import { suggestCommandUrl } from '../lib/github';
 // The engine (MiniSearch) is loaded with the index, not with the page (SPEC §8).
 import type { SearchDoc, SearchEngine } from '../lib/search';
@@ -14,6 +15,7 @@ import {
 } from '../lib/search-state';
 import { createFilterChips } from './FilterChips';
 import { RESULTS_MAX, createResultsList } from './ResultsList';
+import { trackEvent } from './Stats';
 
 const root = document.querySelector<HTMLElement>('[data-search]');
 if (root) init(root);
@@ -34,6 +36,8 @@ function init(root: HTMLElement): void {
   let state: SearchState = parseState(location.search);
   let engine: Promise<SearchEngine> | null = null;
   let run = 0;
+  // Searches without result tell which commands are missing (SPEC §6.4).
+  const noResult = createNoResultReporter({ send: (query) => trackEvent('search_no_result', { query }) });
 
   function load(): Promise<SearchEngine> {
     engine ??= fetch('/search-index.json')
@@ -58,6 +62,7 @@ function init(root: HTMLElement): void {
   function render(): void {
     const current = ++run;
     if (isEmptyState(state)) {
+      noResult.update('', 0);
       status.textContent = '';
       show('browse');
       return;
@@ -67,6 +72,7 @@ function init(root: HTMLElement): void {
         if (current !== run) return;
         const found = search.search(state.q, state);
         list.render(found);
+        noResult.update(state.q, found.length);
         if (found.length === 0) {
           status.textContent = '';
           suggest.href = suggestCommandUrl(state.q);
