@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ConfirmDialog from '../components/ConfirmDialog.astro';
+import ShortcutsHelp from '../components/ShortcutsHelp.astro';
 import Toast from '../components/Toast.astro';
 import { canonicalUrl } from '../lib/site';
 
@@ -55,5 +56,9 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     </p>
     <Toast />
     <ConfirmDialog />
+    <ShortcutsHelp />
+    <script>
+      import '../components/KeyboardNav';
+    </script>
   </body>
 </html>

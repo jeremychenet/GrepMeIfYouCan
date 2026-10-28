@@ -112,19 +112,25 @@ Références : Raycast, Warp, Linear.
 ### 3.2 Navigation clavier (desktop)
 | Touche | Action |
 |--------|--------|
-| `/` ou `⌘K` | Focus recherche |
-| `↑` `↓` | Naviguer dans les résultats |
-| `Entrée` | Copier la commande sélectionnée |
+| `/` ou `⌘K` (`Ctrl K`) | Focus recherche |
+| `↑` `↓` (`Début` / `Fin`) | Naviguer dans les résultats |
+| `Entrée` | Copier la commande sélectionnée (ou celle de la variable en cours d'édition) |
 | `Tab` | Éditer les variables de la fiche sélectionnée |
 | `f` | Ajouter / retirer des favoris |
 | `o` | Ouvrir la page de la fiche |
 | `Esc` | Effacer / quitter le champ |
 | `?` | Afficher l'aide des raccourcis |
 
+- À l'arrivée sur l'accueil, le curseur est dans la recherche (après une requête restaurée depuis l'URL), sauf si le visiteur a déjà déplacé le focus ou si l'URL vise une ancre. Jamais sur écran tactile : le clavier virtuel masquerait la page.
+- Chaque liste de fiches (résultats, pages outil et catégorie) est une `listbox` : elle prend le focus et désigne la fiche active par `aria-activedescendant`. Dans la recherche, `↓` entre dans les résultats sur la première fiche. Les lettres (`o`, `f`, `?`) restent donc tapables dans la recherche et dans les variables.
+- `Esc` vide la recherche (puis en sort si elle est déjà vide). Depuis une variable, il revient à la liste, et depuis la liste à la recherche.
+- La copie au clavier suit les mêmes règles que le bouton Copier (confirmation des commandes destructives).
+- L'aide `?` est aussi ouverte par un bouton « Keyboard shortcuts » en pied de page, masqué sans JavaScript et sur écran tactile.
+
 ### 3.3 Responsive
 - Conception **mobile-first**. Breakpoints : < 640 px (mobile), 640–1024 px (tablette), > 1024 px (desktop).
 - Mobile : recherche fixée en haut, liste tactile, zones cliquables ≥ 44 px, filtres en chips défilantes horizontalement, bouton Copier toujours visible. Aucun scroll horizontal de la page : les commandes longues défilent dans leur propre bloc.
-- Les raccourcis clavier sont désactivés ou cachés sur les écrans tactiles.
+- Les raccourcis clavier sont désactivés ou cachés sur les écrans tactiles (`(hover: none) and (pointer: coarse)`) : pas de raccourci, pas d'aide, listes simples sans rôle `listbox`.
 
 ### 3.4 Accessibilité
 - WCAG 2.2 niveau AA : contrastes vérifiés dans les deux thèmes, focus visible, rôles ARIA sur la liste de résultats (`listbox` / `option`), annonce du toast « Copied » via `aria-live`.
@@ -217,7 +223,7 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 - Le script est servi depuis le même domaine (`/stats/script.js`), conforme à la CSP.
 
 ### 6.5 CI/CD (GitHub Actions)
-- **Sur PR** : lint + typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E, validation du schéma des fiches, **lint de danger**, unicité des ids, build Astro.
+- **Sur PR** : lint + typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E (Playwright sur le site construit, `astro preview`), validation du schéma des fiches, **lint de danger**, unicité des ids, build Astro.
 - **Sur PR** : build des images Docker (sans push) pour vérifier qu'elles se construisent.
 - **Sur merge dans `main`** :
   1. Build des images de production à partir des **mêmes Dockerfiles** que le dev (stages multi-étapes) :

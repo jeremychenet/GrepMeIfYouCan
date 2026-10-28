@@ -33,7 +33,7 @@ const byTool = groupBy(cards, (c) => c.tool);
             <code>{tool}</code>
           </a>
         </h2>
-        <CardList>
+        <CardList label={`${tool} commands`}>
           {list.map((card) => (
             <li>
               <CommandCard card={card} level={3} />

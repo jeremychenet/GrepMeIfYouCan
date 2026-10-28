@@ -17,3 +17,17 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
+  # End-to-end tests (`make e2e`). Shares the proxy's network namespace, so
+  # the site is http://localhost:8080 (accepted by Vite's host check). The
+  # image tag must match @playwright/test in package.json (tests/config).
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.64.1-noble
+    profiles: [test]
+    init: true
+    ipc: host
+    network_mode: service:proxy
+    working_dir: /app
+    environment:
+      E2E_BASE_URL: http://localhost:8080
+    command: ["npx", "playwright", "test"]

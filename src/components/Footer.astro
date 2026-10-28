@@ -12,6 +12,9 @@ import { REPO_URL } from '../lib/github';
         <li><a href={REPO_URL} rel="noopener">GitHub</a></li>
       </ul>
     </nav>
+    <button type="button" class="shortcuts-button" hidden data-shortcuts-open>
+      Keyboard shortcuts <kbd>?</kbd>
+    </button>
     <p class="muted">
       Many examples are adapted from <a href="https://github.com/tldr-pages/tldr" rel="noopener"
         >tldr-pages</a
@@ -49,7 +52,34 @@ import { REPO_URL } from '../lib/github';
     min-height: var(--tap-min);
   }
 
+  .shortcuts-button {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    padding: 0;
+    color: var(--color-accent);
+    background: none;
+    border: 0;
+    font-size: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  kbd {
+    padding: 0 var(--space-1);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+  }
+
   @media (min-width: 640px) {
+    .shortcuts-button {
+      align-self: auto;
+    }
+
     .inner {
       flex-direction: row;
       align-items: center;

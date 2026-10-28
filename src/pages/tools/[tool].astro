@@ -21,7 +21,7 @@ const meta = toolPageMeta(tool, cards);
 <Base title={meta.title} description={meta.description}>
   <h1><code>{tool}</code></h1>
   <p class="muted count">{cards.length} {cards.length === 1 ? 'command' : 'commands'}</p>
-  <CardList>
+  <CardList label={`${tool} commands`}>
     {cards.map((card) => <li><CommandCard card={card} level={2} /></li>)}
   </CardList>
 </Base>
