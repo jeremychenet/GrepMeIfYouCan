@@ -53,7 +53,7 @@ Chaque fiche affiche :
 - la commande en police monospace, avec les **variables éditables** ;
 - un badge **niveau de danger** ;
 - l'outil, la catégorie et les tags (cliquables pour filtrer) ;
-- les actions : **Copier**, **Favori ★**, **Report an issue** ;
+- les actions : **Copier**, **Favori ★**, et **Report an issue** sur la page de la fiche ;
 - la source et l'attribution (ex. « Adapted from tldr-pages, CC BY 4.0 »).
 
 Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (fichiers `c/<id>.html`). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique et des balises Open Graph, et figure dans `sitemap-index.xml`. `scripts/check-dist.ts` vérifie tout cela en CI après le build.
@@ -99,8 +99,9 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 
 ### 2.9 Contributions
 Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par GitHub :
-- Bouton global **« Suggest a command »** → formulaire d'*issue* GitHub (issue form YAML) prérempli : titre, commande, description, catégorie, tags, niveau de danger supposé.
-- Bouton **« Report an issue »** sur chaque fiche → issue form prérempli avec l'id de la fiche.
+- Lien global **« Suggest a command »** (pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` : besoin, commande, description, catégorie, tags, niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre et le champ « besoin ».
+- Lien **« Report an issue »** sur la page de chaque fiche (`/c/<id>`, pas sur les lignes des listes) → formulaire `report-issue.yml` prérempli avec l'id et l'URL de la fiche ; type de problème et détails à remplir.
+- Les champs sont préremplis par les paramètres d'URL nommés d'après leur `id` dans le formulaire (`src/lib/github.ts`) ; un test vérifie que ces `id` existent. Les issues vides sont désactivées (`config.yml`). Labels : `suggestion`, `report`.
 - Traitement : relecture par le mainteneur. Option : une GitHub Action convertit une issue labellisée `accepted` en PR qui contient le fichier YAML. **Aucune publication sans merge manuel.**
 
 ## 3. Design & UX
@@ -186,7 +187,7 @@ source:
   5. Conversion des placeholders tldr : `{{path/to/file}}` est conservé ; `{{[-r|--recursive]}}` et `{{[ps|container ls]}}` deviennent la forme longue écrite en dur ; une URL devient `{{url:<URL>}}` ; tout autre `:` dans un placeholder devient `_` (signalé à la relecture). Les exemples avec accolades échappées (`\{\{`), accolades ambiguës (`{{{`), caractères non ASCII ou invisibles sont écartés et listés dans le rapport.
   6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même `source.page` + `source.example`) n'est pas recréée, même si son titre et sa commande ont été réécrits. Un exemple écarté à la relecture est aussi retiré de `scripts/tldr-selection.yaml`.
 - Le résultat est commité via **une PR relue** comme n'importe quelle contribution.
-- **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous une licence à choisir (MIT proposée).
+- **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous licence MIT (`LICENSE`).
 
 ## 5. Données & vie privée
 

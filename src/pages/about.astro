@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import { REPO_URL, suggestCommandUrl } from '../lib/github';
+
+const TLDR = 'https://github.com/tldr-pages/tldr';
+const CC_BY = 'https://creativecommons.org/licenses/by/4.0/';
+---
+
+<Base title="About" description="What GrepMeIfYouCan is, where its commands come from, and how to contribute.">
+  <header class="page-head">
+    <h1>About</h1>
+    <p class="lead">Find, adapt and copy the right shell command in under 10 seconds.</p>
+  </header>
+
+  <div class="prose">
+    <p>
+      GrepMeIfYouCan is a search engine for the shell commands Linux, infrastructure and DevOps
+      engineers use every day. Search in plain words, edit the <strong>highlighted values</strong>,
+      copy. Every command has a danger level, and destructive ones ask for a confirmation before
+      the first copy.
+    </p>
+
+    <h2 id="tldr">Commands adapted from tldr-pages</h2>
+    <p>
+      Many commands are adapted from <a href={TLDR} rel="noopener">tldr-pages</a>, a collection of
+      simplified and community-driven man pages by the tldr-pages contributors, licensed under
+      the <a href={CC_BY} rel="noopener">Creative Commons Attribution 4.0 International License
+      (CC BY 4.0)</a>. Each adapted command links to its tldr-pages source page. Changes made:
+      each example became its own card, with a new title and description, editable values and a
+      danger level.
+    </p>
+
+    <h2 id="licenses">Licenses</h2>
+    <ul>
+      <li>
+        <strong>Commands</strong> (titles, descriptions, commands): CC BY 4.0, see <a href={`${REPO_URL}/blob/main/CONTENT_LICENSE`} rel="noopener">CONTENT_LICENSE</a>.
+      </li>
+      <li>
+        <strong>Source code</strong>: MIT, see <a href={`${REPO_URL}/blob/main/LICENSE`} rel="noopener">LICENSE</a>.
+      </li>
+    </ul>
+
+    <h2 id="contribute">Contribute</h2>
+    <p>
+      Missing a command? <a href={suggestCommandUrl()} rel="noopener">Suggest a command</a>.
+      Something wrong on a command? Use <strong>Report an issue</strong> on its page. Both open a
+      prefilled form on <a href={REPO_URL} rel="noopener">GitHub</a>. Nothing is published
+      without a review: every change goes through a pull request.
+    </p>
+
+    <p>
+      Your data stays in your browser: see <a href="/privacy">Privacy</a>.
+    </p>
+  </div>
+</Base>

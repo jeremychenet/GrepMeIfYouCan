@@ -113,6 +113,7 @@ describe('expectedPages', () => {
   it('lists home, the static pages, one page per card, per tool and per category', () => {
     expect(expectedPages(cards)).toEqual([
       '/',
+      '/about',
       '/c/a',
       '/c/b',
       '/c/c',
@@ -120,6 +121,7 @@ describe('expectedPages', () => {
       '/categories/linux',
       '/favorites',
       '/history',
+      '/privacy',
       '/tools/git',
       '/tools/ls',
     ]);

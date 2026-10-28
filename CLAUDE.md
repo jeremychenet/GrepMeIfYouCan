@@ -72,7 +72,7 @@ Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger level
 - E2E: specs in `tests/e2e/*.spec.ts` (Vitest only picks up `*.test.ts`). `make e2e` sets `E2E_BASE_URL` (dev stack, warmed up by `tests/e2e/wait-for-site.ts`); without it (CI job `e2e`), Playwright serves `dist/` with `astro preview`, so build first. Chromium only, clipboard permissions granted, no retries. The `e2e` image tag must equal `@playwright/test` in `package.json` (`tests/config/playwright-version.test.ts`): bump both together. Vite ignores `playwright-report/` and `test-results/` so reports do not reload the dev server mid-test.
 - Browser checks run in Docker (host Node is too old): `mcr.microsoft.com/playwright` with `--network container:grepmeifyoucan-proxy-1`, so `localhost:8080` works and Vite's host check passes.
 
-**Contributions** go through GitHub issue forms (`.github/ISSUE_TEMPLATE/`), linked prefilled from the site — no in-site submission form. Nothing is published without a reviewed, merged PR (branch protection + CODEOWNERS).
+**Contributions** go through GitHub issue forms (`.github/ISSUE_TEMPLATE/suggest-command.yml`, `report-issue.yml`; blank issues disabled), linked prefilled from the site by `src/lib/github.ts` (query parameters named after the form field `id`s; `tests/lib/github.test.ts` checks they exist, so rename both together) — no in-site submission form. "Suggest a command" is in the footer and the empty search result; "Report an issue" is on `/c/<id>` only. Nothing is published without a reviewed, merged PR (branch protection + CODEOWNERS).
 
 **Docker layout:** shared `compose.yaml` + `compose.dev.yaml` (bind mounts, `astro dev`, `node_modules` in a named volume, ports on 127.0.0.1 only) + `compose.prod.yaml` (GHCR images tagged by commit SHA, read-only, non-root, `cap_drop: ALL`). One `docker/web.Dockerfile` with `dev` and `prod` targets; the prod image is Nginx serving the static build and proxying `/stats`. Pin every image version (no `latest`).
 
@@ -82,4 +82,4 @@ Categories are fixed: `linux`, `containers`, `cloud-iac`, `git-ci`. Danger level
 
 ## Licensing
 
-Content imported from tldr-pages is CC BY 4.0: every imported card keeps its `source` block (page, pinned commit, license), and attribution appears on the card and on `/about`. Code license is not decided yet (MIT proposed).
+Content imported from tldr-pages is CC BY 4.0: every imported card keeps its `source` block (page, pinned commit, license), and attribution appears on the card and on `/about`. The code is MIT (`LICENSE`); `CONTENT_LICENSE` covers `content/`.

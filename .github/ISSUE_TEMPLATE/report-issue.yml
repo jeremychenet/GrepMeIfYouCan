@@ -1,0 +1,37 @@
+name: Report an issue
+description: Report a problem with a command of GrepMeIfYouCan.
+title: 'Report: '
+labels: [report]
+body:
+  - type: input
+    id: card
+    attributes:
+      label: Command id
+      description: Filled in when you use "Report an issue" on a command page.
+      placeholder: find-files-larger-than
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      placeholder: https://grepmeifyoucan.com/c/find-files-larger-than
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problem
+      options:
+        - The command is wrong or does not work
+        - The danger level is wrong
+        - The title or description is unclear
+        - Typo
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What happens, what you expected, and your system (OS, tool version) if relevant.
+    validations:
+      required: true

@@ -5,11 +5,13 @@
 // row: title, command, description and tags, then Favorite and Copy on the right.
 // src/components/ResultsList.ts fills a copy of this markup: keep them in sync.
 // The Copy button (J12) is hidden until src/components/CommandTemplate.ts
-// enables it, the Favorite button (J14) until FavoriteButton.ts does; Report
-// arrives in J15.
+// enables it, the Favorite button (J14) until FavoriteButton.ts does. The card
+// page links to a prefilled GitHub issue to report a problem (J15).
 import type { Command } from '../content/schema';
 import { variableNames } from '../lib/template';
+import { reportIssueUrl } from '../lib/github';
 import { CATEGORY_LABELS, cardPath, categoryPath, sourceUrl, tagSearchPath, toolPath } from '../lib/pages';
+import { canonicalUrl } from '../lib/site';
 import CommandText from './CommandText.astro';
 import DangerBadge from './DangerBadge.astro';
 
@@ -25,6 +27,7 @@ const full = variant === 'full';
 const Heading = full ? 'h1' : (`h${level}` as const);
 const source = sourceUrl(card);
 const hasVariables = variableNames(card.command).length > 0;
+const reportUrl = full ? reportIssueUrl(card.id, canonicalUrl(Astro.site!.origin, cardPath(card.id))) : '';
 ---
 
 <article
@@ -150,6 +153,17 @@ const hasVariables = variableNames(card.command).length > 0;
             </dd>
           </div>
         </dl>
+      )
+    }
+
+    {
+      full && (
+        <p class="report">
+          <a href={reportUrl} rel="noopener" data-report>
+            Report an issue
+          </a>{' '}
+          <span>wrong command, wrong danger level, typo… (opens GitHub)</span>
+        </p>
       )
     }
 
@@ -482,6 +496,20 @@ const hasVariables = variableNames(card.command).length > 0;
 
   .card--full dd .tags {
     font-size: var(--text-sm);
+  }
+
+  .report {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .report a {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .report span {
+    color: var(--color-text-faint);
   }
 
   .attribution {

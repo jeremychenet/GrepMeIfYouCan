@@ -219,20 +219,20 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Avec `localStorage` indisponible (simulé), le site fonctionne sans erreur dans la console.
 - [x] Les ids de fiches supprimées sont ignorés sans planter.
 
-### - [ ] J15 — Contributions & pages légales
+### - [x] J15 — Contributions & pages légales
 **Objectif** : proposer ou signaler une commande en un clic, avec une attribution conforme.
 **Fichiers**
 - `.github/ISSUE_TEMPLATE/suggest-command.yml`, `.github/ISSUE_TEMPLATE/report-issue.yml`, `.github/ISSUE_TEMPLATE/config.yml`
-- `src/lib/github-links.ts` (URL d'issue préremplies)
+- `src/lib/github.ts` (URL d'issue préremplies ; fichier existant étendu plutôt qu'un nouveau `github-links.ts`)
 - `src/pages/about.astro` (attribution tldr-pages), `src/pages/privacy.astro`
-- `LICENSE` (code, MIT sous réserve de validation)
-- `tests/lib/github-links.test.ts`
+- `LICENSE` (code, MIT, validé)
+- `tests/lib/github.test.ts`, `tests/e2e/contribute.spec.ts`
 
 **Validation**
-- [ ] « Suggest a command » (global et sur le résultat vide) ouvre le formulaire GitHub prérempli, avec la requête dans le titre.
-- [ ] « Report an issue » sur une fiche ouvre le formulaire avec l'id de la fiche.
-- [ ] Les URL générées sont correctement encodées (test avec caractères spéciaux).
-- [ ] La page About cite tldr-pages (CC BY 4.0, lien). La page Privacy décrit le stockage local et Umami.
+- [x] « Suggest a command » (global et sur le résultat vide) ouvre le formulaire GitHub prérempli, avec la requête dans le titre.
+- [x] « Report an issue » sur une fiche ouvre le formulaire avec l'id de la fiche.
+- [x] Les URL générées sont correctement encodées (test avec caractères spéciaux).
+- [x] La page About cite tldr-pages (CC BY 4.0, lien). La page Privacy décrit le stockage local et Umami.
 
 ### - [ ] J16 — Passe responsive, accessibilité & performance
 **Objectif** : atteindre les exigences non fonctionnelles de la SPEC §8.
