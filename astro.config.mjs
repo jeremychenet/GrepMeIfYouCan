@@ -22,7 +22,11 @@ export default defineConfig({
   vite: {
     build: { assetsInlineLimit: 0 },
     server: {
-      watch: usePolling ? { usePolling: true, interval: 300 } : {},
+      watch: {
+        // Playwright writes its reports here while `make e2e` runs.
+        ignored: ['**/playwright-report/**', '**/test-results/**'],
+        ...(usePolling ? { usePolling: true, interval: 300 } : {}),
+      },
     },
   },
 });

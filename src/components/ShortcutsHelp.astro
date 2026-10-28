@@ -1,0 +1,116 @@
+---
+// Keyboard shortcuts help (SPEC §3.2), opened with `?` or the footer button.
+// src/components/ShortcutsHelp.ts opens it; touch screens never show it.
+import { SHORTCUTS } from '../lib/keyboard';
+---
+
+<dialog class="shortcuts" aria-labelledby="shortcuts-title" data-shortcuts>
+  <form method="dialog">
+    <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+    <dl>
+      {
+        SHORTCUTS.map(({ keys, label }) => (
+          <div>
+            <dt>
+              {keys.map((k, i) => (
+                <>
+                  {i > 0 && <span class="muted"> or </span>}
+                  <kbd>{k}</kbd>
+                </>
+              ))}
+            </dt>
+            <dd>{label}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <div class="buttons">
+      <button type="submit" class="button" autofocus>Close</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  import './ShortcutsHelp';
+</script>
+
+<style>
+  .shortcuts {
+    /* The global reset removes the margin that centers a modal dialog. */
+    margin: auto;
+    width: min(38rem, calc(100% - 2 * var(--space-4)));
+    padding: var(--space-6);
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+  }
+
+  .shortcuts::backdrop {
+    background: rgb(0 0 0 / 60%);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  h2 {
+    font-size: var(--text-lg);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  dl div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  dt {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    dl div {
+      grid-template-columns: 12rem 1fr;
+      align-items: baseline;
+      gap: var(--space-4);
+    }
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  kbd {
+    display: inline-block;
+    min-width: 1.75em;
+    padding: 0 var(--space-1);
+    text-align: center;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .button {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>

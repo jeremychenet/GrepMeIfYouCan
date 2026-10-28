@@ -1,8 +1,16 @@
 ---
 // Responsive list of compact cards: one column on mobile, two from 1024px.
+// On keyboard devices, src/components/KeyboardNav.ts turns it into a listbox
+// (one option per card) navigated with the arrow keys.
+interface Props {
+  /** Accessible name of the list. */
+  label?: string;
+}
+
+const { label = 'Commands' } = Astro.props;
 ---
 
-<ul class="card-list">
+<ul class="card-list" aria-label={label} data-card-list>
   <slot />
 </ul>
 
@@ -17,10 +25,22 @@
   .card-list > :global(li) {
     display: flex;
     min-width: 0;
+    /* Keeps the active card clear of the sticky header when it scrolls. */
+    scroll-margin-block: 4.5rem var(--space-4);
   }
 
   .card-list > :global(li) > :global(*) {
     flex: 1;
+  }
+
+  /* The focused listbox shows its active option instead of its own outline. */
+  .card-list[role='listbox']:focus {
+    outline: none;
+  }
+
+  .card-list[role='listbox']:focus > :global([aria-selected='true']) > :global(*) {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: 2px;
   }
 
   @media (min-width: 1024px) {

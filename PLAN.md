@@ -188,20 +188,20 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] La première copie d'une fiche `destructive` dans la session demande une confirmation, les suivantes non.
 - [x] Le toast « Copied » est annoncé via `aria-live`.
 
-### - [ ] J13 — Navigation clavier + tests E2E
+### - [x] J13 — Navigation clavier + tests E2E
 **Objectif** : tout faire au clavier, sous la protection de tests end-to-end.
 **Fichiers**
 - `src/lib/keyboard.ts`
-- `src/components/ShortcutsHelp.ts` (aide affichée avec `?`)
-- `playwright.config.ts`, `compose.yaml` (service `e2e`, profil `test`)
+- `src/components/KeyboardNav.ts` (branchement sur la page), `src/components/ShortcutsHelp.ts` + `.astro` (aide affichée avec `?`)
+- `playwright.config.ts`, `compose.yaml` (service `e2e`, profil `test`), job `e2e` de la CI
 - `tests/e2e/search.spec.ts`, `tests/e2e/keyboard.spec.ts`
 - `Makefile` (`e2e`)
 
 **Validation**
-- [ ] `make e2e` passe : `/` place le curseur dans la recherche, saisie de « large files », `↓`, `Entrée`, et le presse-papiers contient la bonne commande.
-- [ ] `Tab` passe d'une variable à l'autre, `f` ajoute aux favoris, `o` ouvre la fiche, `Esc` efface, `?` affiche l'aide.
-- [ ] Rôles ARIA `listbox` / `option` présents et option active annoncée.
-- [ ] Raccourcis cachés sur un écran tactile (test Playwright en émulation mobile).
+- [x] `make e2e` passe : `/` place le curseur dans la recherche, saisie de « large files », `↓`, `Entrée`, et le presse-papiers contient la bonne commande.
+- [x] `Tab` passe d'une variable à l'autre, `o` ouvre la fiche, `Esc` efface, `?` affiche l'aide. (`f` est déplacé au J14, qui crée les favoris.)
+- [x] Rôles ARIA `listbox` / `option` présents et option active annoncée.
+- [x] Raccourcis cachés sur un écran tactile (test Playwright en émulation mobile).
 
 ### - [ ] J14 — Favoris & historique locaux + export/import
 **Objectif** : retrouver ses commandes sans compte.
@@ -213,6 +213,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 **Validation**
 - [ ] Les favoris et l'historique persistent après rechargement. L'historique ne garde que les copies (FIFO 200).
+- [ ] `f` ajoute / retire la fiche sélectionnée des favoris (raccourci déplacé depuis le J13, ajouté à l'aide `?`).
 - [ ] « Clear history » vide l'historique.
 - [ ] L'export JSON puis l'import dans un navigateur vierge restituent les mêmes données. Un JSON malformé est refusé avec un message clair.
 - [ ] Avec `localStorage` indisponible (simulé), le site fonctionne sans erreur dans la console.
