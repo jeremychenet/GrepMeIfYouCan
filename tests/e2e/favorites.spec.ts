@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
-import { LARGE_FILES, copied, resultCard, results } from './helpers';
+import { LARGE_FILES, copied, resultCard } from './helpers';
 
 const FAVORITES_KEY = 'gmiyc:v1:favorites';
 const HISTORY_KEY = 'gmiyc:v1:history';
