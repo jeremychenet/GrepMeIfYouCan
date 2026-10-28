@@ -2,7 +2,7 @@ COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml
 ARGS ?=
 
 .DEFAULT_GOAL := help
-.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage e2e lint-content lint-danger import-tldr build check-dist
+.PHONY: help up down logs sh npm clean check-headers nginx-test test coverage e2e lint-content lint-danger import-tldr build check-dist lighthouse
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -40,6 +40,10 @@ coverage: ## Run unit tests with coverage thresholds (same check as CI)
 e2e: ## Run Playwright end-to-end tests against the dev stack (started if needed), e.g. ARGS=tests/e2e/search.spec.ts
 	$(COMPOSE) up -d --wait proxy
 	$(COMPOSE) run --rm e2e npx playwright test $(ARGS)
+
+lighthouse: ## Lighthouse CI (mobile) on the built site, same budgets as CI (lighthouserc.json)
+	$(COMPOSE) run --rm --no-deps web npm run build
+	$(COMPOSE) run --rm --no-deps e2e sh -c 'CHROME_PATH=$$(ls -d /ms-playwright/chromium-*/chrome-linux*/chrome | head -n 1) npx lhci autorun'
 
 lint-content: ## Validate every command card in content/commands (schema + danger + characters)
 	$(COMPOSE) run --rm --no-deps web npm run lint-content

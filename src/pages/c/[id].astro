@@ -42,6 +42,22 @@ const { card } = Astro.props;
     color: var(--color-accent);
   }
 
+  /* Touch screens: links are at least 44px (SPEC §3.3). */
+  @media (pointer: coarse) {
+    .breadcrumb ol {
+      align-items: center;
+      padding-block: var(--space-3) 0;
+    }
+
+    .breadcrumb a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--tap-min);
+      min-height: var(--tap-min);
+    }
+  }
+
   .breadcrumb li + li::before {
     content: '/';
     margin-right: var(--space-2);

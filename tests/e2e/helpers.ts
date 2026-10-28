@@ -16,3 +16,7 @@ export async function copied(page: Page): Promise<string> {
 export const results = (page: Page) => page.locator('[data-search-results] [data-card-list]');
 
 export const resultCard = (page: Page, id: string) => results(page).locator(`article[data-card="${id}"]`);
+
+/** The row (list item) of a result card; aria-current marks the active one. */
+export const row = (page: Page, id: string) =>
+  results(page).locator('> li').filter({ has: page.locator(`article[data-card="${id}"]`) });

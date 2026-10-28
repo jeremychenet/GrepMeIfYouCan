@@ -7,6 +7,7 @@ import { CATEGORY_LABELS } from '../lib/pages';
 import { QUERY_MAX } from '../lib/search-state';
 import CardList from './CardList.astro';
 import CardTemplates from './CardTemplates.astro';
+import NewTab from './NewTab.astro';
 ---
 
 <section class="search" aria-label="Search" data-search>
@@ -52,7 +53,7 @@ import CardTemplates from './CardTemplates.astro';
 
   <p class="empty" hidden data-search-empty>
     No command matches your search.
-    <a href="#" data-suggest-link>Suggest this command</a>
+    <a href="#" target="_blank" rel="noopener" data-suggest-link>Suggest this command<NewTab /></a>
   </p>
 
   <CardTemplates />
@@ -139,8 +140,19 @@ import CardTemplates from './CardTemplates.astro';
     font-size: var(--text-sm);
   }
 
-  .status:empty {
-    display: none;
+  /* Results render after the index loads: the page keeps its height until
+     then, so the footer is not pushed down in view (CLS). */
+  :global(main:has([data-search])) {
+    min-height: 100dvh;
+  }
+
+  /* Narrow screens: the result count has its own line, reserved even while
+     empty, so the band does not grow when it appears (CLS). */
+  @media (max-width: 639px) {
+    .status {
+      flex-basis: 100%;
+      min-height: 1lh;
+    }
   }
 
   .esc {

@@ -6,21 +6,22 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping! Every suggestion is reviewed before it is published.
-        Use `{{name}}` or `{{name:default}}` for the values to adapt, e.g. `find {{path:.}} -name '{{pattern}}'`.
+        Thanks for helping! A command needs at least a **title**, the **command** and a **description**.
+        Every suggestion is reviewed before it is published.
   - type: input
-    id: need
+    id: card-title
     attributes:
-      label: What should the command do?
-      description: What you searched for, or the task in a few words.
-      placeholder: rotate nginx logs
+      label: Title
+      description: What the command does, in a few words, as people would search for it.
+      placeholder: Find files larger than a given size
     validations:
       required: true
   - type: textarea
     id: command
     attributes:
       label: Command
-      description: One line, with `{{name}}` placeholders for the values to adapt.
+      description: One line. Write the values to adapt as `{{name}}`, or `{{name:default}}` when a default is obvious and safe.
+      placeholder: find {{path:.}} -type f -size +{{size:100M}}
       render: shell
     validations:
       required: true
@@ -29,6 +30,9 @@ body:
     attributes:
       label: Description
       description: One sentence explaining what the command does (180 characters max).
+      placeholder: Recursively lists regular files bigger than the given size under a directory.
+    validations:
+      required: true
   - type: dropdown
     id: category
     attributes:
@@ -45,12 +49,20 @@ body:
     attributes:
       label: Tags
       description: A few keywords, separated by commas.
-      placeholder: logs, nginx, disk
+      placeholder: files, disk, cleanup
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Platforms
+      description: Where the command works as written.
+      options:
+        - label: Linux
+        - label: macOS
   - type: dropdown
     id: danger
     attributes:
       label: Danger level
-      description: "`destructive` if it can delete or overwrite data, `caution` if it changes the system."
+      description: "`destructive` if it can delete or overwrite data, `caution` if it changes the system, `safe` if it only reads."
       options:
         - safe
         - caution
@@ -63,3 +75,4 @@ body:
     attributes:
       label: Source
       description: Optional link to the documentation or where the command comes from.
+      placeholder: https://man7.org/linux/man-pages/man1/find.1.html

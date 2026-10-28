@@ -99,7 +99,8 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 
 ### 2.9 Contributions
 Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par GitHub :
-- Lien global **« Suggest a command »** (pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` : besoin, commande, description, catégorie, tags, niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre et le champ « besoin ».
+- Lien global **« Suggest a command »** (pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` reprenant les champs d'une fiche, avec un exemple dans chacun : titre, commande, description (obligatoires), catégorie, tags, plateformes (Linux, macOS), niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre de l'issue et le titre de la fiche (champ `card-title`, car `title` est réservé au titre de l'issue).
+- Les liens vers GitHub (Suggest, Report) s'ouvrent dans un **nouvel onglet** (↗, annoncé aux lecteurs d'écran) : le visiteur ne quitte pas le site.
 - Lien **« Report an issue »** sur la page de chaque fiche (`/c/<id>`, pas sur les lignes des listes) → formulaire `report-issue.yml` prérempli avec l'id et l'URL de la fiche ; type de problème et détails à remplir.
 - Les champs sont préremplis par les paramètres d'URL nommés d'après leur `id` dans le formulaire (`src/lib/github.ts`) ; un test vérifie que ces `id` existent. Les issues vides sont désactivées (`config.yml`). Labels : `suggestion`, `report`.
 - Traitement : relecture par le mainteneur. Option : une GitHub Action convertit une issue labellisée `accepted` en PR qui contient le fichier YAML. **Aucune publication sans merge manuel.**
@@ -109,7 +110,7 @@ Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par Gi
 ### 3.1 Direction : « Terminal sur papier »
 Référence : maquette « oneliner » (fond papier, encre noire, accent orange, bandes de terminal noires).
 - **Thème clair (papier) par défaut**, thème sombre disponible (même palette : fond encre, texte papier, même orange, même jaune). Le choix est mémorisé, et `prefers-color-scheme: dark` est respecté au premier chargement.
-- Polices auto-hébergées en woff2 (sous-ensemble latin + flèches) : **DejaVu Sans Mono** pour les commandes et l'interface technique, **TeX Gyre Heros** pour le texte, **TeX Gyre Heros Cn** (gras) pour les titres. Licences libres (Bitstream Vera / DejaVu, GUST Font License), fournies dans `public/fonts/`.
+- Polices auto-hébergées en woff2 (sous-ensemble latin + flèches) : **DejaVu Sans Mono** pour les commandes et l'interface technique, **TeX Gyre Heros** pour le texte, **TeX Gyre Heros Cn** (gras) pour les titres. Licences libres (Bitstream Vera / DejaVu, GUST Font License), fournies dans `public/fonts/`. Elles sont en `font-display: optional` (utilisées si elles sont prêtes au premier affichage, jamais échangées en cours de page) ; les polices de secours de la mono sont ajustées à la même largeur (`size-adjust`), pour que le texte ne bouge jamais.
 - Le thème est appliqué avant le premier affichage par un petit script externe bloquant (`/theme-init.js`), compatible CSP. Sans JavaScript, le site reste en thème clair et le bouton de thème est masqué.
 - Briques communes à toutes les pages : barre de recherche noire avec prompt `$` orange, chips carrées, **lignes numérotées** (`01`, `02`…) avec titre, commande et bouton `COPY`, valeurs éditables surlignées en jaune, barre de raccourcis noire en bas. Pas de coins arrondis, d'ombres, de dégradés ni d'emojis.
 - La ligne active (clavier) porte une barre orange à gauche, une commande plus grande, un rappel des touches et un bouton `COPY ↵` orange. Le bouton `COPY` d'une fiche `destructive` est rouge-orangé.
@@ -128,19 +129,19 @@ Référence : maquette « oneliner » (fond papier, encre noire, accent orange, 
 | `?` | Afficher l'aide des raccourcis |
 
 - À l'arrivée sur l'accueil, le curseur est dans la recherche (après une requête restaurée depuis l'URL), sauf si le visiteur a déjà déplacé le focus ou si l'URL vise une ancre. Jamais sur écran tactile : le clavier virtuel masquerait la page.
-- Chaque liste de fiches (résultats, pages outil et catégorie) est une `listbox` : elle prend le focus et désigne la fiche active par `aria-activedescendant`. Dans la recherche, `↓` entre dans les résultats sur la première fiche. Les lettres (`o`, `f`, `?`) restent donc tapables dans la recherche et dans les variables.
-- `Esc` vide la recherche (puis en sort si elle est déjà vide). Depuis une variable, il revient à la liste, et depuis la liste à la recherche.
+- Chaque liste de fiches (résultats, pages outil et catégorie) reste une liste simple : les flèches déplacent le **vrai focus** d'une fiche à l'autre (*roving tabindex* : la fiche active est le seul arrêt `Tab` de la liste). Chaque fiche (`article`) est nommée par son titre, et la ligne active porte `aria-current`. Ses liens, valeurs et boutons restent atteignables (une `listbox` ne peut pas en contenir). Dans la recherche, `↓` entre dans les résultats sur la première fiche. Les lettres (`o`, `f`, `?`) restent donc tapables dans la recherche et dans les variables.
+- `Esc` vide la recherche (puis en sort si elle est déjà vide). Depuis une variable, il revient à sa fiche, et depuis une fiche à la recherche.
 - La copie au clavier suit les mêmes règles que le bouton Copier (confirmation des commandes destructives).
 - L'aide `?` est aussi ouverte par un bouton « Keyboard shortcuts » en pied de page, masqué sans JavaScript et sur écran tactile.
 - Une **barre de raccourcis** noire, collée en bas de l'écran, s'affiche tant qu'une liste de fiches est visible (≥ 640 px, jamais sur écran tactile) : position de la ligne active (`01/07`) et touches principales. Elle est décorative (`aria-hidden`) : l'aide `?` contient les mêmes informations.
 
 ### 3.3 Responsive
 - Conception **mobile-first**. Breakpoints : < 640 px (mobile), 640–1024 px (tablette), > 1024 px (desktop).
-- Mobile : recherche fixée en haut, liste tactile, zones cliquables ≥ 44 px, filtres en chips défilantes horizontalement, bouton Copier toujours visible. Aucun scroll horizontal de la page : les commandes longues défilent dans leur propre bloc.
-- Les raccourcis clavier sont désactivés ou cachés sur les écrans tactiles (`(hover: none) and (pointer: coarse)`) : pas de raccourci, pas d'aide, listes simples sans rôle `listbox`.
+- Mobile : liste tactile, zones cliquables ≥ 44 px, filtres en chips défilantes horizontalement, bouton Copier toujours visible. Pour afficher plus de résultats par écran, chaque ligne met Favori et Copier en haut à droite, à côté du titre, masque les tags et limite la description à deux lignes. Aucun scroll horizontal de la page : les commandes longues défilent dans leur propre bloc.
+- Les raccourcis clavier sont désactivés ou cachés sur les écrans tactiles (`(hover: none) and (pointer: coarse)`) : pas de raccourci, pas d'aide, pas de ligne active ni de rappel de touches (même si la navigation clavier a démarré, par exemple dans l'émulation mobile d'un navigateur de bureau).
 
 ### 3.4 Accessibilité
-- WCAG 2.2 niveau AA : contrastes vérifiés dans les deux thèmes, focus visible, rôles ARIA sur la liste de résultats (`listbox` / `option`), annonce du toast « Copied » via `aria-live`.
+- WCAG 2.2 niveau AA : contrastes vérifiés dans les deux thèmes, focus visible, fiches nommées par leur titre et ligne active en `aria-current`, annonce du toast « Copied » via `aria-live`. Vérifié par axe (`tests/e2e/a11y.spec.ts`) : 0 violation sérieuse ou critique dans les deux thèmes.
 
 ## 4. Contenu
 
@@ -351,7 +352,7 @@ open http://localhost:8080
 - Dépendances : Dependabot + `npm audit` en CI.
 
 ## 8. Exigences non fonctionnelles
-- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s ; résultat de recherche < 50 ms pour environ 1000 fiches.
+- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s ; CLS < 0,1 ; résultat de recherche < 50 ms pour environ 1000 fiches. En CI, Lighthouse simule une 4G lente sur `dist/` servi par son serveur statique : le budget y est **LCP ≤ 1,6 s** (la simulation varie de 1,36 à 1,51 s selon l'arrivée des polices) ; les 1,5 s se vérifient sur le vrai serveur à la mise en ligne (J20).
 - **SEO** : pages statiques par fiche, `<title>` et meta description, sitemap.xml, données structurées si pertinent.
 - **Compatibilité** : deux dernières versions de Chrome, Firefox, Safari, Edge ; iOS Safari et Chrome Android.
 - **Disponibilité** : le site fonctionne même si Umami est en panne (les analytics ne bloquent jamais l'affichage).

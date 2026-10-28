@@ -3,7 +3,8 @@
 // search can be shared and survives a reload. The index is fetched once, on
 // first interaction or when the browser is idle.
 import { suggestCommandUrl } from '../lib/github';
-import { createSearch, type SearchDoc, type SearchEngine } from '../lib/search';
+// The engine (MiniSearch) is loaded with the index, not with the page (SPEC §8).
+import type { SearchDoc, SearchEngine } from '../lib/search';
 import {
   isEmptyState,
   parseState,
@@ -40,7 +41,7 @@ function init(root: HTMLElement): void {
         if (!res.ok) throw new Error(`search index: HTTP ${res.status}`);
         return res.json() as Promise<SearchDoc[]>;
       })
-      .then(createSearch)
+      .then(async (docs) => (await import('../lib/search')).createSearch(docs))
       .catch((err: unknown) => {
         engine = null; // retry on the next interaction
         throw err;

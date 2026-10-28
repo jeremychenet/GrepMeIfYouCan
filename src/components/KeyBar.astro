@@ -58,8 +58,8 @@
     display: none;
   }
 
-  /* Keyboard bar only where there is room for it. */
-  @media (max-width: 639px) {
+  /* Keyboard bar only where there is room for it, never on touch screens. */
+  @media (max-width: 639px), (hover: none), (pointer: coarse) {
     .keybar {
       display: none;
     }

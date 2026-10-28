@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
-import { LARGE_FILES, copied, resultCard, results } from './helpers';
+import { LARGE_FILES, copied, resultCard } from './helpers';
 
 const FAVORITES_KEY = 'gmiyc:v1:favorites';
 const HISTORY_KEY = 'gmiyc:v1:history';
@@ -47,10 +47,11 @@ test.describe('favorites and history', () => {
     await page.keyboard.type('large files');
     await expect(star(page)).toBeVisible();
     await page.keyboard.press('ArrowDown');
-    await expect(results(page)).toBeFocused();
+    const card = resultCard(page, LARGE_FILES);
+    await expect(card).toBeFocused();
     await page.keyboard.press('f');
     await expect(star(page)).toHaveAttribute('aria-pressed', 'true');
-    await expect(results(page)).toBeFocused();
+    await expect(card).toBeFocused();
     await page.keyboard.press('f');
     await expect(star(page)).toHaveAttribute('aria-pressed', 'false');
 

@@ -8,7 +8,10 @@
 
 /* Self-hosted fonts, latin subset + arrows, converted to woff2 with fonttools.
    TeX Gyre Heros 2.004 (GUST Font License: public/fonts/TeXGyre-GUST-FONT-LICENSE.txt);
-   DejaVu Sans Mono 2.37 (public/fonts/DejaVu-LICENSE.txt). */
+   DejaVu Sans Mono 2.37 (public/fonts/DejaVu-LICENSE.txt).
+   `font-display: optional`: a font is used if it is ready at first paint
+   (regular faces are preloaded in Base.astro, all are cached afterwards),
+   never swapped in mid-page, so text never moves (CLS, SPEC §8). */
 @font-face {
   font-family: 'TeX Gyre Heros';
   font-style: normal;
@@ -21,7 +24,7 @@
   font-family: 'TeX Gyre Heros';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/texgyreheros-bold.woff2') format('woff2');
 }
 
@@ -29,7 +32,7 @@
   font-family: 'TeX Gyre Heros Cn';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/texgyreheroscn-bold.woff2') format('woff2');
 }
 
@@ -37,7 +40,7 @@
   font-family: 'DejaVu Sans Mono';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/dejavu-sans-mono.woff2') format('woff2');
 }
 
@@ -45,14 +48,38 @@
   font-family: 'DejaVu Sans Mono';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/dejavu-sans-mono-bold.woff2') format('woff2');
+}
+
+/* Fallbacks for DejaVu Sans Mono with the same character width (0.602em),
+   so commands wrap the same way before and after the web font is ready: no
+   layout shift (CLS), whatever font the device has. Advance widths: Menlo
+   0.602em (same design), Liberation Mono / Courier New / Droid Sans Mono
+   0.600em, Consolas 0.550em. */
+@font-face {
+  font-family: 'Mono Fallback Menlo';
+  src: local('DejaVu Sans Mono'), local('Menlo');
+}
+
+@font-face {
+  font-family: 'Mono Fallback 600';
+  src: local('Liberation Mono'), local('Cousine'), local('Droid Sans Mono'), local('Courier New');
+  size-adjust: 100.33%;
+}
+
+@font-face {
+  font-family: 'Mono Fallback Consolas';
+  src: local('Consolas');
+  size-adjust: 109.5%;
 }
 
 :root {
   --font-sans: 'TeX Gyre Heros', Helvetica, Arial, sans-serif;
   --font-cond: 'TeX Gyre Heros Cn', 'TeX Gyre Heros', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'DejaVu Sans Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-mono:
+    'DejaVu Sans Mono', 'Mono Fallback Menlo', 'Mono Fallback 600', 'Mono Fallback Consolas',
+    monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;

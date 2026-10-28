@@ -247,12 +247,15 @@ kbd {
 }
 
 /* Editable command variable (src/components/CommandTemplate.ts): a yellow
-   highlighted value; the default shows as placeholder, a typed value in ink. */
+   highlighted value; the default shows as placeholder, a typed value in ink.
+   Same box as the <var> it replaces (CommandText.astro): sized to its text,
+   with 2px more on the right for the caret. */
 .var-input {
   box-sizing: content-box;
-  min-width: 2ch;
+  field-sizing: content;
+  min-width: 1.5ch;
   max-width: 100%;
-  padding: 0 0.3em;
+  padding: 0 calc(0.3em + 2px) 0 0.3em;
   color: var(--color-on-hl);
   background: var(--color-hl);
   border: 0;

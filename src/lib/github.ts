@@ -16,13 +16,13 @@ function newIssueUrl(fields: Record<string, string>): string {
 
 /**
  * New command suggestion. From a search that found nothing, the query goes in
- * the title and in the "need" field; without a query (global button), a
- * blank form.
+ * the issue title and in the card's Title field (`card-title`: `title` is the
+ * issue title); without a query (global button), a blank form.
  */
 export function suggestCommandUrl(query = ''): string {
   const q = sanitizeValue(query).trim().slice(0, QUERY_MAX);
   if (!q) return newIssueUrl({ template: SUGGEST_TEMPLATE, title: 'Suggest a command' });
-  return newIssueUrl({ template: SUGGEST_TEMPLATE, title: `Suggest a command: ${q}`, need: q });
+  return newIssueUrl({ template: SUGGEST_TEMPLATE, title: `Suggest a command: ${q}`, 'card-title': q });
 }
 
 /** Problem report about a card, from its page. */

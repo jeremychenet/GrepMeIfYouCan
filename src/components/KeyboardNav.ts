@@ -1,20 +1,32 @@
 // Keyboard navigation (SPEC §3.2). The key → action mapping lives in
 // src/lib/keyboard.ts (tested); this file applies the actions to the page.
 //
-// Each card list (CardList.astro) becomes a listbox: it takes the focus and
-// points to its active card with aria-activedescendant, so screen readers
-// announce it. Search results are re-rendered on every keystroke, so a
-// MutationObserver keeps their roles in place. Touch screens get none of this.
+// Each card list (CardList.astro) stays a plain list: the arrow keys move the
+// real focus from card to card (roving tabindex: the active card is the one
+// Tab stop of the list). Each card is an <article> named by its title, so
+// screen readers announce it, and its links, values and buttons stay
+// reachable (a listbox could not contain them). The active row is marked
+// with aria-current. Search results are re-rendered on every keystroke, so a
+// MutationObserver prepares the new cards. Touch screens get none of this.
 import { isTouchOnly, moveIndex, positionLabel, resolveKey, type KeyAction, type KeyContext } from '../lib/keyboard';
 import { openShortcutsHelp } from './ShortcutsHelp';
 
+const CARD = 'article[data-card]';
 const active = new WeakMap<HTMLElement, number>();
 let lists: HTMLElement[] = [];
 /** The list whose position the key bar shows (the last one used). */
 let barList: HTMLElement | undefined;
 
-function options(list: HTMLElement): HTMLElement[] {
-  return [...list.children].filter((el): el is HTMLElement => el instanceof HTMLLIElement && el.getAttribute('role') === 'option');
+/** The cards of a list, in order. */
+function cards(list: HTMLElement): HTMLElement[] {
+  return [...list.children].flatMap((li) => {
+    const card = li instanceof HTMLLIElement ? li.querySelector<HTMLElement>(`:scope > ${CARD}`) : null;
+    return card ? [card] : [];
+  });
+}
+
+function isVisible(el: HTMLElement): boolean {
+  return !el.closest('[hidden]');
 }
 
 /** Shows the key bar (KeyBar.astro) while a list is visible, with its `01/07` position. */
@@ -24,57 +36,51 @@ function refreshBar(): void {
   if (!bar || !position) return;
   const list = barList && isVisible(barList) ? barList : lists.find(isVisible);
   bar.hidden = !list;
-  if (list) position.textContent = positionLabel(active.get(list) ?? -1, options(list).length);
+  if (list) position.textContent = positionLabel(active.get(list) ?? -1, cards(list).length);
 }
 
-function setActive(list: HTMLElement, index: number, scroll = true): void {
-  const all = options(list);
+/** Makes card `index` the active one; `focus` also moves the focus to it. */
+function setActive(list: HTMLElement, index: number, focus = false): void {
+  const all = cards(list);
   active.set(list, index);
   if (index >= 0) barList = list;
-  all.forEach((li, i) => li.setAttribute('aria-selected', String(i === index)));
+  all.forEach((card, i) => {
+    const li = card.parentElement!;
+    if (i === index) li.setAttribute('aria-current', 'true');
+    else li.removeAttribute('aria-current');
+    // One Tab stop per list: the active card, else the first one.
+    card.tabIndex = i === Math.max(index, 0) ? 0 : -1;
+  });
   refreshBar();
   const current = all[index];
-  if (!current) {
-    list.removeAttribute('aria-activedescendant');
-    return;
+  if (focus && current) {
+    current.focus({ preventScroll: true });
+    current.parentElement!.scrollIntoView({ block: 'nearest' });
   }
-  list.setAttribute('aria-activedescendant', current.id);
-  if (scroll) current.scrollIntoView({ block: 'nearest' });
 }
 
-function activeOption(list: HTMLElement): HTMLElement | undefined {
-  return options(list)[active.get(list) ?? -1];
-}
-
-/** Gives each card of the list the option role and a stable id. */
-function syncOptions(list: HTMLElement): void {
-  for (const li of list.children) {
-    if (!(li instanceof HTMLLIElement)) continue;
-    const id = li.querySelector<HTMLElement>('article[data-card]')?.dataset['card'];
-    if (!id) continue;
-    li.setAttribute('role', 'option');
-    li.id = `option-${id}`;
+/** Names each card by its title, so the focused card is announced. */
+function syncCards(list: HTMLElement): void {
+  for (const card of cards(list)) {
+    const title = card.querySelector<HTMLElement>('.title');
+    if (title) {
+      title.id ||= `title-${card.dataset['card']}`;
+      card.setAttribute('aria-labelledby', title.id);
+    }
+    card.parentElement!.id = `row-${card.dataset['card']}`;
   }
-  setActive(list, -1, false);
+  setActive(list, -1);
 }
 
 function setupList(list: HTMLElement): void {
-  list.setAttribute('role', 'listbox');
-  list.tabIndex = 0;
-  syncOptions(list);
-  new MutationObserver(() => syncOptions(list)).observe(list, { childList: true });
-  list.addEventListener('focus', () => {
-    if ((active.get(list) ?? -1) < 0) setActive(list, moveIndex(-1, 'first', options(list).length), false);
-  });
-  // Focus inside a card (a variable, a link) makes that card the active one.
+  syncCards(list);
+  new MutationObserver(() => syncCards(list)).observe(list, { childList: true });
+  // Focus on or inside a card (a variable, a link) makes it the active one.
   list.addEventListener('focusin', (event) => {
-    const li = (event.target as Element).closest<HTMLElement>('[role="option"]');
-    if (li && li.parentElement === list) setActive(list, options(list).indexOf(li), false);
+    const card = (event.target as Element).closest<HTMLElement>(CARD);
+    const index = card ? cards(list).indexOf(card) : -1;
+    if (index >= 0 && index !== active.get(list)) setActive(list, index);
   });
-}
-
-function isVisible(el: HTMLElement): boolean {
-  return !el.closest('[hidden]');
 }
 
 function init(): void {
@@ -92,10 +98,16 @@ function init(): void {
   }
   const search = document.querySelector<HTMLInputElement>('[data-search-input]');
 
+  /** The list of a card that has the focus itself (not one of its controls). */
+  function listOfCard(target: HTMLElement): HTMLElement | undefined {
+    if (!target.matches(CARD)) return undefined;
+    return lists.find((l) => target.parentElement?.parentElement === l);
+  }
+
   function contextOf(target: EventTarget | null): KeyContext {
     if (!(target instanceof HTMLElement)) return 'page';
     if (target === search) return 'search';
-    if (lists.includes(target)) return 'list';
+    if (listOfCard(target)) return 'list';
     if (target.isContentEditable || target.matches('input, textarea, select')) return 'field';
     return 'page';
   }
@@ -109,7 +121,8 @@ function init(): void {
 
   /** Runs an action; false lets the browser handle the key as usual. */
   function run(action: KeyAction, target: HTMLElement): boolean {
-    const list = lists.includes(target) ? target : target.closest<HTMLElement>('[data-card-list]');
+    const card = target.closest<HTMLElement>(CARD);
+    const list = card ? lists.find((l) => l.contains(card)) : undefined;
     switch (action) {
       case 'focus-search':
         return focusSearch();
@@ -125,49 +138,47 @@ function init(): void {
         }
         return true;
       case 'back':
-        // From a variable back to its list, from a list back to the search.
-        if (list && target !== list) {
-          list.focus();
+        // From a variable back to its card, from a card back to the search.
+        if (card && list && target !== card) {
+          card.focus();
           return true;
         }
         if (focusSearch()) return true;
         target.blur();
         return true;
       case 'enter-list': {
-        const results = lists.find((l) => isVisible(l) && options(l).length > 0);
+        const results = lists.find((l) => isVisible(l) && cards(l).length > 0);
         if (!results) return false;
-        results.focus();
-        setActive(results, 0);
+        setActive(results, 0, true);
         return true;
       }
       case 'next':
       case 'prev':
       case 'first':
       case 'last':
-        if (!list) return false;
-        setActive(list, moveIndex(active.get(list) ?? -1, action, options(list).length));
+        if (!list || !card) return false;
+        setActive(list, moveIndex(cards(list).indexOf(card), action, cards(list).length), true);
         return true;
       case 'copy': {
-        const card = list === target ? activeOption(list) : target.closest('article[data-card]');
         const button = card?.querySelector<HTMLButtonElement>('[data-copy]');
         if (!button || button.hidden) return false;
         button.click();
         return true;
       }
       case 'edit': {
-        const field = list && activeOption(list)?.querySelector<HTMLInputElement>('.var-input');
+        const field = card?.querySelector<HTMLInputElement>('.var-input');
         if (!field) return false;
         field.focus();
         return true;
       }
       case 'favorite': {
-        const button = list && activeOption(list)?.querySelector<HTMLButtonElement>('[data-favorite]');
+        const button = card?.querySelector<HTMLButtonElement>('[data-favorite]');
         if (!button || button.hidden) return false;
         button.click();
         return true;
       }
       case 'open': {
-        const link = list && activeOption(list)?.querySelector<HTMLAnchorElement>('.title a');
+        const link = card?.querySelector<HTMLAnchorElement>('.title a');
         if (!link) return false;
         window.location.assign(link.href);
         return true;

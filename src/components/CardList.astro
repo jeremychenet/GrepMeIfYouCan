@@ -1,8 +1,9 @@
 ---
 // List of compact cards as numbered rows (01, 02…), one per line, across the
-// whole width. On keyboard devices, src/components/KeyboardNav.ts turns it
-// into a listbox (one option per card) navigated with the arrow keys; the
-// active row gets the orange bar, the larger command and the key hint.
+// whole width. On keyboard devices, src/components/KeyboardNav.ts moves the
+// focus from card to card with the arrow keys (it stays a plain list, so the
+// links, values and buttons of each card stay reachable); the active row
+// (aria-current) gets the orange bar, the larger command and the key hint.
 interface Props {
   /** Accessible name of the list. */
   label?: string;
@@ -45,25 +46,44 @@ const { label = 'Commands' } = Astro.props;
   }
 
   /* The active row (keyboard): orange bar, tinted background. */
-  .card-list > :global([aria-selected='true']) {
+  .card-list > :global([aria-current='true']) {
     background: var(--color-surface);
     border-left-color: var(--color-focus);
   }
 
-  .card-list > :global([aria-selected='true'])::before {
+  .card-list > :global([aria-current='true'])::before {
     color: var(--color-accent);
   }
 
-  /* The focused listbox shows its active row instead of its own outline. */
-  .card-list[role='listbox']:focus {
+  /* Touch screens: no "active row" (a keyboard notion). */
+  @media (hover: none), (pointer: coarse) {
+    .card-list > :global([aria-current='true']) {
+      background: none;
+      border-left-color: transparent;
+    }
+
+    .card-list > :global([aria-current='true'])::before {
+      color: var(--color-text-faint);
+    }
+  }
+
+  /* A focused card shows the orange bar of its row instead of an outline. */
+  .card-list > :global(li) > :global(article:focus-visible) {
     outline: none;
   }
 
   /* Narrow screens: the number sits on the title line. */
   @media (max-width: 639px) {
+    .card-list > :global(li) {
+      grid-template-columns: 1.5rem minmax(0, 1fr);
+      gap: var(--space-2);
+      padding-block: var(--space-3) var(--space-4);
+    }
+
     .card-list > :global(li)::before {
       align-self: start;
-      padding-top: 0.125rem;
+      padding-top: 0.75rem;
+      font-size: var(--text-xs);
     }
   }
 

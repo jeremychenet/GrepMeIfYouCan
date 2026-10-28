@@ -29,6 +29,7 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE} />
     <meta property="og:title" content={title ?? SITE} />
@@ -37,20 +38,6 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <meta name="color-scheme" content="light dark" />
     <!-- Blocking on purpose: sets the theme before first paint (no flash). -->
     <script is:inline src="/theme-init.js"></script>
-    <link
-      rel="preload"
-      href="/fonts/dejavu-sans-mono.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/texgyreheros-regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -66,7 +53,12 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <Toast />
     <ConfirmDialog />
     <ShortcutsHelp />
+    <!-- One entry module for the islands every page uses (fewer requests
+         before first paint, SPEC §8); pages add their own (search, saved lists). -->
     <script>
+      import '../components/ThemeToggle';
+      import '../components/CommandTemplate';
+      import '../components/ShortcutsHelp';
       import '../components/KeyboardNav';
     </script>
   </body>

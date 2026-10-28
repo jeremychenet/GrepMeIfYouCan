@@ -2,6 +2,7 @@
 // Site links, the global "Suggest a command" (prefilled GitHub issue form,
 // SPEC §2.9) and the tldr-pages attribution.
 import { REPO_URL, suggestCommandUrl } from '../lib/github';
+import NewTab from './NewTab.astro';
 ---
 
 <footer class="site-footer">
@@ -11,7 +12,11 @@ import { REPO_URL, suggestCommandUrl } from '../lib/github';
         <li><a href="/about">About</a></li>
         <li><a href="/privacy">Privacy</a></li>
         <li><a href={REPO_URL} rel="noopener">GitHub</a></li>
-        <li><a href={suggestCommandUrl()} rel="noopener" data-suggest-global>Suggest a command</a></li>
+        <li>
+          <a href={suggestCommandUrl()} target="_blank" rel="noopener" data-suggest-global
+            >Suggest a command<NewTab /></a
+          >
+        </li>
       </ul>
     </nav>
     <button type="button" class="shortcuts-button" hidden data-shortcuts-open>
@@ -57,6 +62,8 @@ import { REPO_URL, suggestCommandUrl } from '../lib/github';
   ul a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-width: var(--tap-min);
     min-height: var(--tap-min);
   }
 

@@ -1,14 +1,15 @@
 import { z } from 'astro/zod';
+import {
+  CATEGORIES,
+  DANGER_LEVELS,
+  DESCRIPTION_MAX,
+  ID_MAX,
+  PLATFORMS,
+  TAGS_MAX,
+  TITLE_MAX,
+} from './constants';
 
-/** Fixed categories (SPEC §2.2). The folder name under content/commands/ must match. */
-export const CATEGORIES = ['linux', 'containers', 'cloud-iac', 'git-ci'] as const;
-export const DANGER_LEVELS = ['safe', 'caution', 'destructive'] as const;
-export const PLATFORMS = ['linux', 'macos'] as const;
-
-export const ID_MAX = 80;
-export const TITLE_MAX = 80;
-export const DESCRIPTION_MAX = 180;
-export const TAGS_MAX = 8;
+export { CATEGORIES, DANGER_LEVELS, DESCRIPTION_MAX, ID_MAX, PLATFORMS, TAGS_MAX, TITLE_MAX };
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TOOL = /^[a-z0-9][a-z0-9._+-]*$/;

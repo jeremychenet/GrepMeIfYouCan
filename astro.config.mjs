@@ -20,7 +20,9 @@ export default defineConfig({
   // into the HTML, always emit external files.
   build: { format: 'file', inlineStylesheets: 'never' },
   vite: {
-    build: { assetsInlineLimit: 0 },
+    // One stylesheet for the whole site (a few KB): fewer render-blocking
+    // requests than one file per component (Lighthouse, SPEC §8).
+    build: { assetsInlineLimit: 0, cssCodeSplit: false },
     server: {
       watch: {
         // Playwright writes its reports here while `make e2e` runs.
