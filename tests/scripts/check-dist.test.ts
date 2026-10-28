@@ -62,12 +62,16 @@ function buildSite() {
     write(pageFile(`/tools/${c.tool}`), html(`/tools/${c.tool}`, 'Tool page.'));
   }
   write(pageFile('/'), html('/', 'Home.'));
+  write(pageFile('/favorites'), html('/favorites', 'Favorites.'));
+  write(pageFile('/history'), html('/history', 'History.'));
   write(pageFile('/categories/linux'), html('/categories/linux', 'Linux page.'));
   write(join(dist, 'sitemap-index.xml'), '<sitemapindex/>');
   const urls = [
     '/',
     ...CARDS.flatMap((c) => [`/c/${c.id}`, `/tools/${c.tool}`]),
     '/categories/linux',
+    '/favorites',
+    '/history',
   ].map((p) => `<url><loc>${p === '/' ? `${SITE}/` : SITE + p}</loc></url>`);
   write(join(dist, 'sitemap-0.xml'), `<urlset>${urls.join('')}</urlset>`);
   write(join(dist, 'search-index.json'), JSON.stringify(CARDS.map(searchDoc)));
@@ -99,7 +103,7 @@ afterEach(() => rmSync(root, { recursive: true, force: true }));
 
 describe('checkDist', () => {
   it('accepts a complete site', () => {
-    expect(check()).toEqual({ errors: [], pages: 8 });
+    expect(check()).toEqual({ errors: [], pages: 10 });
   });
 
   it('reports a missing card page', () => {
@@ -204,7 +208,7 @@ describe('main / cli', () => {
   it('prints a summary and returns 0 on success', () => {
     const log = vi.fn();
     expect(main({ dist, content, site: SITE }, log, vi.fn())).toBe(0);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('8 page(s) checked'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('10 page(s) checked'));
   });
 
   it('prints every problem and returns 1 on failure', () => {

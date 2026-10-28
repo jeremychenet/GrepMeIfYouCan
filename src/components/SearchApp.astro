@@ -1,28 +1,12 @@
 ---
 // Search box, filters and results of the home page (SPEC §2.3). The markup
 // is static; src/components/SearchBox.ts brings it to life. Result cards are
-// copies of the <template> below, which renders a real CommandCard so results
-// look exactly like the cards of the tool and category pages.
-import type { Command } from '../content/schema';
+// copies of the templates of CardTemplates.astro.
 import { CATEGORIES } from '../content/schema';
 import { CATEGORY_LABELS } from '../lib/pages';
 import { QUERY_MAX } from '../lib/search-state';
 import CardList from './CardList.astro';
-import CommandCard from './CommandCard.astro';
-import DangerBadge from './DangerBadge.astro';
-
-// Never shown: only its markup is copied (one variable, one tag, a badge).
-const prototype: Command = {
-  id: 'prototype',
-  title: 'Prototype',
-  description: 'Template for search results.',
-  command: 'x {{v}}',
-  tool: 'x',
-  category: 'linux',
-  tags: ['t'],
-  danger: 'destructive',
-  source: { type: 'original' },
-};
+import CardTemplates from './CardTemplates.astro';
 ---
 
 <section class="search" aria-label="Search" data-search>
@@ -68,13 +52,7 @@ const prototype: Command = {
     <a href="#" data-suggest-link>Suggest this command</a>
   </p>
 
-  <template data-result-template>
-    <li><CommandCard card={prototype} /></li>
-  </template>
-  <template data-badge-template>
-    <DangerBadge level="caution" />
-    <DangerBadge level="destructive" />
-  </template>
+  <CardTemplates />
   <template data-tag-chip-template>
     <button type="button" class="chip chip--tag">
       <span data-tag-name></span>
