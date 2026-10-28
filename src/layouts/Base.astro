@@ -7,6 +7,7 @@ import ShortcutsHelp from '../components/ShortcutsHelp.astro';
 import Toast from '../components/Toast.astro';
 import KeyBar from '../components/KeyBar.astro';
 import { canonicalUrl } from '../lib/site';
+import { umamiWebsiteId } from '../lib/analytics';
 
 interface Props {
   title?: string;
@@ -18,6 +19,8 @@ const { title, description = 'Find, adapt and copy the right shell command in se
   Astro.props;
 const fullTitle = title ? `${title} · ${SITE}` : SITE;
 const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
+// Without an id (CI, Lighthouse, plain `make up`) no tracker is added.
+const umami = umamiWebsiteId(import.meta.env);
 ---
 
 <!doctype html>
@@ -38,6 +41,22 @@ const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
     <meta name="color-scheme" content="light dark" />
     <!-- Blocking on purpose: sets the theme before first paint (no flash). -->
     <script is:inline src="/theme-init.js"></script>
+    {
+      // Audience statistics (SPEC §6.4): same origin, deferred, never blocks
+      // rendering. Page views drop ?query, so searches are not recorded.
+      umami && (
+        <script
+          is:inline
+          defer
+          src="/stats/script.js"
+          data-website-id={umami}
+          data-host-url="/stats"
+          data-do-not-track="true"
+          data-exclude-search="true"
+          data-exclude-hash="true"
+        />
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

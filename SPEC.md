@@ -228,7 +228,11 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 ### 6.4 Analytics
 - **Umami self-hosted**, sans cookies, compatible RGPD, sans bannière.
 - Événements personnalisés : `search_no_result` (requête tronquée à 100 caractères), `copy` (id de la fiche), `favorite`.
-- Le script est servi depuis le même domaine (`/stats/script.js`), conforme à la CSP.
+- Le script est servi depuis le même domaine (`/stats/script.js`), conforme à la CSP. Il n'est ajouté aux pages que si `PUBLIC_UMAMI_WEBSITE_ID` (UUID du site dans Umami, validé au build) est défini : sans lui (CI, Lighthouse, `make up`), aucun traceur. Chargé en `defer`, il ne bloque jamais l'affichage.
+- Règles d'envoi : `copy` seulement après une copie réussie ; `favorite` seulement à l'ajout ; `search_no_result` 1,5 s après la dernière frappe, si la requête fait au moins 2 caractères et ne donne aucun résultat, une seule fois par requête et par page. La requête est nettoyée (caractères invisibles retirés, espaces regroupés, minuscules) puis tronquée à 100 caractères.
+- Les pages vues n'incluent ni la query string (`data-exclude-search`, donc jamais `?q=…`) ni le hash. Do Not Track est respecté (`data-do-not-track`).
+- Seules deux URLs passent par le proxy : `/stats/script.js` et `/stats/api/send` (POST uniquement, corps ≤ 8 ko, 10 req/s par IP avec rafale de 20, pas de log d'accès car le Referer contient la recherche). Tout autre chemin sous `/stats` renvoie 404 : l'interface d'administration n'est jamais publique (en dev : `http://127.0.0.1:3001` ; en prod : tunnel SSH). Le proxy retire les cookies et les en-têtes de sécurité d'Umami (plus permissifs) au profit des siens, et résout Umami à la requête : il démarre sans lui, et `/stats` répond 502 tant qu'il est arrêté.
+- Le site Umami est créé une fois à la main dans le tableau de bord (Settings > Websites), et son id est reporté dans `.env`. Le compte par défaut (`admin` / `umami`) doit être changé à la première connexion.
 
 ### 6.5 CI/CD (GitHub Actions)
 - **Sur PR** : lint + typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E (Playwright sur le site construit, `astro preview`), validation du schéma des fiches, **lint de danger**, unicité des ids, build Astro.
@@ -255,16 +259,16 @@ Un fichier `compose.yaml` à la racine décrit l'environnement :
 | `proxy`  | `nginx:<version épinglée>` | Point d'entrée unique : `/` → `web`, `/stats` → `umami`. Mêmes routes et en-têtes de sécurité (CSP…) qu'en production | `8080` |
 | `web`    | `docker/web.Dockerfile` (Node LTS) | `astro dev` avec rechargement à chaud | interne |
 | `db`     | `postgres:<version épinglée>` | Base `umami`. Profil Compose `analytics` | interne |
-| `umami`  | `ghcr.io/umami-software/umami:<version épinglée>` | Analytics. Profil Compose `analytics`, optionnel en dev | interne |
+| `umami`  | `ghcr.io/umami-software/umami:<version épinglée>` | Analytics. Profil Compose `analytics`, optionnel en dev | `3001` (admin, dev uniquement) |
 
 Règles :
 - **Une seule URL locale** : `http://localhost:8080`. Passer par le proxy reproduit la production : mêmes routes, CSP réaliste.
 - `make up` lance seulement `proxy` + `web` ; `make up-analytics` ajoute `db` + `umami`.
 - **Code source monté en bind mount** pour le rechargement à chaud. `node_modules` reste dans un volume nommé, pour ne pas mélanger les binaires macOS et Linux.
-- Données PostgreSQL (Umami) dans un volume nommé (`db-data`), persistantes entre redémarrages.
+- Données PostgreSQL (Umami) dans un volume nommé (`db-data`), persistantes entre redémarrages (`make clean` les supprime). `db` n'est que sur un réseau Docker interne (`analytics`) ; `umami` est sur ce réseau et sur celui du proxy. Les tables sont créées par Umami lui-même au démarrage : pas de script SQL d'initialisation.
 - Les ports sont exposés sur `127.0.0.1` uniquement, jamais sur `0.0.0.0`.
 - Toutes les images ont une **version épinglée** (pas de `latest`). Les conteneurs applicatifs tournent en utilisateur non-root.
-- Configuration via `.env` (non commité) ; un `.env.example` documente chaque variable : identifiants DB Umami, `PUBLIC_BASE_URL=http://localhost:8080`.
+- Configuration via `.env` (non commité) ; un `.env.example` documente chaque variable : `UMAMI_DB_PASSWORD` et `UMAMI_APP_SECRET` (hex, `openssl rand -hex 32`, vérifiés par `make up-analytics`), `PUBLIC_UMAMI_WEBSITE_ID`, `PUBLIC_BASE_URL=http://localhost:8080`.
 - Les scripts outillage (import tldr, lint de danger, validation des fiches, tests) tournent eux aussi dans un conteneur : `docker compose run --rm web npm run <script>`.
 - Un `Makefile` (ou des scripts npm) fournit les raccourcis : `make up`, `make down`, `make logs`, `make import-tldr`, `make lint-content`, `make test`.
 

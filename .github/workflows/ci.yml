@@ -88,6 +88,9 @@ jobs:
         run: npm run build
         env:
           ASTRO_TELEMETRY_DISABLED: '1'
+          # Fake id: adds the tracker tag so tests/e2e/analytics.spec.ts runs
+          # (with a stub script; nothing is sent anywhere).
+          PUBLIC_UMAMI_WEBSITE_ID: 00000000-0000-4000-8000-000000000000
 
       - name: End-to-end tests
         run: npx playwright test
@@ -165,4 +168,5 @@ jobs:
             -v "$PWD/docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
             -v "$PWD/docker/nginx/security-headers.conf:/etc/nginx/snippets/security-headers.conf:ro" \
             -v "$PWD/docker/nginx/csp.dev.conf:/etc/nginx/snippets/csp.conf:ro" \
+            -v "$PWD/docker/nginx/stats-proxy.conf:/etc/nginx/snippets/stats-proxy.conf:ro" \
             "$image" nginx -t

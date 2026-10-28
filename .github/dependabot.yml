@@ -5,6 +5,7 @@
 #   - TypeScript is capped by @astrojs/check (^5 || ^6).
 #   - nginx stays on the stable branch (even minor); odd minors are mainline,
 #     so minor bumps are ignored and only stable patches come through.
+#   - PostgreSQL majors change the data format (dump and restore needed).
 version: 2
 updates:
   - package-ecosystem: npm
@@ -33,6 +34,9 @@ updates:
     ignore:
       - dependency-name: nginxinc/nginx-unprivileged
         update-types: [version-update:semver-major, version-update:semver-minor]
+      # A major PostgreSQL upgrade needs a dump and restore of the Umami data.
+      - dependency-name: postgres
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:

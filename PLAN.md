@@ -252,21 +252,22 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 ## Phase D — Analytics & production
 
-### - [ ] J17 — Analytics Umami (local)
+### - [x] J17 — Analytics Umami (local)
 **Objectif** : mesurer l'usage, en particulier les recherches sans résultat, sans cookies.
 **Fichiers**
-- `compose.yaml` (services `db` + `umami`, profil `analytics`)
-- `docker/db/init/*.sql`
-- `docker/nginx/nginx.conf` (routes `/stats/*`, rate limit sur la collecte)
-- `src/lib/analytics.ts` (`search_no_result`, `copy`, `favorite`, sans effet si Umami est absent)
+- `compose.yaml` (services `db` + `umami`, profil `analytics`, réseau interne), `compose.dev.yaml` (admin sur `127.0.0.1:3001`)
+- ~~`docker/db/init/*.sql`~~ : inutile, Umami crée ses tables au démarrage
+- `docker/nginx/nginx.conf` + `stats-proxy.conf` (routes `/stats/script.js` et `/stats/api/send`, rate limit sur la collecte, 404 ailleurs)
+- `src/lib/analytics.ts` (`search_no_result`, `copy`, `favorite`, sans effet si Umami est absent) + `src/components/Stats.ts`
+- `tests/lib/analytics.test.ts`, `tests/e2e/analytics.spec.ts`
 - `.env.example`
 - `Makefile` (`up-analytics`)
 
 **Validation**
-- [ ] `make up-analytics` : les événements `copy` et `search_no_result` (requête tronquée à 100 caractères) apparaissent dans le tableau de bord Umami.
-- [ ] Aucun cookie déposé et aucune violation CSP.
-- [ ] Avec Umami arrêté, le site fonctionne normalement, sans erreur bloquante.
-- [ ] L'interface d'administration Umami n'est pas accessible via le proxy public (seulement en accès direct local ou par tunnel).
+- [x] `make up-analytics` : les événements `copy` et `search_no_result` (requête tronquée à 100 caractères) apparaissent dans le tableau de bord Umami.
+- [x] Aucun cookie déposé et aucune violation CSP.
+- [x] Avec Umami arrêté, le site fonctionne normalement, sans erreur bloquante.
+- [x] L'interface d'administration Umami n'est pas accessible via le proxy public (seulement en accès direct local ou par tunnel).
 
 ### - [ ] J18 — Images de production + Compose prod (testés en local)
 **Objectif** : les conteneurs de production tournent à l'identique sur le Mac.

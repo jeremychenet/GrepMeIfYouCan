@@ -3,6 +3,7 @@
 // tab changes them.
 import { FAVORITES_MAX, type ToggleResult } from '../lib/store';
 import { onStoreChange, store } from './LocalStore';
+import { trackEvent } from './Stats';
 import { showToast } from './Toast';
 
 const MESSAGES: Record<ToggleResult, string> = {
@@ -32,6 +33,8 @@ export function enhanceFavorite(article: HTMLElement): void {
   button.hidden = false;
   button.addEventListener('click', () => {
     const result = store.toggleFavorite(id);
+    // Only additions are counted (SPEC §6.4).
+    if (result === 'added') trackEvent('favorite', { id });
     showToast(MESSAGES[result]);
     syncAll();
   });
