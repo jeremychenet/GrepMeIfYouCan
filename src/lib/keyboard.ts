@@ -45,6 +45,16 @@ const LIST_KEYS: Readonly<Record<string, KeyAction>> = {
   f: 'favorite',
 };
 
+/**
+ * Arrows that also move between cards from a control of a card (a variable
+ * after Tab, a link, a button). KeyboardNav lets the browser handle them
+ * when the focus is not inside a card (page scroll, caret).
+ */
+const CARD_ARROWS: Readonly<Record<string, KeyAction>> = {
+  ArrowDown: 'next',
+  ArrowUp: 'prev',
+};
+
 /** Keys that act anywhere except while typing in a text field. */
 const PAGE_KEYS: Readonly<Record<string, KeyAction>> = {
   '/': 'focus-search',
@@ -56,6 +66,7 @@ export function resolveKey(press: KeyPress, ctx: KeyContext): KeyAction | null {
   if ((press.metaKey || press.ctrlKey) && !press.altKey && key.toLowerCase() === 'k') return 'focus-search';
   if (key === 'Escape') return ctx === 'search' ? 'clear' : ctx === 'page' ? null : 'back';
   if (press.metaKey || press.ctrlKey || press.altKey) return null;
+  if (ctx !== 'search' && !press.shiftKey && Object.hasOwn(CARD_ARROWS, key)) return CARD_ARROWS[key]!;
 
   switch (ctx) {
     case 'search':

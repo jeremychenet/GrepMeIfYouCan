@@ -96,6 +96,28 @@ test.describe('keyboard', () => {
     await expect(search(page)).toBeFocused();
   });
 
+  test('the arrows still move between cards after Tab into a value or onto a button', async ({ page }) => {
+    await searchFor(page, 'large files');
+    const rows = results(page).locator('> li');
+    const card = (i: number) => rows.nth(i).locator('> article');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
+    await expect(card(0).getByLabel('Value for path')).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(card(1)).toBeFocused();
+    await expect(rows.nth(1)).toHaveAttribute('aria-current', 'true');
+
+    await card(1).locator('[data-copy]:visible').focus();
+    await page.keyboard.press('ArrowUp');
+    await expect(card(0)).toBeFocused();
+    await expect(rows.nth(0)).toHaveAttribute('aria-current', 'true');
+
+    // Outside a card, the arrows keep scrolling the page.
+    await page.getByRole('link', { name: 'About' }).focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('link', { name: 'About' })).toBeFocused();
+  });
+
   test('o opens the selected command page', async ({ page }) => {
     await searchFor(page, 'large files');
     await page.keyboard.press('ArrowDown');
