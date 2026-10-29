@@ -1,0 +1,137 @@
+name: Deploy
+
+# SPEC §6.5. Every merge on main: build the prod image, scan it with Trivy (a
+# critical vulnerability stops everything: nothing is pushed or deployed),
+# push it to GHCR tagged with the commit SHA (+ `main`), then deploy it over
+# SSH. The deploy key can only run deploy/deploy.sh on the server.
+#
+# Run by hand (Actions > Deploy > Run workflow):
+#   - on main with `sha`: rollback, redeploys an image already in GHCR;
+#   - on any branch: build + scan only (nothing is pushed or deployed).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Commit SHA to redeploy (rollback). Empty = build and deploy this branch.
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+# One deploy at a time, never cancelled half-way.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/jeremychenet/grepmeifyoucan-web
+
+jobs:
+  image:
+    name: build, scan, push
+    if: inputs.sha == ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build prod image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: docker/web.Dockerfile
+          target: prod
+          push: false
+          load: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          build-args: |
+            PUBLIC_BASE_URL=https://grepmeifyoucan.com
+            PUBLIC_UMAMI_WEBSITE_ID=${{ vars.PUBLIC_UMAMI_WEBSITE_ID }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha,scope=prod
+          cache-to: type=gha,mode=max,scope=prod
+
+      # Same Trivy image as `make scan` (read from the Makefile), run on a
+      # `docker save` archive like locally. Fails on a critical vulnerability,
+      # before anything is pushed.
+      - name: Scan with Trivy
+        run: |
+          trivy=$(sed -n 's/^TRIVY_IMAGE := //p' Makefile)
+          test -n "$trivy"
+          mkdir -p "$RUNNER_TEMP/trivy"
+          docker save -o "$RUNNER_TEMP/trivy/web.tar" "$IMAGE:$GITHUB_SHA"
+          docker run --rm -v "$RUNNER_TEMP/trivy:/work" "$trivy" image \
+            --cache-dir /work/db --input /work/web.tar --scanners vuln \
+            --severity HIGH,CRITICAL --no-progress
+          docker run --rm -v "$RUNNER_TEMP/trivy:/work" "$trivy" image \
+            --cache-dir /work/db --skip-db-update --input /work/web.tar --scanners vuln \
+            --severity CRITICAL --exit-code 1 --quiet
+
+      - name: Push to GHCR
+        if: github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push "$IMAGE:$GITHUB_SHA"
+          docker tag "$IMAGE:$GITHUB_SHA" "$IMAGE:main"
+          docker push "$IMAGE:main"
+          docker logout ghcr.io
+
+  deploy:
+    name: deploy
+    needs: image
+    # After a successful build on main, or for a rollback (build skipped).
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/main' &&
+      (needs.image.result == 'success' || (needs.image.result == 'skipped' && inputs.sha != ''))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # Secrets live in this environment, limited to protected branches.
+    environment: production
+    permissions:
+      contents: read
+    env:
+      SHA: ${{ inputs.sha || github.sha }}
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+    steps:
+      - name: Check the commit SHA
+        run: |
+          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "not a full commit SHA: $SHA"; exit 1; }
+          [[ "$DEPLOY_HOST" =~ ^[0-9a-zA-Z.:-]+$ ]] || { echo "DEPLOY_HOST is not set"; exit 1; }
+
+      - name: Deploy over SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # The server's forced command reads "deploy <sha>" and nothing else.
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile=~/.ssh/known_hosts \
+            "deploy@$DEPLOY_HOST" "deploy $SHA"
+          rm -f ~/.ssh/deploy_key
+
+      # Through the public Nginx, as a visitor. Until Let's Encrypt (J20) the
+      # certificate is self-signed and the DNS may not point here yet: --resolve
+      # and --insecure, both removed in J20.
+      - name: Healthcheck https://grepmeifyoucan.com/healthz
+        run: |
+          curl -fsS --retry 5 --retry-all-errors --retry-delay 3 --max-time 10 \
+            --resolve "grepmeifyoucan.com:443:$DEPLOY_HOST" --insecure \
+            https://grepmeifyoucan.com/healthz
