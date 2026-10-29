@@ -304,9 +304,13 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 ### - [ ] J20 — Mise en ligne sur grepmeifyoucan.com
 **Objectif** : le site est public, en HTTPS, durci et sauvegardé.
 **Fichiers**
-- `compose.prod.yaml` (service `certbot`)
-- `deploy/backup.sh` (`pg_dump` Umami, copie hors serveur)
-- `deploy/README.md` (DNS A/AAAA + CAA, restauration)
+- `compose.prod.yaml` (services `certbot`, sous l'uid de Nginx, et `backup`, `pg_dump` quotidien)
+- `docker/web-prod-entrypoint.sh` (Nginx + rechargement toutes les 6 h pour les certificats renouvelés)
+- `deploy/setup-server.sh` (premier certificat, bascule du `.env`, dossier des sauvegardes), `deploy/init-cert-volumes.sh`
+- `deploy/backup-pull.sh` + `make backup-pull` (copie hors serveur sur le Mac + test de restauration), `make lighthouse-prod` (`lighthouserc.prod.json`)
+- `.github/workflows/deploy.yml` (healthcheck par le vrai DNS, certificat vérifié), HSTS 1 an
+- `deploy/README.md` (DNS A + CAA, sans AAAA ; certificat ; sauvegarde et restauration ; admin Umami)
+- `tests/deploy/prod-loops.test.ts`, `tests/deploy/backup-pull.test.ts`, `tests/config/lighthouse-prod.test.ts`
 
 **Validation**
 - [ ] `https://grepmeifyoucan.com` répond ; `http://` et `www` redirigent en 301 vers `https://grepmeifyoucan.com`.

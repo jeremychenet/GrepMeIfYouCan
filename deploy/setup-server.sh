@@ -10,7 +10,10 @@
 #     nothing but /usr/local/bin/grepmeifyoucan-deploy (installed from
 #     deploy.sh next to this file, owned by root);
 #   - /opt/grepmeifyoucan with a .env (generated secrets, kept if present)
-#     and a temporary self-signed certificate (Let's Encrypt comes in J20);
+#     and the backups folder;
+#   - the certificate: a temporary self-signed one on a new server; once the
+#     site runs, the Let's Encrypt one (webroot, staging dry run first), then
+#     .env switches to it (redeploy to apply);
 #   - SSH: keys only, no root login, nothing but the forced command for
 #     `deploy` (refuses to run if the admin user has no key: no lock-out);
 #   - disables the host nginx (ports 80/443 belong to the `web` container).
@@ -22,6 +25,11 @@ DEPLOY_USER=deploy
 BASE=/opt/grepmeifyoucan
 COMMAND=/usr/local/bin/grepmeifyoucan-deploy
 SSHD_DROPIN=/etc/ssh/sshd_config.d/10-grepmeifyoucan.conf
+# Compose project and image of the certbot service (compose.prod.yaml, kept
+# equal by tests/config/compose-prod.test.ts).
+PROJECT=grepmeifyoucan-prod
+CERTBOT_IMAGE=certbot/certbot:v5.8.0
+DOMAIN=grepmeifyoucan.com
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 die() {
@@ -72,24 +80,89 @@ if [ ! -f "$BASE/.env" ]; then
   cat > "$BASE/.env" << EOF
 # Production settings, read by docker compose (deploy.sh). Never commit.
 WEB_BIND=0.0.0.0
-# Temporary self-signed certificate until Let's Encrypt (J20).
+# Temporary self-signed certificate until the Let's Encrypt one exists
+# (setup-server.sh removes this line once it is issued).
 LETSENCRYPT_DIR=$BASE/tls
+BACKUP_DIR=$BASE/backups
 UMAMI_DB_PASSWORD=$(openssl rand -hex 32)
 UMAMI_APP_SECRET=$(openssl rand -hex 32)
 EOF
   umask 022
 fi
+grep -q '^BACKUP_DIR=' "$BASE/.env" || echo "BACKUP_DIR=$BASE/backups" >> "$BASE/.env"
 chown "$DEPLOY_USER:$DEPLOY_USER" "$BASE/.env"
 chmod 600 "$BASE/.env"
 
-LIVE="$BASE/tls/live/grepmeifyoucan.com"
-if [ ! -f "$LIVE/fullchain.pem" ]; then
-  install -d -m 755 "$LIVE"
-  openssl req -x509 -newkey rsa:2048 -nodes -days 90 -subj "/CN=grepmeifyoucan.com" \
-    -addext "subjectAltName=DNS:grepmeifyoucan.com,DNS:www.grepmeifyoucan.com" \
-    -keyout "$LIVE/privkey.pem" -out "$LIVE/fullchain.pem" 2> /dev/null
-  # Read by nginx (uid 101) in the container. Throwaway key, replaced in J20.
-  chmod 644 "$LIVE/privkey.pem"
+step "Backups ($BASE/backups)"
+# Written by the backup container (postgres, uid 70), readable by the admin
+# group for `make backup-pull` (setgid: new dumps inherit the group).
+install -d -o 70 -g "$ADMIN" -m 2750 "$BASE/backups"
+
+step "Certificate volumes (written by certbot as uid 101, read by nginx)"
+[ -f "$HERE/init-cert-volumes.sh" ] || die "init-cert-volumes.sh must sit next to this script"
+sh "$HERE/init-cert-volumes.sh" "$PROJECT" "$CERTBOT_IMAGE"
+
+# certbot as in compose.prod.yaml: uid 101, read-only, no capability.
+certbot() {
+  docker run --rm --user 101:101 --read-only --tmpfs /tmp:uid=101,gid=101 \
+    --cap-drop ALL --security-opt no-new-privileges \
+    -v "${PROJECT}_letsencrypt:/etc/letsencrypt" \
+    -v "${PROJECT}_certbot-webroot:/var/www/certbot" \
+    "$CERTBOT_IMAGE" "$@" \
+    --config-dir /etc/letsencrypt --work-dir /tmp/certbot --logs-dir /tmp/certbot/logs
+}
+has_certificate() {
+  docker run --rm --user 101:101 --entrypoint test \
+    -v "${PROJECT}_letsencrypt:/etc/letsencrypt:ro" "$CERTBOT_IMAGE" \
+    -s "/etc/letsencrypt/live/$DOMAIN/fullchain.pem"
+}
+# The web container answers the HTTP-01 challenge.
+web_running() {
+  [ -n "$(docker ps -q --filter "label=com.docker.compose.project=$PROJECT" \
+    --filter "label=com.docker.compose.service=web" --filter status=running)" ]
+}
+
+# A running container still mounts the temporary certificate.
+tls_in_use() {
+  docker ps -q | xargs -r docker inspect -f '{{range .Mounts}}{{.Source}} {{end}}' \
+    | grep -q "$BASE/tls"
+}
+
+step "Let's Encrypt certificate ($DOMAIN, www.$DOMAIN)"
+if has_certificate; then
+  echo "already issued (renewed by the certbot service)"
+elif web_running; then
+  issue=(certonly --webroot -w /var/www/certbot --cert-name "$DOMAIN"
+    -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos
+    --register-unsafely-without-email --key-type ecdsa)
+  # Staging first: a mistake never counts against the production rate limits.
+  certbot "${issue[@]}" --dry-run
+  certbot "${issue[@]}"
+else
+  echo "no web container yet: deploy once with the temporary certificate, then run this script again"
+fi
+
+if has_certificate; then
+  # From the next deploy on, web reads the certbot volume (compose.prod.yaml
+  # default).
+  sed -i '/^LETSENCRYPT_DIR=/d;/^# Temporary self-signed certificate/d;/^# (setup-server.sh removes this line/d' "$BASE/.env"
+  if [ -d "$BASE/tls" ] && ! tls_in_use; then
+    rm -rf "$BASE/tls"
+    echo "temporary certificate removed"
+  elif [ -d "$BASE/tls" ]; then
+    echo "REDEPLOY NOW: web still uses the temporary certificate (removed on the next run)"
+  fi
+else
+  LIVE="$BASE/tls/live/$DOMAIN"
+  if [ ! -f "$LIVE/fullchain.pem" ]; then
+    install -d -m 755 "$LIVE"
+    openssl req -x509 -newkey rsa:2048 -nodes -days 90 -subj "/CN=$DOMAIN" \
+      -addext "subjectAltName=DNS:$DOMAIN,DNS:www.$DOMAIN" \
+      -keyout "$LIVE/privkey.pem" -out "$LIVE/fullchain.pem" 2> /dev/null
+    # Read by nginx (uid 101) in the container. Throwaway key until the
+    # Let's Encrypt certificate exists.
+    chmod 644 "$LIVE/privkey.pem"
+  fi
 fi
 
 step "SSH hardening ($SSHD_DROPIN)"

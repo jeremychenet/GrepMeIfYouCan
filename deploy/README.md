@@ -15,6 +15,10 @@ Every merge on `main` deploys automatically (SPEC §6.5,
    is started again and the run fails;
 5. **healthcheck** `https://grepmeifyoucan.com/healthz` from outside.
 
+Production stack (`compose.prod.yaml`): `web` (Nginx: site + `/stats`
+proxy), `db` + `umami` (analytics), `certbot` (certificate renewal) and
+`backup` (daily dump), all non-root, read-only, without capability.
+
 ## Server layout
 
 | Path | Owner | Content |
@@ -22,10 +26,13 @@ Every merge on `main` deploys automatically (SPEC §6.5,
 | `/usr/local/bin/grepmeifyoucan-deploy` | root, 755 | `deploy.sh`, the only command the deploy key can run |
 | `/home/deploy/.ssh/authorized_keys` | root, 644 | the deploy key, `restrict,command="…"` |
 | `/etc/ssh/sshd_config.d/10-grepmeifyoucan.conf` | root | keys only, no root login, `ForceCommand` for `deploy` |
-| `/opt/grepmeifyoucan/.env` | deploy, 600 | `WEB_BIND=0.0.0.0`, `LETSENCRYPT_DIR`, Umami secrets |
+| `/opt/grepmeifyoucan/.env` | deploy, 600 | `WEB_BIND=0.0.0.0`, `BACKUP_DIR`, Umami secrets (`LETSENCRYPT_DIR` only until the first Let's Encrypt certificate) |
 | `/opt/grepmeifyoucan/releases/<sha>/` | deploy | compose files of the last 5 deploys |
 | `/opt/grepmeifyoucan/current`, `deploy.log` | deploy | deployed commit, history |
-| `/opt/grepmeifyoucan/tls/` | root | temporary self-signed certificate (Let's Encrypt in J20) |
+| `/opt/grepmeifyoucan/backups/` | uid 70 (postgres), group admin, 2750 | daily Umami dumps, 14 days |
+| volume `grepmeifyoucan-prod_letsencrypt` | uid 101 | Let's Encrypt account and certificates (certbot writes, nginx reads) |
+| volume `grepmeifyoucan-prod_certbot-webroot` | uid 101 | HTTP-01 challenge files |
+| `/opt/grepmeifyoucan/tls/` | root | temporary self-signed certificate of a new server, removed once Let's Encrypt has issued one |
 
 The `deploy` user is in the `docker` group, which is equivalent to root: its
 key is only safe because it cannot run anything but `deploy.sh`. The CI never
@@ -101,12 +108,98 @@ Other admin tools (Grafana, Prometheus…) are reached through an SSH tunnel:
    ```bash
    ssh -i deploy_key deploy@<server> ls            # refused: only 'deploy <sha>' and 'status' are allowed
    ssh -i deploy_key deploy@<server>               # refused (no shell, no TTY)
-   ssh -i deploy_key -N -L 5432:db:5432 deploy@<server>   # port forwarding refused
+   ssh -i deploy_key -W 127.0.0.1:22 deploy@<server>      # forwarding refused (administratively prohibited)
    ssh -i deploy_key deploy@<server> status        # current commit and last deploys
    ```
 
 To update `deploy.sh` later, run step 2 again: it is safe to re-run, and it
 keeps the existing `.env` and certificate.
+
+## DNS
+
+At the registrar (Hostinger: Domains > DNS):
+
+| Name | Type | Value |
+|---|---|---|
+| `@` | A | server IPv4 |
+| `www` | A | server IPv4 |
+| `@` | CAA | `0 issue "letsencrypt.org"` (no other authority may issue a certificate) |
+
+No AAAA record: Docker publishes 80/443 in IPv4 only (`WEB_BIND=0.0.0.0`).
+An AAAA record without IPv6 listeners breaks the site for IPv6 visitors, and
+Let's Encrypt tries IPv6 first. IPv6 needs its own change (IPv6 Docker
+network, `listen [::]` in Nginx, provider firewall rules).
+
+## Certificate (Let's Encrypt)
+
+The `certbot` service of `compose.prod.yaml` renews the certificate twice a
+day (certbot only acts within 30 days of expiry), and `web` reloads its
+config every 6 hours to pick it up. certbot runs as nginx's uid (101), so the
+private key stays `600` and readable by `web`. Let's Encrypt no longer sends
+expiry emails: the account has no email.
+
+The first certificate needs a running site to answer the HTTP-01 challenge,
+and the site needs a certificate to start. On a **new server**:
+
+1. run `setup-server.sh`: no certificate yet, it writes a temporary
+   self-signed one and `LETSENCRYPT_DIR` in `.env`;
+2. deploy once (merge, or Actions > Deploy with the current `sha`);
+3. run `setup-server.sh` again: with `web` running, it asks Let's Encrypt
+   (a staging dry run first, then the real one), then removes
+   `LETSENCRYPT_DIR` from `.env`;
+4. deploy again: `web` now reads the certbot volume; a last run of
+   `setup-server.sh` removes the temporary certificate.
+
+Test the renewal (staging, changes nothing):
+
+```bash
+ssh <admin>@<server> 'docker exec grepmeifyoucan-prod-certbot-1 certbot renew --dry-run \
+  --config-dir /etc/letsencrypt --work-dir /tmp/certbot --logs-dir /tmp/certbot/logs'
+```
+
+## Backups
+
+The `backup` service dumps the Umami database every day
+(`pg_dump --format=custom`) into `/opt/grepmeifyoucan/backups`, keeps
+14 days, and is unhealthy if the newest dump is older than 26 hours.
+
+**Off-server copy**, from the Mac, at least once a week:
+
+```bash
+make backup-pull
+```
+
+It copies every dump to `~/Backups/grepmeifyoucan` (never deleted there),
+then restores the newest one into a blank, throwaway PostgreSQL (same image
+as `db`) and prints the number of tables, websites and events: a backup is
+only trusted once restored.
+
+**Restore in production** (replaces the Umami data; stop the writers first):
+
+```bash
+scp ~/Backups/grepmeifyoucan/umami-<date>.dump <admin>@<server>:/tmp/umami.dump
+ssh <admin>@<server>
+docker stop grepmeifyoucan-prod-umami-1 grepmeifyoucan-prod-backup-1
+docker exec -i grepmeifyoucan-prod-db-1 pg_restore --clean --if-exists --no-owner \
+  -U umami -d umami < /tmp/umami.dump
+docker start grepmeifyoucan-prod-umami-1 grepmeifyoucan-prod-backup-1
+rm /tmp/umami.dump
+```
+
+## Umami admin
+
+Never public: `/stats` only exposes the tracker and the collection endpoint.
+Through an SSH tunnel to the `umami` container:
+
+```bash
+ip=$(ssh <admin>@<server> "docker inspect -f '{{(index .NetworkSettings.Networks \"grepmeifyoucan-prod_default\").IPAddress}}' grepmeifyoucan-prod-umami-1")
+ssh -N -L 3001:$ip:3000 <admin>@<server>     # then http://localhost:3001
+```
+
+On the first login (`admin` / `umami`), change the password right away. Add
+the website `grepmeifyoucan.com`, then set its id for the next builds:
+`gh variable set PUBLIC_UMAMI_WEBSITE_ID --body <id>`. The next deploy adds
+the tracker.
 
 ## Rollback
 
@@ -123,5 +216,5 @@ The next merge on `main` deploys the new commit again. A failed deploy rolls
 back on its own (see above): the site keeps running the previous release.
 
 Database data (Umami) lives in a named volume and is not rolled back: an
-Umami upgrade that migrates the database cannot be undone this way (backups:
-J20).
+Umami upgrade that migrates the database cannot be undone this way; restore a
+backup taken before it (see Backups).

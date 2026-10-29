@@ -5,11 +5,14 @@ PROD := IMAGE_TAG=local LETSENCRYPT_DIR=./.cache/tls WEB_BIND=127.0.0.1 \
 PROD_WEB := grepmeifyoucan-prod-web-1
 PROD_IMAGE := ghcr.io/jeremychenet/grepmeifyoucan-web:local
 TRIVY_IMAGE := aquasec/trivy:0.76.1
+# PostgreSQL image of the db service, for the restore test of backup-pull.
+CERTBOT_IMAGE = $(shell sed -n 's/^ *image: *\(certbot\/certbot:.*\)$$/\1/p' compose.prod.yaml)
+PG_IMAGE = $(shell sed -n 's/^ *image: *\(postgres:.*\)$$/\1/p' compose.yaml | head -n 1)
 PLAYWRIGHT_IMAGE = $(shell sed -n 's/^ *image: *\(mcr\.microsoft\.com\/playwright:.*\)$$/\1/p' compose.dev.yaml)
 ARGS ?=
 
 .DEFAULT_GOAL := help
-.PHONY: help up up-analytics down logs sh npm clean check-headers nginx-test test coverage e2e lint-content lint-danger import-tldr build check-dist lighthouse check-secrets prod-local prod-down prod-logs check-prod scan e2e-prod
+.PHONY: help up up-analytics down logs sh npm clean check-headers nginx-test test coverage e2e lint-content lint-danger import-tldr build check-dist lighthouse check-secrets prod-local prod-down prod-logs check-prod scan e2e-prod backup-pull lighthouse-prod
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -61,6 +64,12 @@ lighthouse: ## Lighthouse CI (mobile) on the built site, same budgets as CI (lig
 	$(COMPOSE) run --rm --no-deps -e PUBLIC_UMAMI_WEBSITE_ID= web npm run build
 	$(COMPOSE) run --rm --no-deps e2e sh -c 'CHROME_PATH=$$(ls -d /ms-playwright/chromium-*/chrome-linux*/chrome | head -n 1) npx lhci autorun'
 
+lighthouse-prod: ## Lighthouse (mobile) on https://grepmeifyoucan.com, same budgets as CI (lighthouserc.prod.json)
+	$(COMPOSE) run --rm --no-deps e2e sh -c 'CHROME_PATH=$$(ls -d /ms-playwright/chromium-*/chrome-linux*/chrome | head -n 1) npx lhci autorun --config=lighthouserc.prod.json'
+
+backup-pull: ## Copy the server's Umami backups to ~/Backups/grepmeifyoucan and test a restore of the newest
+	PG_IMAGE=$(PG_IMAGE) ./deploy/backup-pull.sh
+
 lint-content: ## Validate every command card in content/commands (schema + danger + characters)
 	$(COMPOSE) run --rm --no-deps web npm run lint-content
 
@@ -78,6 +87,8 @@ import-tldr: ## Regenerate drafts in content/drafts from tldr-pages at the pinne
 
 prod-local: check-secrets ## Build and run the production images (https://localhost, self-signed certificate)
 	./scripts/make-local-cert.sh
+	@mkdir -p .cache/backups
+	./deploy/init-cert-volumes.sh grepmeifyoucan-prod $(CERTBOT_IMAGE)
 	$(PROD) up -d --build --wait
 
 prod-down: ## Stop the production images started by prod-local

@@ -213,7 +213,7 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 - **Domaine de production : `grepmeifyoucan.com`**. URL canonique `https://grepmeifyoucan.com` ; `www.grepmeifyoucan.com` redirige en 301 vers l'apex.
   - `PUBLIC_BASE_URL=https://grepmeifyoucan.com` : utilisé pour le sitemap, les URL canoniques et les liens de partage. Valeur par défaut si la variable est absente (en CI par exemple).
   - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS activé progressivement (`max-age` court d'abord, puis 1 an ; `preload` envisagé ensuite).
-  - DNS : enregistrements A/AAAA vers le serveur, CAA limité à Let's Encrypt.
+  - DNS : enregistrements A (apex et `www`) vers le serveur, CAA limité à Let's Encrypt. Pas d'AAAA en v1 : Docker ne publie 80/443 qu'en IPv4, et un AAAA sans écoute IPv6 casse le site pour les visiteurs IPv6 (et la validation Let's Encrypt, qui essaie l'IPv6 d'abord). L'IPv6 demandera un réseau Docker IPv6 et `listen [::]`.
 
 ### 6.2 Front
 - **Astro + TypeScript**, génération statique : une page par fiche, par outil et par catégorie, plus l'accueil.
@@ -292,7 +292,7 @@ open http://localhost:8080
 - **Sur l'hôte** : Docker Engine + le plugin Compose, SSH. Pas de Node, Nginx ni PostgreSQL installés pour le site (le Nginx de l'hôte est désactivé : 80/443 appartiennent au conteneur `web`). Le monitoring personnel du mainteneur (Grafana, Prometheus, node_exporter) peut y tourner, jamais exposé : accès par tunnel SSH.
 - **Pare-feu** : celui de l'hébergeur, en liste blanche (TCP 22, 80, 443 seulement). Il est hors du serveur, donc Docker ne peut pas le contourner.
 - **Exposition** : seul `web` publie les ports `80`/`443` (Nginx écoute sur `8080`/`8443` dans le conteneur, sans capacité). L'adresse vient de `WEB_BIND` : `127.0.0.1` par défaut, `0.0.0.0` dans le `.env` du serveur. Les hôtes inconnus ne reçoivent aucune réponse (444 en HTTP, poignée de main TLS refusée). `db` et `umami` restent sur un réseau Docker interne, sans port publié. Attention, Docker contourne `ufw` : on ne publie donc jamais d'autre port.
-- **TLS** : Let's Encrypt via un conteneur `certbot` (challenge HTTP-01, renouvellement automatique), certificats dans un volume partagé avec `web`, redirection HTTP→HTTPS.
+- **TLS** : Let's Encrypt via un conteneur `certbot` (challenge HTTP-01 en webroot, tentative de renouvellement deux fois par jour), certificats dans un volume partagé avec `web`, redirection HTTP→HTTPS. `certbot` tourne sous l'uid de Nginx (101) : la clé privée reste en `600` et lisible par `web`, sans rien ouvrir. `web` recharge sa configuration toutes les 6 h pour prendre un certificat renouvelé (le socket Docker n'est jamais monté, `certbot` ne peut donc pas le prévenir). Le premier certificat est demandé par `deploy/setup-server.sh` (essai à blanc sur l'environnement de test de Let's Encrypt d'abord), le site tournant encore avec un certificat temporaire.
 - **Durcissement des conteneurs** :
   - utilisateur non-root ;
   - `read_only: true` (avec `tmpfs` si nécessaire), pour les trois services ;
@@ -302,7 +302,7 @@ open http://localhost:8080
   - healthchecks ;
   - socket Docker jamais monté dans un conteneur.
 - **Secrets** : fichier `.env` de production sur le serveur (`chmod 600`, jamais commité), ou secrets Compose.
-- **Données** : volumes nommés pour PostgreSQL et les certificats. `pg_dump` quotidien via un conteneur planifié, copié hors serveur, avec un test de restauration documenté.
+- **Données** : volumes nommés pour PostgreSQL et les certificats. `pg_dump` quotidien par le service `backup` (même image que `db`, 14 jours gardés dans `/opt/grepmeifyoucan/backups`). Copie hors serveur par `make backup-pull` depuis le Mac du mainteneur (au moins chaque semaine), qui restaure aussitôt la sauvegarde la plus récente dans un PostgreSQL vierge. Un stockage objet automatique pourra remplacer cette copie manuelle.
 - **Logs** : driver `json-file` avec rotation (`max-size`, `max-file`).
 - **Cache et compression** : fichiers à nom haché (`/_astro/`) en cache 1 an, polices 30 jours, pages et `search-index.json` revalidés à chaque visite (`no-cache`), pour qu'un déploiement soit visible tout de suite ; gzip sur les fichiers texte. Seul `GET` est accepté sur le site statique.
 - **Mises à jour** : OS de l'hôte en mises à jour de sécurité automatiques (`unattended-upgrades`). Images de base reconstruites régulièrement (Dependabot sur les Dockerfiles).
