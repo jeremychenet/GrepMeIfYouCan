@@ -39,6 +39,11 @@ function cardBody(danger: string): string {
     : badge;
 }
 
+function notFound(head = '<meta name="robots" content="noindex">'): string {
+  return `<!doctype html><html><head><title>Page not found</title>
+<meta name="description" content="Missing.">${head}</head><body></body></html>`;
+}
+
 const pageFile = (path: string) =>
   join(dist, path === '/' ? 'index.html' : `${path.slice(1)}.html`);
 
@@ -67,6 +72,7 @@ function buildSite() {
   write(pageFile('/about'), html('/about', 'About.'));
   write(pageFile('/privacy'), html('/privacy', 'Privacy.'));
   write(pageFile('/categories/linux'), html('/categories/linux', 'Linux page.'));
+  write(pageFile('/404'), notFound());
   write(join(dist, 'sitemap-index.xml'), '<sitemapindex/>');
   const urls = [
     '/',
@@ -184,6 +190,15 @@ describe('checkDist', () => {
     expect(check().errors).toEqual(['search-index.json is not a JSON array']);
     rmSync(index);
     expect(check().errors).toEqual(['search-index.json is missing']);
+  });
+
+  it('requires the 404 page, not indexed and without canonical', () => {
+    write(pageFile('/404'), notFound(`<link rel="canonical" href="${SITE}/404">`));
+    expect(check().errors).toEqual(['/404: missing robots noindex', '/404: must not have a canonical URL']);
+    write(pageFile('/404'), '<html><head><meta name="robots" content="noindex"></head></html>');
+    expect(check().errors).toEqual(['/404: missing <title>']);
+    rmSync(pageFile('/404'));
+    expect(check().errors).toEqual(['/404: page missing']);
   });
 
   it('fails clearly when dist or the content is unusable', () => {

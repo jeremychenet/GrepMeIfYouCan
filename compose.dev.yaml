@@ -10,7 +10,16 @@ services:
       - node_modules:/app/node_modules
     # No published port: only reachable through the proxy.
 
+  # Single entry point, like the prod `web` (SPEC §6.6).
   proxy:
+    image: nginxinc/nginx-unprivileged:1.30.6-alpine3.24-slim
+    depends_on:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./docker/nginx/security-headers.conf:/etc/nginx/snippets/security-headers.conf:ro
@@ -24,7 +33,19 @@ services:
     ports:
       - "127.0.0.1:3001:3000"
 
+  # End-to-end tests (`make e2e`). Shares the proxy's network namespace, so
+  # the site is http://localhost:8080 (accepted by Vite's host check). The
+  # image tag must match @playwright/test in package.json (tests/config).
   e2e:
+    image: mcr.microsoft.com/playwright:v1.64.1-noble
+    profiles: [test]
+    init: true
+    ipc: host
+    network_mode: service:proxy
+    working_dir: /app
+    environment:
+      E2E_BASE_URL: http://localhost:8080
+    command: ["npx", "playwright", "test"]
     volumes:
       - .:/app
       - node_modules:/app/node_modules

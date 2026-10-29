@@ -269,19 +269,22 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Avec Umami arrêté, le site fonctionne normalement, sans erreur bloquante.
 - [x] L'interface d'administration Umami n'est pas accessible via le proxy public (seulement en accès direct local ou par tunnel).
 
-### - [ ] J18 — Images de production + Compose prod (testés en local)
+### - [x] J18 — Images de production + Compose prod (testés en local)
 **Objectif** : les conteneurs de production tournent à l'identique sur le Mac.
 **Fichiers**
-- `docker/web.Dockerfile` (stage `prod` : build Astro → Nginx non-root)
-- `compose.prod.yaml` (images taguées, `read_only`, `cap_drop`, `no-new-privileges`, limites, healthchecks, rotation des logs)
-- `docker/nginx/nginx.prod.conf` (TLS, redirections `www` → apex et HTTP → HTTPS, `/healthz`, `try_files $uri $uri.html =404` : le build écrit `c/<id>.html` pour servir `/c/<id>`)
-- `Makefile` (`prod-local`)
+- `docker/web.Dockerfile` (stages `build` → `prod` : build Astro, puis Nginx non-root `-slim`)
+- `compose.prod.yaml` (images taguées, `read_only`, `cap_drop: [ALL]` sans exception, `no-new-privileges`, limites, healthchecks, rotation des logs, sur les trois services) ; `proxy` et `e2e` passent dans `compose.dev.yaml`
+- `docker/nginx/nginx.prod.conf` (TLS, redirections `www` → apex et HTTP → HTTPS, `/healthz`, `try_files $uri $uri.html =404` : le build écrit `c/<id>.html` pour servir `/c/<id>`) + `csp.prod.conf`, `headers.prod.conf` (HSTS sur le domaine public seulement)
+- `src/pages/404.astro` (page 404 du site, `noindex`), vérifiée par `check-dist`
+- `scripts/make-local-cert.sh` (certificat auto-signé), `scripts/check-prod.sh`
+- `tests/config/compose-prod.test.ts`, `tests/config/nginx.test.ts`, `tests/e2e/not-found.spec.ts`
+- `Makefile` (`prod-local`, `prod-down`, `prod-logs`, `check-prod`, `scan`, `e2e-prod`), job CI `docker` (build `prod`, `nginx -t`, taille)
 
 **Validation**
-- [ ] `make prod-local` sert le site complet sur `localhost` à partir de l'image de prod, sans bind mount de code.
-- [ ] `docker inspect` confirme : non-root, système de fichiers en lecture seule, capacités retirées.
-- [ ] `/healthz` renvoie 200, et le healthcheck Compose passe à `healthy`.
-- [ ] Image `web` de prod < 50 Mo. Trivy : 0 vulnérabilité critique.
+- [x] `make prod-local` sert le site complet sur `localhost` à partir de l'image de prod, sans bind mount de code (`make e2e-prod` : 108 tests verts derrière le Nginx de prod).
+- [x] `docker inspect` confirme : non-root, système de fichiers en lecture seule, capacités retirées (`make check-prod`, pour `web`, `db` et `umami`).
+- [x] `/healthz` renvoie 200, et le healthcheck Compose passe à `healthy`.
+- [x] Image `web` de prod < 50 Mo (23 Mo). Trivy : 0 vulnérabilité critique (`make scan`, qui échoue bien sur une image ancienne).
 
 ### - [ ] J19 — Pipeline de déploiement (build → GHCR → serveur)
 **Objectif** : chaque merge sur `main` déploie automatiquement.
@@ -310,6 +313,11 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [ ] Le renouvellement du certificat est testé (`certbot renew --dry-run`).
 - [ ] Une sauvegarde est produite, et sa restauration est testée sur une base vierge.
 - [ ] Lighthouse en production ≥ 95 sur mobile.
+
+**À prévoir (relevé en J18)**
+- Nginx tourne sous l'uid 101 : la clé privée écrite par certbot (root, `600`) doit lui rester lisible (groupe ou hook de déploiement).
+- Premier démarrage : `nginx.prod.conf` exige un certificat. Il faut donc en obtenir un avant le premier `up` (certificat temporaire ou certbot en mode `standalone`).
+- Passer HSTS de `max-age=300` à 1 an une fois le site stable.
 
 ---
 
