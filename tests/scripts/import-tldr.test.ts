@@ -29,7 +29,7 @@ const readFixture = async (page: string) => readFileSync(join(FIXTURES, page), '
 
 const selection = (pages: Selection['categories']['linux'], category: 'linux' | 'containers' = 'linux'): Selection => ({
   tldr: { repo: 'tldr-pages/tldr', commit: SHA },
-  categories: { linux: [], containers: [], 'cloud-iac': [], 'git-ci': [], [category]: pages },
+  categories: { linux: [], unix: [], containers: [], 'cloud-iac': [], 'git-ci': [], [category]: pages },
 });
 
 let dir: string;
@@ -287,7 +287,7 @@ describe('loadSelection', () => {
   it('accepts the real selection, which covers every category', () => {
     const sel = loadSelection(DEFAULTS.selectionPath);
     expect(sel.tldr.commit).toMatch(/^[0-9a-f]{40}$/);
-    expect(Object.keys(sel.categories).sort()).toEqual(['cloud-iac', 'containers', 'git-ci', 'linux']);
+    expect(Object.keys(sel.categories).sort()).toEqual(['cloud-iac', 'containers', 'git-ci', 'linux', 'unix']);
   });
 
   it('rejects an invalid selection with the offending path', () => {
@@ -302,7 +302,7 @@ describe('main / cli', () => {
     const sel = join(dir, 'sel.yaml');
     writeFileSync(
       sel,
-      `tldr: { repo: tldr-pages/tldr, commit: ${SHA} }\ncategories:\n  linux: [{ page: common/demo.md, tool: demo, tags: [files] }]\n  containers: []\n  cloud-iac: []\n  git-ci: []\n`,
+      `tldr: { repo: tldr-pages/tldr, commit: ${SHA} }\ncategories:\n  linux: [{ page: common/demo.md, tool: demo, tags: [files] }]\n  unix: []\n  containers: []\n  cloud-iac: []\n  git-ci: []\n`,
     );
     mkdirSync(join(dir, 'published', 'linux'), { recursive: true });
     writeFileSync(join(dir, 'published', 'linux', 'demo-list-all-files-in-a-directory.yaml'), 'id: x\n');

@@ -39,6 +39,7 @@ body:
       label: Category
       options:
         - Linux
+        - Unix
         - Containers
         - Cloud & IaC
         - Git & CI
@@ -58,6 +59,7 @@ body:
       options:
         - label: Linux
         - label: macOS
+        - label: Unix
   - type: dropdown
     id: danger
     attributes:

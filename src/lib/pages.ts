@@ -7,6 +7,7 @@ type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_LABELS: Record<Category, string> = {
   linux: 'Linux',
+  unix: 'Unix',
   containers: 'Containers',
   'cloud-iac': 'Cloud & IaC',
   'git-ci': 'Git & CI',

@@ -40,6 +40,11 @@ describe('commandSchema', () => {
     ).toEqual({});
   });
 
+  it('accepts a Unix card (category and platform)', () => {
+    expect(errorsFor({ ...valid, category: 'unix', platforms: ['unix'] })).toEqual({});
+    expect(Object.keys(errorsFor({ ...valid, platforms: ['openbsd'] }))).toEqual(['platforms.0']);
+  });
+
   it('accepts the optional tldr example number', () => {
     const source = { type: 'tldr', page: 'common/find.md', commit: 'a'.repeat(40), license: 'CC-BY-4.0', example: 3 };
     expect(errorsFor({ ...valid, source })).toEqual({});

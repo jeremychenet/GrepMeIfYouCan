@@ -3,9 +3,9 @@
 // re-exports them.
 
 /** Fixed categories (SPEC §2.2). The folder name under content/commands/ must match. */
-export const CATEGORIES = ['linux', 'containers', 'cloud-iac', 'git-ci'] as const;
+export const CATEGORIES = ['linux', 'unix', 'containers', 'cloud-iac', 'git-ci'] as const;
 export const DANGER_LEVELS = ['safe', 'caution', 'destructive'] as const;
-export const PLATFORMS = ['linux', 'macos'] as const;
+export const PLATFORMS = ['linux', 'macos', 'unix'] as const;
 
 export const ID_MAX = 80;
 export const TITLE_MAX = 80;
