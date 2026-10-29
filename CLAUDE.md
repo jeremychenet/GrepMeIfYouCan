@@ -39,7 +39,7 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 | `make check-prod` | `scripts/check-prod.sh` on prod-local: headers + strict CSP, HSTS only for the public domain, redirects, routes, cache/gzip, `docker inspect` hardening of every service, image < 50 MB |
 | `make e2e-prod` | The whole Playwright suite against prod-local (real Nginx, strict CSP), from inside the web container's network (`https://localhost:8443`) |
 | `make backup-pull` | Copy the server's Umami dumps to `~/Backups/grepmeifyoucan`, then restore the newest into a throwaway Postgres (J20) |
-| `make lighthouse-prod` | Lighthouse (mobile) on https://grepmeifyoucan.com with the CI budgets, LCP ≤ 1.5 s (`lighthouserc.prod.json`) |
+| `make lighthouse-prod` | Lighthouse (mobile) on https://grepmeifyoucan.com with the CI budgets, LCP ≤ 1.5 s, ≤ 1.8 s on the `?q=` URL (`lighthouserc.prod.json`) |
 | `make scan` | Trivy on the prod web image via `docker save` (no Docker socket mounted); fails on a critical vulnerability (`PROD_IMAGE=<img>` to scan another) |
 
 Single test: `make npm ARGS="exec vitest run tests/lib/search.test.ts"` (or add `-t '<name>'`). Make does not forward `--` arguments, so always pass them via `ARGS=`. Keep this table in sync with the real `Makefile` (implemented so far: `help up up-analytics down logs sh npm clean check-headers nginx-test test coverage e2e lint-content lint-danger import-tldr build check-dist lighthouse prod-local prod-down prod-logs check-prod scan e2e-prod backup-pull lighthouse-prod`).
