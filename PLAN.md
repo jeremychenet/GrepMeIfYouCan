@@ -286,7 +286,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] `/healthz` renvoie 200, et le healthcheck Compose passe à `healthy`.
 - [x] Image `web` de prod < 50 Mo (23 Mo). Trivy : 0 vulnérabilité critique (`make scan`, qui échoue bien sur une image ancienne).
 
-### - [ ] J19 — Pipeline de déploiement (build → GHCR → serveur)
+### - [x] J19 — Pipeline de déploiement (build → GHCR → serveur)
 **Objectif** : chaque merge sur `main` déploie automatiquement.
 **Fichiers**
 - `.github/workflows/deploy.yml` (build, Trivy **avant** le push, push GHCR tagué au SHA, SSH, `pull` + `up -d --wait`, healthcheck ; lancé à la main avec `sha` pour un rollback)
@@ -296,10 +296,10 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `tests/deploy/deploy-sh.test.ts`, `tests/config/deploy-workflow.test.ts`
 
 **Validation**
-- [ ] Un merge sur `main` publie `ghcr.io/<owner>/grepmeifyoucan-web:<sha>`.
-- [ ] Une vulnérabilité critique (simulée) bloque le déploiement.
-- [ ] La clé SSH de déploiement ne peut exécuter que `deploy.sh` : un test avec une autre commande est refusé.
-- [ ] Le rollback `IMAGE_TAG=<sha précédent>` est testé et documenté.
+- [x] Un merge sur `main` publie `ghcr.io/<owner>/grepmeifyoucan-web:<sha>` (merges de #25 puis #24 : deux déploiements automatiques, healthcheck externe `ok`).
+- [x] Une vulnérabilité critique (simulée) bloque le déploiement (branche jetable avec `nginx-unprivileged:1.20.0-alpine` : 9 failles critiques, scan en échec, push et déploiement sautés).
+- [x] La clé SSH de déploiement ne peut exécuter que `deploy.sh` : un test avec une autre commande est refusé (`ls`, injection, shell, TTY, sftp, redirection de port refusés ; seul `status` passe).
+- [x] Le rollback `IMAGE_TAG=<sha précédent>` est testé et documenté (workflow lancé à la main avec `sha` : retour à #25 puis à #24, image et Postgres suivent ; `deploy/README.md`).
 
 ### - [ ] J20 — Mise en ligne sur grepmeifyoucan.com
 **Objectif** : le site est public, en HTTPS, durci et sauvegardé.
