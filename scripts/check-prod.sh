@@ -93,7 +93,7 @@ enc=$(header "$(fetch -H 'Accept-Encoding: gzip' "$BASE/")" content-encoding)
 [ "$enc" = "gzip" ] && ok "gzip" || ko "no gzip on HTML"
 
 echo "== Containers"
-for svc in web db umami; do
+for svc in web db umami certbot backup; do
   c="$PROJECT-$svc-1"
   if ! docker inspect "$c" >/dev/null 2>&1; then ko "$c is not running"; continue; fi
   info=$(docker inspect -f '{{.Config.User}}|{{.HostConfig.ReadonlyRootfs}}|{{.HostConfig.CapDrop}}|{{.HostConfig.CapAdd}}|{{.HostConfig.SecurityOpt}}|{{.HostConfig.Privileged}}|{{.State.Health.Status}}' "$c")

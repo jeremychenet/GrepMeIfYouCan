@@ -19,6 +19,7 @@ interface Service {
   volumes?: string[];
   ports?: string[];
   network_mode?: string;
+  networks?: string[];
   build?: { target?: string };
 }
 type Compose = { services: Record<string, Service> };
@@ -28,8 +29,8 @@ const prod = load('compose.prod.yaml').services;
 const base = load('compose.yaml').services;
 
 describe('compose.prod.yaml', () => {
-  it('covers every service of compose.yaml', () => {
-    expect(Object.keys(prod).sort()).toEqual(Object.keys(base).sort());
+  it('covers every service of compose.yaml, plus the prod-only certbot and backup', () => {
+    expect(Object.keys(prod).sort()).toEqual([...Object.keys(base), 'certbot', 'backup'].sort());
   });
 
   for (const [name, s] of Object.entries(prod)) {
@@ -70,8 +71,42 @@ describe('compose.prod.yaml', () => {
     });
   }
 
-  it('runs the db as a non-root user (the other images are non-root already)', () => {
-    expect(prod['db']?.user).toMatch(/^[1-9]\d*:[1-9]\d*$/);
+  it('runs db, backup and certbot as explicit non-root users (web and umami images are non-root already)', () => {
+    for (const name of ['db', 'backup', 'certbot']) expect(prod[name]?.user).toMatch(/^[1-9]\d*:[1-9]\d*$/);
+  });
+
+  describe('certbot', () => {
+    const certbot = prod['certbot']!;
+
+    it('runs as nginx (uid 101), so web can read the private key it writes', () => {
+      expect(certbot.user).toBe('101:101');
+    });
+
+    it('pins its image and writes only the certificate and ACME webroot volumes', () => {
+      expect(certbot.image).toMatch(/^certbot\/certbot:v\d+\.\d+\.\d+$/);
+      expect(certbot.volumes).toEqual(['letsencrypt:/etc/letsencrypt', 'certbot-webroot:/var/www/certbot']);
+      expect(certbot.ports).toBeUndefined();
+    });
+
+    it('uses the same image as deploy/setup-server.sh (first certificate)', () => {
+      const setup = readFileSync('deploy/setup-server.sh', 'utf8');
+      expect(/^CERTBOT_IMAGE=(\S+)$/m.exec(setup)?.[1]).toBe(certbot.image);
+    });
+  });
+
+  describe('backup', () => {
+    const backup = prod['backup']!;
+
+    it('uses the image of db and its non-root user', () => {
+      expect(backup.image).toBe(base['db']?.image);
+      expect(backup.user).toBe(prod['db']?.user);
+    });
+
+    it('only reaches the internal network and writes only BACKUP_DIR', () => {
+      expect(backup.networks).toEqual(['analytics']);
+      expect(backup.volumes).toEqual(['${BACKUP_DIR:-./.cache/backups}:/backups']);
+      expect(backup.ports).toBeUndefined();
+    });
   });
 
   describe('web', () => {

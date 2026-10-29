@@ -46,12 +46,14 @@ COPY docker/nginx/stats-proxy.conf /etc/nginx/snippets/stats-proxy.conf
 # from inside the container, whose file system is read-only anyway.
 RUN rm -rf /usr/share/nginx/html
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY --chmod=755 docker/web-prod-entrypoint.sh /usr/local/bin/web-entrypoint
 # Back to the image's unprivileged user (nginx, uid 101).
 USER 101
 # Port 8080 (HTTP) and 8443 (HTTPS) inside, published as 80/443: no
 # capability is needed to bind them (SPEC §6.7).
 EXPOSE 8080 8443
 # Skip the image's entrypoint scripts: they rewrite the config at start,
-# which a read-only file system forbids, and we need none of them.
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# which a read-only file system forbids, and we need none of them. Ours runs
+# nginx and reloads it every 6 hours (renewed certificates, J20).
+ENTRYPOINT ["/usr/local/bin/web-entrypoint"]
 CMD []
