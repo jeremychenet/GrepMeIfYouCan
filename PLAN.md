@@ -301,7 +301,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] La clé SSH de déploiement ne peut exécuter que `deploy.sh` : un test avec une autre commande est refusé (`ls`, injection, shell, TTY, sftp, redirection de port refusés ; seul `status` passe).
 - [x] Le rollback `IMAGE_TAG=<sha précédent>` est testé et documenté (workflow lancé à la main avec `sha` : retour à #25 puis à #24, image et Postgres suivent ; `deploy/README.md`).
 
-### - [ ] J20 — Mise en ligne sur grepmeifyoucan.com
+### - [x] J20 — Mise en ligne sur grepmeifyoucan.com
 **Objectif** : le site est public, en HTTPS, durci et sauvegardé.
 **Fichiers**
 - `compose.prod.yaml` (services `certbot`, sous l'uid de Nginx, et `backup`, `pg_dump` quotidien)
@@ -313,17 +313,17 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - `tests/deploy/prod-loops.test.ts`, `tests/deploy/backup-pull.test.ts`, `tests/config/lighthouse-prod.test.ts`
 
 **Validation**
-- [ ] `https://grepmeifyoucan.com` répond ; `http://` et `www` redirigent en 301 vers `https://grepmeifyoucan.com`.
-- [ ] Note A ou plus sur securityheaders.com, et A sur SSL Labs.
-- [ ] Depuis l'extérieur, seuls les ports 22, 80 et 443 sont ouverts (`nmap`).
-- [ ] Le renouvellement du certificat est testé (`certbot renew --dry-run`).
-- [ ] Une sauvegarde est produite, et sa restauration est testée sur une base vierge.
-- [ ] Lighthouse en production ≥ 95 sur mobile.
+- [x] `https://grepmeifyoucan.com` répond ; `http://` et `www` redirigent en 301 vers `https://grepmeifyoucan.com` (certificat Let's Encrypt pour l'apex et `www`, healthcheck du déploiement par le vrai DNS).
+- [x] Note A sur securityheaders.com (vérifiée par le mainteneur dans un navigateur ; le site refuse les requêtes automatisées), et A sur SSL Labs.
+- [x] Depuis l'extérieur, seuls les ports 22, 80 et 443 sont ouverts (`nmap` : 22, 80, 443 ouverts, 4000/9090/9100 filtrés ; les autres ports « ouverts » répondaient aussi pour 8.8.8.8 et 1.1.1.1, donc interceptés par le réseau local du test ; côté serveur, `ss` ne montre que 22, 80, 443 en écoute publique hors ports filtrés).
+- [x] Le renouvellement du certificat est testé (`certbot renew --dry-run` dans le conteneur `certbot` : succès ; clé privée `600` à l'uid 101).
+- [x] Une sauvegarde est produite, et sa restauration est testée sur une base vierge (`make backup-pull` : 27 tables restaurées dans un PostgreSQL jetable).
+- [x] Lighthouse en production ≥ 95 sur mobile (`make lighthouse-prod` : 100 sur les 4 catégories et les 4 pages, LCP 0,8 à 1 s, CLS ≤ 0,001).
 
 **À prévoir (relevé en J18)**
 - Nginx tourne sous l'uid 101 : la clé privée écrite par certbot (root, `600`) doit lui rester lisible (groupe ou hook de déploiement).
 - Premier démarrage : `nginx.prod.conf` exige un certificat. Il faut donc en obtenir un avant le premier `up` (certificat temporaire ou certbot en mode `standalone`).
-- Passer HSTS de `max-age=300` à 1 an une fois le site stable.
+- ~~Passer HSTS de `max-age=300` à 1 an une fois le site stable.~~ Fait (sans `preload`).
 
 ---
 

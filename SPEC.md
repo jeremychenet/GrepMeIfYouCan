@@ -212,7 +212,7 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 - **Même domaine** pour le site et les stats : pas de CORS, CSP simple.
 - **Domaine de production : `grepmeifyoucan.com`**. URL canonique `https://grepmeifyoucan.com` ; `www.grepmeifyoucan.com` redirige en 301 vers l'apex.
   - `PUBLIC_BASE_URL=https://grepmeifyoucan.com` : utilisé pour le sitemap, les URL canoniques et les liens de partage. Valeur par défaut si la variable est absente (en CI par exemple).
-  - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS activé progressivement (`max-age` court d'abord, puis 1 an ; `preload` envisagé ensuite).
+  - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS activé progressivement (`max-age=300` jusqu'à la mise en ligne, 1 an depuis J20 ; `preload` envisagé plus tard, car difficile à annuler).
   - DNS : enregistrements A (apex et `www`) vers le serveur, CAA limité à Let's Encrypt. Pas d'AAAA en v1 : Docker ne publie 80/443 qu'en IPv4, et un AAAA sans écoute IPv6 casse le site pour les visiteurs IPv6 (et la validation Let's Encrypt, qui essaie l'IPv6 d'abord). L'IPv6 demandera un réseau Docker IPv6 et `listen [::]`.
 
 ### 6.2 Front
@@ -344,7 +344,7 @@ open http://localhost:8080
 ### 7.4 Web
 - En-têtes Nginx :
   - **CSP stricte** : `default-src 'self'`, pas de script inline, `frame-ancestors 'none'` ;
-  - HSTS, pour `grepmeifyoucan.com` seulement (`max-age=300` au départ, puis 1 an) ;
+  - HSTS, pour `grepmeifyoucan.com` seulement (1 an depuis la mise en ligne, sans `preload`) ;
   - `X-Content-Type-Options: nosniff` ;
   - `Referrer-Policy: strict-origin-when-cross-origin` ;
   - `Permissions-Policy` restrictive.

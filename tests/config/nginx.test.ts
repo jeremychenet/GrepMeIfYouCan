@@ -61,7 +61,9 @@ describe('nginx configs', () => {
 
   it('sends HSTS for the public domain only, never for localhost', () => {
     const map = PROD.match(/map \$host \$hsts \{([^}]*)\}/)?.[1] ?? '';
-    expect(map).toMatch(/^\s*grepmeifyoucan\.com\s+"max-age=\d+";/m);
+    // 1 year since the go-live (J20), without preload (hard to undo).
+    expect(map).toMatch(/^\s*grepmeifyoucan\.com\s+"max-age=31536000";/m);
+    expect(map).not.toContain('preload');
     expect(map).toMatch(/^\s*default\s+"";/m);
     expect(map).not.toContain('localhost');
     expect(read('headers.prod.conf')).toContain('add_header Strict-Transport-Security $hsts always;');
