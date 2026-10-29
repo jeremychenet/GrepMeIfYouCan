@@ -4,6 +4,7 @@ Find, adapt and copy the right Linux / Infra / DevOps command in under 10 second
 
 - Specification: [SPEC.md](./SPEC.md)
 - Milestones: [PLAN.md](./PLAN.md)
+- Deployment and server: [deploy/README.md](./deploy/README.md)
 
 ## Requirements
 
