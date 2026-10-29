@@ -7,11 +7,15 @@ import { SUGGEST_TEMPLATE } from '../../src/lib/github';
 const header = (page: Page) => page.getByRole('banner');
 
 test.describe('header and home', () => {
-  test('shows the tagline as the page heading', async ({ page }) => {
+  test('shows the promise as two timed runs, and as the page heading for screen readers', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       'Faster than asking your LLM: type a few words, copy the command you had in mind in under 5 seconds.',
     );
+    const race = page.locator('[data-race]');
+    await expect(race).toBeVisible();
+    await expect(race).toHaveAttribute('aria-hidden', 'true');
+    await expect(race.locator('.run')).toHaveText([/time ask-llm.*real 0m20\.0s/s, /time grepmeifyoucan.*real 0m04\.2s/s]);
   });
 
   test('has Suggest a command, Favorites and History on the right, before the theme toggle', async ({ page }) => {

@@ -18,10 +18,21 @@ const categories = CATEGORIES.map((category) => {
 ---
 
 <Base>
-  <!-- The promise of the site (SPEC §3.1): faster than asking an LLM. -->
-  <h1 class="tagline">
+  <!-- The promise of the site (SPEC §3.1), shown as two timed shell runs:
+       asking an LLM vs. this site. Screen readers get the sentence. -->
+  <h1 class="visually-hidden">
     Faster than asking your LLM: type a few words, copy the command you had in mind in under 5 seconds.
   </h1>
+  <div class="race" aria-hidden="true" data-race>
+    <p class="run llm">
+      <span class="cmd"><span class="ps">$</span> time ask-llm<span class="arg"> "check if a service runs"</span></span>
+      <span class="real">real 0m20.0s</span>
+    </p>
+    <p class="run us">
+      <span class="cmd"><span class="ps">$</span> time grepmeifyoucan</span>
+      <span class="real">real 0m04.2s</span>
+    </p>
+  </div>
 
   <SearchApp />
 
@@ -46,14 +57,38 @@ const categories = CATEGORIES.map((category) => {
 </Base>
 
 <style>
-  .tagline {
-    max-width: var(--prose-max);
-    padding-block: var(--space-4);
-    font-family: var(--font-sans);
-    font-size: var(--text-md);
-    font-weight: 400;
-    line-height: 1.4;
+  /* Two runs, timed like `time` would: the times line up in a column. */
+  .race {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 0 var(--space-8);
+    padding-block: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .run {
+    display: contents;
+  }
+
+  .llm {
+    color: var(--color-text-faint);
+  }
+
+  .llm .cmd {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .us {
     color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .us .ps,
+  .us .real {
+    color: var(--color-accent);
   }
 
   .browse h2 {
@@ -140,6 +175,14 @@ const categories = CATEGORIES.map((category) => {
 
   /* Phones: one line per category, so the footer links stay in view. */
   @media (max-width: 639px) {
+    .race {
+      gap: 0 var(--space-4);
+    }
+
+    .arg {
+      display: none;
+    }
+
     .browse h2 {
       padding-block: var(--space-3) var(--space-1);
     }
@@ -175,7 +218,8 @@ const categories = CATEGORIES.map((category) => {
   }
 
   @media (min-width: 1024px) {
-    .tagline {
+    .race {
+      padding-block: var(--space-4);
       font-size: var(--text-lg);
     }
 
