@@ -22,6 +22,8 @@ chmod 700 "$DEST"
 echo "==> Copy $HOST:$SRC to $DEST"
 # No --delete: local copies outlive the 14 days kept on the server.
 rsync -a -e "ssh -o BatchMode=yes" "$HOST:$SRC/" "$DEST/"
+# -a also copies the server folder's mode (2750) onto DEST: private again.
+chmod 700 "$DEST"
 
 latest="$(find "$DEST" -maxdepth 1 -name 'umami-*.dump' | sort | tail -n 1)"
 [ -n "$latest" ] || {
