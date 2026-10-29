@@ -1,7 +1,8 @@
 // Checks the built site in dist/ (PLAN J10): one page per card, tool and
 // category; a title, meta description and canonical URL on every page;
 // danger badges/warnings on card pages; a sitemap listing every page; a
-// search index with one up-to-date entry per card (J11).
+// search index with one up-to-date entry per card (J11); the 404 page, not
+// indexed and without canonical URL (J18).
 // Runs in CI after `npm run build`: `tsx scripts/check-dist.ts [--dist dir] [--site url]`.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
@@ -9,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { validateEntries } from '../src/content/validate';
 import type { Command } from '../src/content/schema';
-import { cardPath, expectedPages } from '../src/lib/pages';
+import { cardPath, ERROR_PAGES, expectedPages } from '../src/lib/pages';
 import { toSearchDoc } from '../src/lib/search';
 import { canonicalUrl, siteUrl } from '../src/lib/site';
 import { readEntries } from './validate-content';
@@ -78,6 +79,15 @@ function checkPage(path: string, html: string, site: string, card: Command | und
   return errors;
 }
 
+/** Error pages have no URL of their own: noindex, no canonical. */
+function checkErrorPage(path: string, html: string): string[] {
+  const errors: string[] = [];
+  if (!first(html, /<title>([^<]*)<\/title>/)) errors.push(`${path}: missing <title>`);
+  if (!/<meta name="robots" content="noindex"/.test(html)) errors.push(`${path}: missing robots noindex`);
+  if (/<link rel="canonical"/.test(html)) errors.push(`${path}: must not have a canonical URL`);
+  return errors;
+}
+
 function checkSitemap(dist: string, urls: string[]): string[] {
   if (!existsSync(join(dist, 'sitemap-index.xml'))) return ['sitemap-index.xml is missing'];
   const listed = new Set(
@@ -138,7 +148,12 @@ export function checkDist({ dist, content, site }: Options): { errors: string[];
     if (!file) errors.push(`${path}: page missing`);
     else errors.push(...checkPage(path, readFileSync(file, 'utf8'), site, cards.get(path)));
   }
-  const wanted = new Set(expected);
+  for (const path of ERROR_PAGES) {
+    const file = files.get(path);
+    if (!file) errors.push(`${path}: page missing`);
+    else errors.push(...checkErrorPage(path, readFileSync(file, 'utf8')));
+  }
+  const wanted = new Set<string>([...expected, ...ERROR_PAGES]);
   for (const path of files.keys()) if (!wanted.has(path)) errors.push(`${path}: unexpected page`);
   errors.push(...checkSitemap(dist, expected.map((p) => canonicalUrl(site, p))));
   errors.push(...checkSearchIndex(dist, commands));
@@ -152,7 +167,7 @@ export function main(opts: Options, log = console.log, error = console.error): n
     error(`\n✗ ${errors.length} problem(s) in ${opts.dist}`);
     return 1;
   }
-  log(`✓ ${pages} page(s) checked in ${opts.dist} (title, description, canonical, danger, sitemap, search index)`);
+  log(`✓ ${pages} page(s) checked in ${opts.dist} (title, description, canonical, danger, sitemap, search index, 404)`);
   return 0;
 }
 

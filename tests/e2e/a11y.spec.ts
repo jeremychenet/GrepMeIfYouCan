@@ -35,6 +35,7 @@ const PAGES: { name: string; path: string; ready?: (page: Page) => Promise<void>
   { name: 'favorites', path: '/favorites', ready: (page) => expect(page.locator('[data-saved-empty]')).toBeVisible() },
   { name: 'about', path: '/about' },
   { name: 'privacy', path: '/privacy' },
+  { name: 'not found', path: '/no-such-page' },
 ];
 
 for (const theme of ['light', 'dark'] as const) {

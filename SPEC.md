@@ -56,7 +56,7 @@ Chaque fiche affiche :
 - les actions : **Copier**, **Favori ★**, et **Report an issue** sur la page de la fiche ;
 - la source et l'attribution (ex. « Adapted from tldr-pages, CC BY 4.0 »).
 
-Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (fichiers `c/<id>.html`). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique et des balises Open Graph, et figure dans `sitemap-index.xml`. `scripts/check-dist.ts` vérifie tout cela en CI après le build.
+Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (fichiers `c/<id>.html`). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique et des balises Open Graph, et figure dans `sitemap-index.xml`. Une URL inconnue renvoie une page 404 au style du site (`404.astro`, servie par Nginx), en `noindex`, sans URL canonique et hors sitemap ; une URL avec slash final redirige en 301 vers la version sans slash. `scripts/check-dist.ts` vérifie tout cela en CI après le build.
 
 ### 2.5 Variables éditables
 - Syntaxe dans les données : `{{nom}}` ou `{{nom:valeur_par_défaut}}`, compatible avec les placeholders tldr.
@@ -252,11 +252,11 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 ### 6.6 Environnement de développement local (Docker)
 **Phase actuelle : tout le développement se fait en local, sur macOS, entièrement conteneurisé.** Le domaine de production (`grepmeifyoucan.com`) n'est utilisé qu'à partir de M3, et il n'y a pas encore de serveur de production. Seuls Docker Desktop (ou OrbStack) et Git sont requis sur le Mac : pas de Node installé sur l'hôte.
 
-Un fichier `compose.yaml` à la racine décrit l'environnement :
+Les fichiers `compose.yaml` (services partagés) et `compose.dev.yaml` (services et réglages de dev) décrivent l'environnement :
 
 | Service  | Image / build | Rôle | Port hôte |
 |----------|---------------|------|-----------|
-| `proxy`  | `nginx:<version épinglée>` | Point d'entrée unique : `/` → `web`, `/stats` → `umami`. Mêmes routes et en-têtes de sécurité (CSP…) qu'en production | `8080` |
+| `proxy`  | `nginx-unprivileged:<version épinglée>-slim` (dev uniquement : en prod, `web` joue ce rôle) | Point d'entrée unique : `/` → `web`, `/stats` → `umami`. Mêmes routes et en-têtes de sécurité (CSP…) qu'en production | `8080` |
 | `web`    | `docker/web.Dockerfile` (Node LTS) | `astro dev` avec rechargement à chaud | interne |
 | `db`     | `postgres:<version épinglée>` | Base `umami`. Profil Compose `analytics` | interne |
 | `umami`  | `ghcr.io/umami-software/umami:<version épinglée>` | Analytics. Profil Compose `analytics`, optionnel en dev | `3001` (admin, dev uniquement) |
@@ -282,25 +282,27 @@ open http://localhost:8080
 **Lien avec la production : les mêmes conteneurs tournent en local et sur le serveur.**
 - Un `compose.yaml` de base est partagé, avec deux surcharges :
   - `compose.dev.yaml` : bind mounts, `astro dev`, port sur localhost ;
-  - `compose.prod.yaml` : images taguées depuis GHCR, pas de bind mount de code, `restart: unless-stopped`, durcissement.
-- Le Dockerfile `web` a des stages `dev` et `prod` : un seul fichier, deux cibles (`--target`).
+  - `compose.prod.yaml` : images taguées depuis GHCR, pas de bind mount de code, `restart: unless-stopped`, durcissement. Nom de projet distinct (`grepmeifyoucan-prod`) : `make prod-local` ne touche jamais aux conteneurs de dev.
+- Le Dockerfile `web` a des stages `dev` et `prod` : un seul fichier, deux cibles (`--target`). Le stage `prod` construit le site (`npm run build`, donc `lint-content` aussi) puis copie `dist/` et la conf Nginx dans `nginx-unprivileged` (variante `-slim`, même image que le proxy de dev). L'image est la même partout : `PUBLIC_BASE_URL` y vaut toujours `https://grepmeifyoucan.com`, et `PUBLIC_UMAMI_WEBSITE_ID` est passé au build.
+- **Production en local** (`make prod-local`) : les images de prod tournent sur `https://localhost` (ports `127.0.0.1:80` et `443`), avec un certificat auto-signé (`scripts/make-local-cert.sh`, dans `.cache/tls`, au même emplacement que celui de Let's Encrypt). `make check-prod` vérifie en-têtes, redirections, routes, durcissement des conteneurs et taille de l'image ; `make e2e-prod` lance toute la suite Playwright sur cette stack (vraie CSP) ; `make scan` passe l'image au scanner Trivy (archive `docker save`, socket Docker jamais monté).
 
 ### 6.7 Serveur de production (plus tard)
 **Déploiement : Docker Compose sur le serveur**, avec les mêmes services qu'en local : `web` (Nginx + statique + proxy), `db` et `umami`, plus `certbot`.
 - **Sur l'hôte** : seuls Docker Engine + le plugin Compose, SSH et un pare-feu. Pas de Node, Nginx ni PostgreSQL installés directement.
-- **Exposition** : seul `web` publie les ports `80`/`443`. `db` et `umami` restent sur un réseau Docker interne, sans port publié. Attention, Docker contourne `ufw` : on ne publie donc jamais d'autre port.
+- **Exposition** : seul `web` publie les ports `80`/`443` (Nginx écoute sur `8080`/`8443` dans le conteneur, sans capacité). L'adresse vient de `WEB_BIND` : `127.0.0.1` par défaut, `0.0.0.0` dans le `.env` du serveur. Les hôtes inconnus ne reçoivent aucune réponse (444 en HTTP, poignée de main TLS refusée). `db` et `umami` restent sur un réseau Docker interne, sans port publié. Attention, Docker contourne `ufw` : on ne publie donc jamais d'autre port.
 - **TLS** : Let's Encrypt via un conteneur `certbot` (challenge HTTP-01, renouvellement automatique), certificats dans un volume partagé avec `web`, redirection HTTP→HTTPS.
 - **Durcissement des conteneurs** :
   - utilisateur non-root ;
-  - `read_only: true` (avec `tmpfs` si nécessaire) ;
-  - `cap_drop: [ALL]` (sauf `NET_BIND_SERVICE` pour `web`) ;
+  - `read_only: true` (avec `tmpfs` si nécessaire), pour les trois services ;
+  - `cap_drop: [ALL]`, sans exception (`web` écoute sur des ports non privilégiés ; `db` tourne directement sous l'utilisateur `postgres`, uid 70) ;
   - `security_opt: no-new-privileges:true` ;
-  - limites mémoire et CPU ;
+  - limites mémoire, CPU et nombre de processus ;
   - healthchecks ;
   - socket Docker jamais monté dans un conteneur.
 - **Secrets** : fichier `.env` de production sur le serveur (`chmod 600`, jamais commité), ou secrets Compose.
 - **Données** : volumes nommés pour PostgreSQL et les certificats. `pg_dump` quotidien via un conteneur planifié, copié hors serveur, avec un test de restauration documenté.
 - **Logs** : driver `json-file` avec rotation (`max-size`, `max-file`).
+- **Cache et compression** : fichiers à nom haché (`/_astro/`) en cache 1 an, polices 30 jours, pages et `search-index.json` revalidés à chaque visite (`no-cache`), pour qu'un déploiement soit visible tout de suite ; gzip sur les fichiers texte. Seul `GET` est accepté sur le site statique.
 - **Mises à jour** : OS de l'hôte en mises à jour de sécurité automatiques (`unattended-upgrades`). Images de base reconstruites régulièrement (Dependabot sur les Dockerfiles).
 
 ## 7. Sécurité
@@ -340,7 +342,7 @@ open http://localhost:8080
 ### 7.4 Web
 - En-têtes Nginx :
   - **CSP stricte** : `default-src 'self'`, pas de script inline, `frame-ancestors 'none'` ;
-  - HSTS ;
+  - HSTS, pour `grepmeifyoucan.com` seulement (`max-age=300` au départ, puis 1 an) ;
   - `X-Content-Type-Options: nosniff` ;
   - `Referrer-Policy: strict-origin-when-cross-origin` ;
   - `Permissions-Policy` restrictive.
@@ -348,7 +350,7 @@ open http://localhost:8080
 - **Écarts dev / prod** (proxy local, §6.6) : les en-têtes sont les mêmes, à trois exceptions près, toutes imposées par le rechargement à chaud ou par `localhost`.
   - La CSP de dev ajoute `style-src 'unsafe-inline'` (styles injectés par Vite) et `connect-src ws://<host>` (WebSocket HMR). Les scripts inline restent interdits même en dev, et la barre d'outils de dev d'Astro est désactivée pour cette raison.
   - HSTS n'est envoyé qu'en production : en local, il forcerait HTTPS sur `localhost` pour tous les projets.
-  - La CSP stricte de prod est vérifiée sur le vrai build en J18.
+  - La CSP stricte de prod est vérifiée sur le vrai build : `make e2e-prod` (toute la suite E2E derrière le Nginx de prod) et `make check-prod`. Un test garde la CSP de dev égale à celle de prod plus ces deux assouplissements.
 - Pas d'API, donc pas de surface d'authentification ni d'écriture côté serveur en v1.
 - Rate limiting Nginx sur `/stats/api/send` (collecte Umami). L'interface d'administration Umami n'est pas exposée publiquement (accès via tunnel SSH, ou restreint par IP).
 - Les données lues depuis `localStorage` sont validées avant usage et ne sont jamais injectées comme HTML.

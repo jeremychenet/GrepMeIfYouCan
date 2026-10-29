@@ -1,0 +1,93 @@
+# Production overlay (SPEC §6.5, §6.7): docker compose -f compose.yaml -f compose.prod.yaml
+# Same files on the server and on the Mac (`make prod-local`). Analytics run
+# in prod: start with `--profile analytics`.
+#
+# Hardening of every service (checked by tests/config/compose-prod.test.ts):
+# non-root, read-only file system (tmpfs where a service must write), no
+# capability, no-new-privileges, memory/CPU/process limits, healthcheck, log
+# rotation, restart. No code is mounted: the site is inside the image.
+#
+# Variables (.env on the server, set by the Makefile for prod-local):
+#   IMAGE_TAG        image to run (commit SHA in prod, `local` for prod-local)
+#   WEB_BIND         address that publishes 80/443: 127.0.0.1 unless set,
+#                    the server's .env sets 0.0.0.0
+#   LETSENCRYPT_DIR  certificates: the `letsencrypt` volume (certbot, J20) or
+#                    ./.cache/tls (self-signed, prod-local)
+# Its own project name, so prod-local never touches the dev containers.
+name: grepmeifyoucan-prod
+
+x-hardening: &hardening
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  web:
+    <<: *hardening
+    image: ghcr.io/jeremychenet/grepmeifyoucan-web:${IMAGE_TAG:?set IMAGE_TAG (commit SHA, or local)}
+    build:
+      target: prod
+      args:
+        # Always the public domain, even for prod-local: same image everywhere.
+        PUBLIC_BASE_URL: https://grepmeifyoucan.com
+        PUBLIC_UMAMI_WEBSITE_ID: ${PUBLIC_UMAMI_WEBSITE_ID:-}
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    volumes:
+      - ${LETSENCRYPT_DIR:-letsencrypt}:/etc/letsencrypt:ro
+      - certbot-webroot:/var/www/certbot:ro
+    ports:
+      - "${WEB_BIND:-127.0.0.1}:80:8080"
+      - "${WEB_BIND:-127.0.0.1}:443:8443"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+          pids: 100
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  db:
+    <<: *hardening
+    # The image's own `postgres` user (uid 70 on Alpine): the entrypoint then
+    # skips its root-only steps (chown, gosu), so no capability is needed.
+    user: "70:70"
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql:size=1m,uid=70,gid=70
+      - /tmp:size=16m
+    shm_size: 128m
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+          pids: 100
+
+  umami:
+    <<: *hardening
+    # Already non-root in its image (nextjs, uid 1001).
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+          pids: 200
+
+volumes:
+  letsencrypt:
+  certbot-webroot:

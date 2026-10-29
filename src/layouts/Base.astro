@@ -12,11 +12,16 @@ import { umamiWebsiteId } from '../lib/analytics';
 interface Props {
   title?: string;
   description?: string;
+  /** Error pages: not indexed, no canonical URL (they have no URL of their own). */
+  noindex?: boolean;
 }
 
 const SITE = 'GrepMeIfYouCan';
-const { title, description = 'Find, adapt and copy the right shell command in seconds.' } =
-  Astro.props;
+const {
+  title,
+  description = 'Find, adapt and copy the right shell command in seconds.',
+  noindex = false,
+} = Astro.props;
 const fullTitle = title ? `${title} · ${SITE}` : SITE;
 const canonical = canonicalUrl(Astro.site!.origin, Astro.url.pathname);
 // Without an id (CI, Lighthouse, plain `make up`) no tracker is added.
@@ -30,14 +35,14 @@ const umami = umamiWebsiteId(import.meta.env);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE} />
     <meta property="og:title" content={title ?? SITE} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta name="color-scheme" content="light dark" />
     <!-- Blocking on purpose: sets the theme before first paint (no flash). -->
     <script is:inline src="/theme-init.js"></script>

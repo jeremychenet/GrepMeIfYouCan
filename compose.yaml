@@ -1,4 +1,6 @@
-# Base services shared by dev (compose.dev.yaml) and prod (compose.prod.yaml, J18).
+# Base services shared by dev (compose.dev.yaml) and prod (compose.prod.yaml).
+# `web` is the Astro dev server in dev, and Nginx (static build + /stats
+# proxy) in prod; the dev-only `proxy` and `e2e` live in compose.dev.yaml.
 name: grepmeifyoucan
 
 services:
@@ -7,16 +9,6 @@ services:
       context: .
       dockerfile: docker/web.Dockerfile
     init: true
-
-  proxy:
-    image: nginxinc/nginx-unprivileged:1.30.6-alpine3.24
-    depends_on:
-      - web
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
 
   # Analytics (SPEC §6.4), Compose profile `analytics` (`make up-analytics`).
   # Secrets come from .env (see .env.example). The database only sits on the
@@ -58,20 +50,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
-
-  # End-to-end tests (`make e2e`). Shares the proxy's network namespace, so
-  # the site is http://localhost:8080 (accepted by Vite's host check). The
-  # image tag must match @playwright/test in package.json (tests/config).
-  e2e:
-    image: mcr.microsoft.com/playwright:v1.64.1-noble
-    profiles: [test]
-    init: true
-    ipc: host
-    network_mode: service:proxy
-    working_dir: /app
-    environment:
-      E2E_BASE_URL: http://localhost:8080
-    command: ["npx", "playwright", "test"]
 
 networks:
   analytics:

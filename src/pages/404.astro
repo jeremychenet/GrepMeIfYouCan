@@ -1,0 +1,19 @@
+---
+// Served by Nginx for any unknown URL (error_page 404, nginx.prod.conf).
+// Not indexed and not in the sitemap: it has no URL of its own.
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="This page does not exist on GrepMeIfYouCan." noindex>
+  <header class="page-head">
+    <h1>Page not found</h1>
+    <p class="lead">No command lives at this address.</p>
+  </header>
+
+  <div class="prose">
+    <p>
+      The link may be old or mistyped. <a href="/">Search all commands</a> from the home page, or
+      browse your <a href="/favorites">favorites</a>.
+    </p>
+  </div>
+</Base>

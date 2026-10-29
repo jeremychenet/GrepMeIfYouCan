@@ -1,13 +1,17 @@
 #!/bin/sh
 # Checks that the site answers 200 with the security headers of SPEC §7.4.
 # Usage: scripts/check-headers.sh [base_url]   (default: http://localhost:8080)
+# CURL_INSECURE=1 accepts a self-signed certificate (prod-local, check-prod.sh).
 # Runs on the host: needs only curl.
 set -eu
 
 URL="${1:-http://localhost:8080}"
 fail=0
 
-headers=$(curl -sS -D - -o /dev/null --max-time 10 "$URL/") || {
+insecure=""
+[ "${CURL_INSECURE:-0}" = 1 ] && insecure=-k
+
+headers=$(curl -sS $insecure -D - -o /dev/null --max-time 10 "$URL/") || {
   echo "FAIL  cannot reach $URL"; exit 1;
 }
 
