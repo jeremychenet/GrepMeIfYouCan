@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SearchApp from '../components/SearchApp.astro';
 import { CATEGORIES } from '../content/schema';
-import { CATEGORY_LABELS, categoryPath } from '../lib/pages';
+import { CATEGORY_LABELS, categoryPath, countLabel } from '../lib/pages';
 
 // Search first; the category list shows while there is nothing to search.
 const cards = (await getCollection('commands')).map((e) => e.data);
@@ -18,7 +18,21 @@ const categories = CATEGORIES.map((category) => {
 ---
 
 <Base>
-  <h1 class="visually-hidden">Find the right shell command</h1>
+  <!-- The promise of the site (SPEC §3.1), shown as two timed shell runs:
+       asking an LLM vs. this site. Screen readers get the sentence. -->
+  <h1 class="visually-hidden">
+    Faster than asking your LLM: type a few words, copy the command you had in mind in under 5 seconds.
+  </h1>
+  <div class="race" aria-hidden="true" data-race>
+    <p class="run llm">
+      <span class="cmd"><span class="ps">$</span> time ask-llm<span class="arg"> "check if a service runs"</span></span>
+      <span class="real">real 0m20.0s</span>
+    </p>
+    <p class="run us">
+      <span class="cmd"><span class="ps">$</span> time grepmeifyoucan</span>
+      <span class="real">real 0m04.2s</span>
+    </p>
+  </div>
 
   <SearchApp />
 
@@ -31,7 +45,7 @@ const categories = CATEGORIES.map((category) => {
             <a href={categoryPath(category)}>
               <span class="name">{CATEGORY_LABELS[category]}</span>
               <span class="meta">
-                {count} commands · {tools} tools
+                {countLabel(count, 'command')}<span class="tools"> · {countLabel(tools, 'tool')}</span>
               </span>
               <span class="go" aria-hidden="true">→</span>
             </a>
@@ -39,16 +53,46 @@ const categories = CATEGORIES.map((category) => {
         ))
       }
     </ol>
-    <p class="lead">
-      Search, adapt and copy Linux, Unix, container, cloud and Git commands in seconds: type a few
-      words, edit the <mark>highlighted values</mark>, copy.
-    </p>
   </div>
 </Base>
 
 <style>
+  /* Two runs, timed like `time` would: the times line up in a column. */
+  .race {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 0 var(--space-8);
+    padding-block: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .run {
+    display: contents;
+  }
+
+  .llm {
+    color: var(--color-text-faint);
+  }
+
+  .llm .cmd {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+
+  .us {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .us .ps,
+  .us .real {
+    color: var(--color-accent);
+  }
+
   .browse h2 {
-    padding-block: var(--space-6) var(--space-3);
+    padding-block: var(--space-4) var(--space-2);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -70,8 +114,8 @@ const categories = CATEGORIES.map((category) => {
     display: grid;
     grid-template-columns: 2.5rem 1fr auto;
     align-items: baseline;
-    gap: var(--space-1) var(--space-4);
-    padding-block: var(--space-5);
+    gap: 0 var(--space-4);
+    padding-block: var(--space-3);
     text-decoration: none;
   }
 
@@ -124,20 +168,61 @@ const categories = CATEGORIES.map((category) => {
     padding-inline: var(--gutter);
   }
 
-  .lead {
-    max-width: var(--prose-max);
-    padding-top: var(--space-6);
-    color: var(--color-text-muted);
-    font-size: var(--text-md);
+  /* The home page fits the screen with its footer in view (SPEC §3.1). */
+  :global(main:has(.browse)) {
+    padding-bottom: var(--space-4);
   }
 
-  mark {
-    padding: 0 0.3em;
-    color: var(--color-on-hl);
-    background: var(--color-hl);
+  /* Phones: one line per category, so the footer links stay in view. */
+  @media (max-width: 639px) {
+    .race {
+      gap: 0 var(--space-4);
+    }
+
+    .arg {
+      display: none;
+    }
+
+    .browse h2 {
+      padding-block: var(--space-3) var(--space-1);
+    }
+
+    .categories a {
+      grid-template-columns: 2rem 1fr auto auto;
+      align-items: center;
+      min-height: var(--tap-min);
+      padding-block: var(--space-2);
+    }
+
+    .categories a::before {
+      grid-row: auto;
+    }
+
+    .name {
+      font-size: var(--text-lg);
+    }
+
+    .meta {
+      grid-column: 3;
+    }
+
+    .tools {
+      display: none;
+    }
+
+    .go {
+      grid-row: auto;
+      grid-column: 4;
+      font-size: var(--text-lg);
+    }
   }
 
   @media (min-width: 1024px) {
+    .race {
+      padding-block: var(--space-4);
+      font-size: var(--text-lg);
+    }
+
     .categories {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));

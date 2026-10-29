@@ -43,7 +43,7 @@ const umami = umamiWebsiteId(import.meta.env);
     <meta property="og:title" content={title ?? SITE} />
     <meta property="og:description" content={description} />
     {!noindex && <meta property="og:url" content={canonical} />}
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark light" />
     <!-- Blocking on purpose: sets the theme before first paint (no flash). -->
     <script is:inline src="/theme-init.js"></script>
     {

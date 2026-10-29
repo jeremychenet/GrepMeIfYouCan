@@ -24,9 +24,9 @@ const throwing = () => {
 };
 
 describe('theme', () => {
-  it('uses a versioned storage key and light by default', () => {
+  it('uses a versioned storage key and dark by default', () => {
     expect(THEME_KEY).toBe('gmiyc:v1:theme');
-    expect(DEFAULT_THEME).toBe('light');
+    expect(DEFAULT_THEME).toBe('dark');
   });
 
   it('recognises only the two themes', () => {
@@ -46,10 +46,10 @@ describe('theme', () => {
     expect(toggleLabel('light')).toBe('Switch to dark theme');
   });
 
-  it('reads the theme set on <html>, falling back to light', () => {
-    expect(currentTheme({ dataset: { theme: 'dark' } })).toBe('dark');
-    expect(currentTheme({ dataset: { theme: 'bogus' } })).toBe('light');
-    expect(currentTheme({ dataset: {} })).toBe('light');
+  it('reads the theme set on <html>, falling back to dark', () => {
+    expect(currentTheme({ dataset: { theme: 'light' } })).toBe('light');
+    expect(currentTheme({ dataset: { theme: 'bogus' } })).toBe('dark');
+    expect(currentTheme({ dataset: {} })).toBe('dark');
   });
 
   describe('readSavedTheme', () => {
