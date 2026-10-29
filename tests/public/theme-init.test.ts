@@ -12,15 +12,17 @@ interface Env {
   prefersDark?: boolean;
   storageThrows?: boolean;
   matchMediaThrows?: boolean;
+  search?: string;
 }
 
-function run(env: Env = {}): string | undefined {
+function runFull(env: Env = {}): Record<string, string> {
   const html = { dataset: {} as Record<string, string> };
   const storage = {
     getItem: (k: string) => (k === THEME_KEY ? (env.saved ?? null) : null),
   };
   const sandbox = {
     document: { documentElement: html },
+    location: { search: env.search ?? '' },
     get localStorage() {
       if (env.storageThrows) throw new Error('SecurityError');
       return storage;
@@ -31,33 +33,35 @@ function run(env: Env = {}): string | undefined {
     },
   };
   runInNewContext(source, sandbox);
-  return html.dataset['theme'];
+  return html.dataset;
 }
+const run = (env: Env = {}) => runFull(env)['theme'];
 
 describe('public/theme-init.js', () => {
-  it('defaults to light', () => {
-    expect(run()).toBe('light');
+  it('defaults to dark, whatever the system preference', () => {
+    expect(run()).toBe('dark');
+    expect(run({ prefersDark: false })).toBe('dark');
   });
 
-  it('respects prefers-color-scheme: dark on first visit', () => {
-    expect(run({ prefersDark: true })).toBe('dark');
-  });
-
-  it('prefers the saved choice over the system preference', () => {
+  it('keeps the light theme chosen with the toggle', () => {
     expect(run({ saved: 'light', prefersDark: true })).toBe('light');
-    expect(run({ saved: 'dark', prefersDark: false })).toBe('dark');
+    expect(run({ saved: 'dark' })).toBe('dark');
   });
 
   it('ignores an invalid saved value', () => {
-    expect(run({ saved: 'neon', prefersDark: true })).toBe('dark');
-    expect(run({ saved: 'neon' })).toBe('light');
+    expect(run({ saved: 'neon' })).toBe('dark');
   });
 
-  it('still follows the system when storage is blocked', () => {
-    expect(run({ storageThrows: true, prefersDark: true })).toBe('dark');
+  it('falls back to dark when every browser API fails', () => {
+    expect(run({ storageThrows: true, matchMediaThrows: true })).toBe('dark');
   });
 
-  it('falls back to light when every browser API fails', () => {
-    expect(run({ storageThrows: true, matchMediaThrows: true })).toBe('light');
+  it('marks a page opened with a search in the URL', () => {
+    for (const search of ['?q=find', '?cat=linux', '?tag=disk', '?x=1&q=a']) {
+      expect(runFull({ search })['initialSearch'], search).toBe('');
+    }
+    for (const search of ['', '?x=1', '?query=a', '?faq=1']) {
+      expect(runFull({ search })['initialSearch'], search).toBeUndefined();
+    }
   });
 });

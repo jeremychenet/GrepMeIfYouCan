@@ -42,14 +42,14 @@ import NewTab from './NewTab.astro';
   .inner {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-    padding-block: var(--space-4);
+    gap: 0;
+    padding-block: var(--space-2) var(--space-3);
   }
 
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-5);
+    gap: 0 var(--space-3);
     padding: 0;
     list-style: none;
     font-family: var(--font-mono);
@@ -90,6 +90,7 @@ import NewTab from './NewTab.astro';
 
   p {
     max-width: var(--prose-max);
+    font-size: var(--text-xs);
   }
 
   @media (min-width: 640px) {

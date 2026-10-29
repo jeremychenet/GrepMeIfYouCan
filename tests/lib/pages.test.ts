@@ -4,6 +4,7 @@ import {
   CATEGORY_LABELS,
   cardPath,
   categoryPageMeta,
+  countLabel,
   categoryPath,
   expectedPages,
   groupBy,
@@ -41,6 +42,12 @@ describe('paths', () => {
     expect(toolPath('kubectl')).toBe('/tools/kubectl');
     expect(tagSearchPath('large-files')).toBe('/?tag=large-files');
     expect(categoryPath('cloud-iac')).toBe('/categories/cloud-iac');
+  });
+
+  it('writes counts in the singular for one', () => {
+    expect(countLabel(1, 'command')).toBe('1 command');
+    expect(countLabel(0, 'tool')).toBe('0 tools');
+    expect(countLabel(67, 'command')).toBe('67 commands');
   });
 
   it('labels every category', () => {

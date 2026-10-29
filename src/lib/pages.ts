@@ -13,6 +13,11 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   'git-ci': 'Git & CI',
 };
 
+/** `1 command`, `2 commands`. */
+export function countLabel(n: number, noun: string): string {
+  return `${n} ${n === 1 ? noun : `${noun}s`}`;
+}
+
 export const cardPath = (id: string) => `/c/${id}`;
 export const toolPath = (tool: string) => `/tools/${tool}`;
 export const categoryPath = (category: string) => `/categories/${category}`;

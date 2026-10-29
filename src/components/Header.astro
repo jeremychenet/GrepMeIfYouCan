@@ -1,7 +1,11 @@
 ---
-// Favorites and History live in this browser only (SPEC §2.8).
+// Wordmark on the left; on the right "Suggest a command" (prefilled GitHub
+// issue form, SPEC §2.9), Favorites and History (this browser only, SPEC
+// §2.8), then the theme toggle. The wordmark leads to the search.
+import { suggestCommandUrl } from '../lib/github';
+import NewTab from './NewTab.astro';
+
 const nav = [
-  { href: '/', label: 'Search' },
   { href: '/favorites', label: 'Favorites' },
   { href: '/history', label: 'History' },
 ];
@@ -11,10 +15,17 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <header class="site-header">
   <div class="container bar">
     <a class="brand" href="/" aria-label="GrepMeIfYouCan, home">
-      <span aria-hidden="true">grepmeifyoucan</span><b class="cursor" aria-hidden="true"></b>
+      <span aria-hidden="true">grep<span class="dim">me</span>if<span class="dim">you</span>can</span><b
+        class="cursor"
+        aria-hidden="true"></b>
     </a>
     <nav aria-label="Main">
       <ul>
+        <li>
+          <a href={suggestCommandUrl()} target="_blank" rel="noopener" data-suggest-header
+            ><span class="long">Suggest a command</span><span class="short">Suggest</span><NewTab
+            /></a>
+        </li>
         {
           nav.map(({ href, label }) => (
             <li>
@@ -76,6 +87,11 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     text-decoration: none;
   }
 
+  /* "me" and "you" recede, so grep / if / can stand out. */
+  .dim {
+    color: var(--color-text-faint);
+  }
+
   .cursor {
     display: inline-block;
     width: 0.58em;
@@ -85,8 +101,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   }
 
   nav {
-    margin-right: auto;
-    margin-left: var(--space-4);
+    margin-left: auto;
   }
 
   nav ul {
@@ -146,32 +161,39 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
     display: none;
   }
 
-  /* Small phones: the wordmark alone, nav links stay reachable. */
+  .short {
+    display: none;
+  }
+
+  /* Phones: smaller wordmark, short "Suggest", so everything fits one line. */
   @media (max-width: 479px) {
-    .brand span {
-      font-size: var(--text-base);
+    .bar {
+      gap: 0;
     }
 
-    nav {
-      margin-left: var(--space-1);
+    .brand {
+      font-size: var(--text-sm);
     }
 
-    /* The wordmark already leads to the search. */
-    nav li:first-child {
-      display: none;
+    nav ul {
+      gap: 0;
     }
 
     nav a {
       padding-inline: var(--space-1);
       font-size: var(--text-sm);
     }
+
+    .long {
+      display: none;
+    }
+
+    .short {
+      display: inline;
+    }
   }
 
   @media (min-width: 1024px) {
-    nav {
-      margin-left: var(--space-12);
-    }
-
     nav ul {
       gap: var(--space-4);
     }

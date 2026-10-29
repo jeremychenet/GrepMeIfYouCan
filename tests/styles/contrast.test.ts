@@ -84,7 +84,7 @@ describe.each(['dark', 'light'] as const)('%s theme', (theme) => {
   }
 
   // Black terminal bands (search prompt, key bar): the $ prompt is accent-fill.
-  for (const fg of ['--color-term-text', '--color-term-muted', '--color-accent-fill']) {
+  for (const fg of ['--color-term-text', '--color-term-muted', '--color-term-placeholder', '--color-accent-fill']) {
     it(`${fg} on the terminal band >= 4.5`, () => {
       expect(contrast(get(fg), get('--color-term-bg'))).toBeGreaterThanOrEqual(4.5);
     });

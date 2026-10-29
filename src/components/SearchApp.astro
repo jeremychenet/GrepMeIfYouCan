@@ -121,8 +121,9 @@ import NewTab from './NewTab.astro';
     appearance: none;
   }
 
+  /* Fainter than typed text, so the example never reads as a query. */
   .search-input::placeholder {
-    color: var(--color-term-muted);
+    color: var(--color-term-placeholder);
     opacity: 1;
   }
 
@@ -140,9 +141,11 @@ import NewTab from './NewTab.astro';
     font-size: var(--text-sm);
   }
 
-  /* Results render after the index loads: the page keeps its height until
-     then, so the footer is not pushed down in view (CLS). */
-  :global(main:has([data-search])) {
+  /* Opened with a search in the URL (theme-init.js): results render after
+     the index loads, so the page keeps the screen height until then and the
+     footer is not pushed down in view (CLS). Without one, the home page fits
+     the screen with its footer in view. */
+  :global(html[data-initial-search] main:has([data-search])) {
     min-height: 100dvh;
   }
 
