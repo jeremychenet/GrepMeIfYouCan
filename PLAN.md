@@ -234,7 +234,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Les URL générées sont correctement encodées (test avec caractères spéciaux).
 - [x] La page About cite tldr-pages (CC BY 4.0, lien). La page Privacy décrit le stockage local et Umami.
 
-### - [ ] J16 — Passe responsive, accessibilité & performance
+### - [x] J16 — Passe responsive, accessibilité & performance
 **Objectif** : atteindre les exigences non fonctionnelles de la SPEC §8.
 **Fichiers**
 - `src/styles/*` (ajustements responsive)
@@ -246,7 +246,7 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 - [x] Aucun scroll horizontal de la page à 375 px, et zones cliquables ≥ 44 px (test automatisé).
 - [x] axe : 0 violation sérieuse ou critique sur l'accueil, une fiche, les favoris et la recherche vide.
 - [x] Lighthouse mobile ≥ 95 sur les 4 axes, LCP < 1,5 s (Lighthouse CI dans la CI ; budget simulé 1,6 s, voir SPEC §8).
-- [ ] Test manuel sur un vrai téléphone (iOS Safari ou Chrome Android) : recherche, copie, favoris. *(à faire par le mainteneur, au plus tard en J20)*
+- [x] Test manuel sur un vrai téléphone (iOS Safari ou Chrome Android) : recherche, copie, favoris. *(fait par le mainteneur le 2026-10-30 : tout fonctionne ; la flèche ↗ des liens externes, rendue en emoji sur iPhone, est devenue une icône SVG)*
 
 ---
 

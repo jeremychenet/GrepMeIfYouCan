@@ -49,6 +49,7 @@ const umami = umamiWebsiteId(import.meta.env);
     {
       // Audience statistics (SPEC §6.4): same origin, deferred, never blocks
       // rendering. Page views drop ?query, so searches are not recorded.
+      // Do Not Track is not followed (SPEC §6.4, Privacy page).
       umami && (
         <script
           is:inline
@@ -56,7 +57,6 @@ const umami = umamiWebsiteId(import.meta.env);
           src="/stats/script.js"
           data-website-id={umami}
           data-host-url="/stats"
-          data-do-not-track="true"
           data-exclude-search="true"
           data-exclude-hash="true"
         />

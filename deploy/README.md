@@ -192,9 +192,14 @@ Never public: `/stats` only exposes the tracker and the collection endpoint.
 Through an SSH tunnel to the `umami` container:
 
 ```bash
+# Both lines in the same terminal ($ip does not cross terminals).
 ip=$(ssh <admin>@<server> "docker inspect -f '{{(index .NetworkSettings.Networks \"grepmeifyoucan-prod_default\").IPAddress}}' grepmeifyoucan-prod-umami-1")
-ssh -N -L 3001:$ip:3000 <admin>@<server>     # then http://localhost:3001
+echo "$ip"                                   # e.g. 172.20.0.3; empty = stop here
+ssh -N -L 3002:$ip:3000 <admin>@<server>     # then http://localhost:3002
 ```
+
+Port 3002 locally: 3001 is the dev stack's Umami. The address changes when
+a deploy recreates the container: run the first line again.
 
 On the first login (`admin` / `umami`), change the password right away. Add
 the website `grepmeifyoucan.com`, then set its id for the next builds:

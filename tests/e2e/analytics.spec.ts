@@ -54,6 +54,13 @@ async function skipWithoutTracker(page: Page): Promise<void> {
 const searchBox = (page: Page) => page.getByRole('searchbox');
 
 test.describe('analytics', () => {
+  test('the tracker leaves out the search query, and counts Do Not Track visits too', async ({ page }) => {
+    await skipWithoutTracker(page);
+    const tracker = page.locator('script[src="/stats/script.js"]');
+    await expect(tracker).toHaveAttribute('data-exclude-search', 'true');
+    await expect(tracker).not.toHaveAttribute('data-do-not-track');
+  });
+
   test('sends copy, favorite and search_no_result, without cookies or CSP violations', async ({ page, context }) => {
     const errors = await watchErrors(page);
     const sent = await withStats(page);
