@@ -289,9 +289,11 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 ### - [ ] J19 — Pipeline de déploiement (build → GHCR → serveur)
 **Objectif** : chaque merge sur `main` déploie automatiquement.
 **Fichiers**
-- `.github/workflows/deploy.yml` (build, push GHCR tagué au SHA, Trivy, SSH, `pull` + `up -d`, healthcheck)
-- `deploy/deploy.sh` (script appelé par la commande forcée SSH)
-- `deploy/README.md` (préparation du serveur : utilisateur, clé, pare-feu, Docker, `.env`)
+- `.github/workflows/deploy.yml` (build, Trivy **avant** le push, push GHCR tagué au SHA, SSH, `pull` + `up -d --wait`, healthcheck ; lancé à la main avec `sha` pour un rollback)
+- `deploy/deploy.sh` (script appelé par la commande forcée SSH : `deploy <sha>` ou `status`, rollback automatique si la nouvelle version n'est pas saine)
+- `deploy/setup-server.sh` (préparation du serveur, relançable : utilisateur `deploy`, commande forcée, durcissement SSH, `.env`, certificat temporaire)
+- `deploy/README.md` (préparation du serveur : utilisateur, clé, pare-feu de l'hébergeur, Docker, `.env`, token GHCR, rollback)
+- `tests/deploy/deploy-sh.test.ts`, `tests/config/deploy-workflow.test.ts`
 
 **Validation**
 - [ ] Un merge sur `main` publie `ghcr.io/<owner>/grepmeifyoucan-web:<sha>`.
@@ -323,5 +325,5 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 
 ## Points à trancher en cours de route
 - [ ] Licence du code (MIT proposée), avant J15.
-- [ ] OS et taille du serveur, avant J19.
+- [x] OS et taille du serveur, avant J19 : VPS Hostinger, Ubuntu 26.04 LTS, 1 vCPU, 4 Go (SPEC §6.7).
 - [ ] Action « issue acceptée → PR » automatique : à ajouter après J20 si le volume de propositions le justifie.

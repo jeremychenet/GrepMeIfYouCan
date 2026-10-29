@@ -237,20 +237,20 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 ### 6.5 CI/CD (GitHub Actions)
 - **Sur PR** : lint + typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E (Playwright sur le site construit, `astro preview`), validation du schéma des fiches, **lint de danger**, unicité des ids, build Astro.
 - **Sur PR** : build des images Docker (sans push) pour vérifier qu'elles se construisent.
-- **Sur merge dans `main`** :
-  1. Build des images de production à partir des **mêmes Dockerfiles** que le dev (stages multi-étapes) :
-     - `web` : build Astro, puis les fichiers statiques sont copiés dans une image Nginx qui sert aussi de proxy vers Umami.
-  2. Push sur **GitHub Container Registry** (`ghcr.io`, privé), tag = SHA du commit (+ `main`).
-  3. Scan de vulnérabilités des images (Trivy). Une faille critique bloque le déploiement.
-  4. Connexion SSH au serveur, puis :
-     - `docker compose pull` ;
-     - `docker compose up -d` ;
-     - healthcheck sur `https://grepmeifyoucan.com/healthz`.
-- **Rollback** : redéployer le tag SHA précédent (`IMAGE_TAG=<sha> docker compose up -d`).
-- Clé SSH de déploiement dédiée, utilisateur non-root (membre du groupe `docker`), commande forcée dans `authorized_keys` limitée au script de déploiement. Token de lecture GHCR sur le serveur. Secrets stockés dans GitHub Actions Secrets.
+- **Sur merge dans `main`** (`.github/workflows/deploy.yml`, détail dans `deploy/README.md`) :
+  1. Build de l'image `web` de production à partir du **même Dockerfile** que le dev (stage `prod`) : build Astro, puis les fichiers statiques sont copiés dans une image Nginx qui sert aussi de proxy vers Umami.
+  2. Scan de vulnérabilités de l'image (Trivy, même image que `make scan`), **avant tout push** : une faille critique arrête tout, rien n'est publié ni déployé.
+  3. Push sur **GitHub Container Registry** (`ghcr.io`, privé), tag = SHA du commit (+ `main`).
+  4. Connexion SSH au serveur : la clé ne peut lancer que `deploy/deploy.sh` avec `deploy <sha>`. Le script :
+     - télécharge `compose.yaml` et `compose.prod.yaml` **à ce commit** (pas de git sur le serveur) ;
+     - `docker compose pull` puis `up -d --wait` (healthchecks de tous les services) ;
+     - si la nouvelle version n'est pas saine, relance la précédente et échoue.
+  5. Healthcheck sur `https://grepmeifyoucan.com/healthz` depuis l'extérieur.
+- **Rollback** : redéployer le SHA précédent, par le workflow lancé à la main (entrée `sha`) ou par `ssh deploy@<serveur> "deploy <sha>"`. L'image et les fichiers Compose de ce commit reviennent ensemble ; les données (volumes) ne sont pas restaurées.
+- Clé SSH de déploiement dédiée, utilisateur non-root `deploy` (membre du groupe `docker`, donc équivalent root : la commande forcée est la vraie barrière). Commande forcée à la fois dans `authorized_keys` (`restrict,command=…`, fichier appartenant à root) et dans `sshd` (`ForceCommand`, sans redirection de port ni TTY). `deploy.sh` est installé par un admin (`deploy/setup-server.sh`), jamais mis à jour par la CI. Token de lecture GHCR (PAT classique `read:packages`) sur le serveur. Secrets dans l'environnement GitHub `production`, limité aux branches protégées.
 
 ### 6.6 Environnement de développement local (Docker)
-**Phase actuelle : tout le développement se fait en local, sur macOS, entièrement conteneurisé.** Le domaine de production (`grepmeifyoucan.com`) n'est utilisé qu'à partir de M3, et il n'y a pas encore de serveur de production. Seuls Docker Desktop (ou OrbStack) et Git sont requis sur le Mac : pas de Node installé sur l'hôte.
+**Phase actuelle : tout le développement se fait en local, sur macOS, entièrement conteneurisé.** Le domaine de production (`grepmeifyoucan.com`) n'est utilisé qu'à partir de M3 ; le serveur de production (§6.7) est alimenté par le pipeline de déploiement (§6.5). Seuls Docker Desktop (ou OrbStack) et Git sont requis sur le Mac : pas de Node installé sur l'hôte.
 
 Les fichiers `compose.yaml` (services partagés) et `compose.dev.yaml` (services et réglages de dev) décrivent l'environnement :
 
@@ -286,9 +286,11 @@ open http://localhost:8080
 - Le Dockerfile `web` a des stages `dev` et `prod` : un seul fichier, deux cibles (`--target`). Le stage `prod` construit le site (`npm run build`, donc `lint-content` aussi) puis copie `dist/` et la conf Nginx dans `nginx-unprivileged` (variante `-slim`, même image que le proxy de dev). L'image est la même partout : `PUBLIC_BASE_URL` y vaut toujours `https://grepmeifyoucan.com`, et `PUBLIC_UMAMI_WEBSITE_ID` est passé au build.
 - **Production en local** (`make prod-local`) : les images de prod tournent sur `https://localhost` (ports `127.0.0.1:80` et `443`), avec un certificat auto-signé (`scripts/make-local-cert.sh`, dans `.cache/tls`, au même emplacement que celui de Let's Encrypt). `make check-prod` vérifie en-têtes, redirections, routes, durcissement des conteneurs et taille de l'image ; `make e2e-prod` lance toute la suite Playwright sur cette stack (vraie CSP) ; `make scan` passe l'image au scanner Trivy (archive `docker save`, socket Docker jamais monté).
 
-### 6.7 Serveur de production (plus tard)
+### 6.7 Serveur de production
 **Déploiement : Docker Compose sur le serveur**, avec les mêmes services qu'en local : `web` (Nginx + statique + proxy), `db` et `umami`, plus `certbot`.
-- **Sur l'hôte** : seuls Docker Engine + le plugin Compose, SSH et un pare-feu. Pas de Node, Nginx ni PostgreSQL installés directement.
+- **Serveur** : VPS Hostinger, Ubuntu 26.04 LTS, 1 vCPU, 4 Go de RAM, 48 Go de disque. Préparé par `deploy/setup-server.sh` (voir `deploy/README.md`).
+- **Sur l'hôte** : Docker Engine + le plugin Compose, SSH. Pas de Node, Nginx ni PostgreSQL installés pour le site (le Nginx de l'hôte est désactivé : 80/443 appartiennent au conteneur `web`). Le monitoring personnel du mainteneur (Grafana, Prometheus, node_exporter) peut y tourner, jamais exposé : accès par tunnel SSH.
+- **Pare-feu** : celui de l'hébergeur, en liste blanche (TCP 22, 80, 443 seulement). Il est hors du serveur, donc Docker ne peut pas le contourner.
 - **Exposition** : seul `web` publie les ports `80`/`443` (Nginx écoute sur `8080`/`8443` dans le conteneur, sans capacité). L'adresse vient de `WEB_BIND` : `127.0.0.1` par défaut, `0.0.0.0` dans le `.env` du serveur. Les hôtes inconnus ne reçoivent aucune réponse (444 en HTTP, poignée de main TLS refusée). `db` et `umami` restent sur un réseau Docker interne, sans port publié. Attention, Docker contourne `ufw` : on ne publie donc jamais d'autre port.
 - **TLS** : Let's Encrypt via un conteneur `certbot` (challenge HTTP-01, renouvellement automatique), certificats dans un volume partagé avec `web`, redirection HTTP→HTTPS.
 - **Durcissement des conteneurs** :
@@ -402,6 +404,6 @@ open http://localhost:8080
 4. **v2 (hors v1) — Comptes** : API, OAuth GitHub/Google, synchronisation favoris/historique, export et suppression de compte (RGPD).
 
 ## 11. Questions ouvertes
-- OS et taille du serveur : vérifier qu'il tient Nginx + PostgreSQL + Umami (besoins modestes).
+- ~~OS et taille du serveur~~ : Ubuntu 26.04 LTS, 1 vCPU, 4 Go (J19), largement suffisant pour Nginx + PostgreSQL + Umami.
 - Licence du code (MIT proposée).
 - Activer ou non dès M3 l'Action de conversion issue → PR.
