@@ -1,6 +1,8 @@
-# GrepMeIfYouCan — Spécification v1
+# GrepMeIfYouCan — Spécification
 
-> Trouver la bonne commande Linux / Infra / DevOps en moins de 10 secondes.
+> Trouver la bonne commande Linux / Infra / DevOps en moins de 5 secondes.
+
+Ce document décrit le site tel qu'il est livré (v1, en ligne sur `grepmeifyoucan.com` depuis le 2026-10-29). Les évolutions prévues sont au §10 et dans `PLAN.md` ; l'exploitation du serveur est détaillée dans `deploy/README.md`.
 
 ## 1. Vision & utilisateurs
 
@@ -14,16 +16,16 @@ Conséquences de conception :
 
 ### Indicateurs de succès
 - Une commande pertinente apparaît dans le top 3 pour une requête courante (« large files », « restart service », « delete pod »…).
-- Moins de 10 s entre l'arrivée sur le site et la commande copiée.
+- Moins de 5 s entre l'arrivée sur le site et la commande copiée.
 - Recherches sans résultat suivies via l'analytics, pour orienter l'enrichissement du contenu.
 
-## 2. Périmètre fonctionnel v1
+## 2. Périmètre fonctionnel
 
 ### 2.1 Unité de contenu : la fiche
 **Une fiche = un cas d'usage = une commande.** Exemple : « Find files larger than 1 GB » → `find {{path}} -size +{{1G}}`.
 Une fiche n'est pas une page outil. La page outil (`find`) regroupe les fiches qui l'utilisent.
 
-### 2.2 Domaines (catégories) v1
+### 2.2 Domaines (catégories)
 | Catégorie   | Exemples d'outils |
 |-------------|-------------------|
 | `linux`     | find, grep, ss, lsof, du, df, systemctl, journalctl, chmod, tar |
@@ -32,7 +34,7 @@ Une fiche n'est pas une page outil. La page outil (`find`) regroupe les fiches q
 | `cloud-iac` | terraform, ansible, aws, gcloud, az |
 | `git-ci`    | git, gh |
 
-**Volume au lancement : environ 50 fiches par catégorie (≈ 200 au total)**, issues de tldr-pages (voir §4). La catégorie `unix` (ajoutée après la mise en ligne, avec la suggestion #30) démarre avec les fiches proposées par les visiteurs.
+Volume à la mise en ligne : 231 fiches (linux 67, containers 64, git-ci 51, cloud-iac 48, unix 1), surtout adaptées de tldr-pages (§4). La catégorie `unix` s'enrichit des suggestions des visiteurs.
 
 ### 2.3 Recherche
 - Barre de recherche toujours visible, focus avec `/` ou `⌘K` / `Ctrl+K`.
@@ -40,7 +42,7 @@ Une fiche n'est pas une page outil. La page outil (`find`) regroupe les fiches q
   - Champs indexés et pondérés : titre > nom de l'outil > tags > commande > description.
   - Tolérance aux fautes de frappe, recherche par préfixe. Fautes admises par mot : aucune jusqu'à 3 lettres, 1 jusqu'à 6, 2 au-delà (une inversion de deux lettres compte pour 2).
   - Les fiches qui contiennent tous les mots de la requête viennent en premier, puis celles qui en contiennent au moins un (« list open ports » trouve aussi une fiche qui ne dit jamais « open »).
-  - Lib : MiniSearch (de préférence) ou Fuse.js.
+  - Moteur : MiniSearch.
   - Au plus 50 résultats affichés ; la ligne de statut indique le total.
 - **Filtres** par catégorie (chips, une seule à la fois) et par tag (plusieurs possibles, combinés en ET ; on ajoute un tag en cliquant sur un tag d'une fiche). Ils se combinent avec la requête.
 - L'état de la recherche est reflété dans l'URL (`?q=large+files&cat=linux&tag=disk`), donc partageable. Les tags d'une fiche pointent vers `/?tag=<tag>`.
@@ -57,7 +59,7 @@ Chaque fiche affiche :
 - les actions : **Copier**, **Favori ★**, et **Report an issue** sur la page de la fiche ;
 - la source et l'attribution (ex. « Adapted from tldr-pages, CC BY 4.0 »).
 
-Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (fichiers `c/<id>.html`). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique et des balises Open Graph, et figure dans `sitemap-index.xml`. Une URL inconnue renvoie une page 404 au style du site (`404.astro`, servie par Nginx), en `noindex`, sans URL canonique et hors sitemap ; une URL avec slash final redirige en 301 vers la version sans slash. `scripts/check-dist.ts` vérifie tout cela en CI après le build.
+Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le partage de lien. Les outils et les catégories ont aussi la leur (`/tools/<tool>`, `/categories/<category>`). Les URL n'ont pas de slash final (une URL avec slash redirige en 301). Chaque page a un `<title>`, une meta description (pour une fiche : sa description), une URL canonique, des balises Open Graph, et figure dans le sitemap. Une URL inconnue renvoie une page 404 au style du site, en `noindex`. `scripts/check-dist.ts` vérifie tout cela en CI.
 
 ### 2.5 Variables éditables
 - Syntaxe dans les données : `{{nom}}` ou `{{nom:valeur_par_défaut}}`, compatible avec les placeholders tldr.
@@ -101,10 +103,10 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 ### 2.9 Contributions
 Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par GitHub :
 - Lien global **« Suggest a command »** (en-tête, pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` reprenant les champs d'une fiche, avec un exemple dans chacun : titre, commande, description (obligatoires), catégorie, tags, plateformes (Linux, macOS, Unix), niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre de l'issue et le titre de la fiche (champ `card-title`, car `title` est réservé au titre de l'issue).
-- Les liens vers GitHub (Suggest, Report) s'ouvrent dans un **nouvel onglet** (↗, annoncé aux lecteurs d'écran) : le visiteur ne quitte pas le site.
+- Les liens vers GitHub (Suggest, Report) s'ouvrent dans un **nouvel onglet** (petite flèche en SVG, annoncée aux lecteurs d'écran) : le visiteur ne quitte pas le site.
 - Lien **« Report an issue »** sur la page de chaque fiche (`/c/<id>`, pas sur les lignes des listes) → formulaire `report-issue.yml` prérempli avec l'id et l'URL de la fiche ; type de problème et détails à remplir.
-- Les champs sont préremplis par les paramètres d'URL nommés d'après leur `id` dans le formulaire (`src/lib/github.ts`) ; un test vérifie que ces `id` existent. Les issues vides sont désactivées (`config.yml`). Labels : `suggestion`, `report`.
-- Traitement : relecture par le mainteneur. Option : une GitHub Action convertit une issue labellisée `accepted` en PR qui contient le fichier YAML. **Aucune publication sans merge manuel.**
+- Les champs sont préremplis par des paramètres d'URL (`src/lib/github.ts`). Les issues vides sont désactivées. Labels : `suggestion`, `report`.
+- Traitement : relecture par le mainteneur, qui écrit la fiche dans une PR. **Aucune publication sans merge manuel.** (Automatisation prévue en v2 : §10.)
 
 ## 3. Design & UX
 
@@ -112,7 +114,7 @@ Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par Gi
 Référence : maquette « oneliner » (fond papier, encre noire, accent orange, bandes de terminal noires).
 - **Thème sombre par défaut** pour tous les visiteurs (la préférence du système n'est pas suivie), thème clair (papier) disponible avec le bouton soleil/lune (même palette : fond papier, texte encre, même orange, même jaune). Le choix est mémorisé.
 - **En-tête** : le logo `grepmeifyoucan` à gauche (`me` et `you` en gris, pour faire ressortir `grep`, `if`, `can`), qui ramène à la recherche ; à droite « Suggest a command » (nouvel onglet), « Favorites », « History », puis le bouton de thème. Sur téléphone (< 480 px) : logo plus petit et « Suggest » au lieu de « Suggest a command », sur une seule ligne.
-- **Accueil** : l'accroche, au-dessus de la recherche, montre deux exécutions chronométrées comme par `time` : `$ time ask-llm "check if a service runs"` barrée et grisée, `real 0m20.0s`, puis `$ time grepmeifyoucan` en gras, `$` et `real 0m04.2s` en orange (l'argument est masqué sur téléphone). Ce bloc est décoratif (`aria-hidden`) ; le titre `h1`, masqué visuellement, donne la phrase aux lecteurs d'écran : « Faster than asking your LLM: type a few words, copy the command you had in mind in under 5 seconds. » La page tient dans l'écran, pied de page visible sans défiler, sur ordinateur (dès 1280×720) et sur un téléphone récent (390×664 visibles dans Safari : au moins la ligne de liens du pied de page) ; sur téléphone, une ligne par catégorie. Une URL avec recherche (`?q`, `?cat`, `?tag`) réserve au contraire la hauteur de l'écran pour les résultats, qui arrivent après le premier affichage (CLS). Vérifié par `tests/e2e/home.spec.ts`.
+- **Accueil** : l'accroche, au-dessus de la recherche, montre deux exécutions chronométrées comme par `time` : `$ time ask-llm "check if a service runs"` barrée et grisée, `real 0m20.0s`, puis `$ time grepmeifyoucan` en gras, `$` et `real 0m04.2s` en orange (l'argument est masqué sur téléphone). Ce bloc est décoratif (`aria-hidden`) ; le titre `h1`, masqué visuellement, donne la phrase aux lecteurs d'écran : « Faster than asking your LLM: type a few words, copy the command you had in mind in under 5 seconds. » La page tient dans l'écran, pied de page visible sans défiler, sur ordinateur (dès 1280×720) et sur un téléphone récent (390×664 visibles dans Safari : au moins la ligne de liens du pied de page) ; sur téléphone, une ligne par catégorie. Une URL avec recherche (`?q`, `?cat`, `?tag`) réserve au contraire la hauteur de l'écran pour les résultats, qui arrivent après le premier affichage (CLS).
 - Le texte d'exemple de la recherche (« find big files ») est plus pâle que le texte saisi (`--color-term-placeholder`, contraste 4,6:1, juste au-dessus du minimum AA), pour ne jamais passer pour une requête déjà tapée.
 - Polices auto-hébergées en woff2 (sous-ensemble latin + flèches) : **DejaVu Sans Mono** pour les commandes et l'interface technique, **TeX Gyre Heros** pour le texte, **TeX Gyre Heros Cn** (gras) pour les titres. Licences libres (Bitstream Vera / DejaVu, GUST Font License), fournies dans `public/fonts/`. Elles sont en `font-display: optional` (utilisées si elles sont prêtes au premier affichage, jamais échangées en cours de page) ; les polices de secours de la mono sont ajustées à la même largeur (`size-adjust`), pour que le texte ne bouge jamais.
 - Le thème est appliqué avant le premier affichage par un petit script externe bloquant (`/theme-init.js`), compatible CSP ; il marque aussi une URL avec recherche (`data-initial-search`). Sans JavaScript, le site reste en thème sombre et le bouton de thème est masqué.
@@ -168,7 +170,7 @@ source:
   license: CC-BY-4.0
   example: 1            # optionnel : numéro de l'exemple dans la page tldr (à partir de 1)
 ```
-- Le schéma est validé au build (Zod ou JSON Schema). Tout fichier invalide fait échouer la CI.
+- Le schéma (Zod) est validé avant chaque build. Tout fichier invalide fait échouer la CI.
 - `id` est unique et sert de slug d'URL.
 - `description` est **obligatoire** : une seule phrase courte (≤ 180 caractères) qui explique ce que fait la commande, et pas seulement le besoin. La CI rejette une description vide, trop longue, de plus d'une phrase ou identique au titre.
   - « Une phrase » : refusée si elle contient `.`, `!` ou `?` suivi d'un espace puis d'une majuscule. Les abréviations (« e.g. ») et les versions (« v1.2 ») restent acceptées.
@@ -181,52 +183,47 @@ source:
   - Variables : noms courts en snake_case (`{{path:.}}`, `{{lines:100}}`), valeur par défaut seulement si elle est évidente et sans risque ; **jamais de valeur par défaut pour la cible d'une commande destructive**.
   - `platforms` : `[linux]` pour ce qui est propre à Linux (systemd, `ss`, options GNU), `[linux, macos]` seulement si la commande a été vérifiée sur macOS ; `[unix]` pour ce qui est propre à un autre Unix (catégorie `unix`), avec le système précis dans le titre (« (OpenBSD) ») et en tag (`openbsd`), car la plateforme n'apparaît que sur la page de la fiche ; omis pour les autres catégories.
   - Fiche adaptée d'un exemple tldr : `source.type: tldr` avec `example`. Fiche écrite sans exemple tldr : `source.type: original`.
-- La validation tourne avant chaque build (`npm run build` = `lint-content` + `astro build`), et Astro revalide aussi chaque fiche avec le même schéma Zod.
 
-### 4.2 Import initial depuis tldr-pages
-- **Script d'import ponctuel** (`scripts/import-tldr.ts`) exécuté localement, pas au build :
-  1. Lit tldr-pages à un **commit épinglé**, pages en anglais (`pages/common`, `pages/linux`). Seules les pages retenues sont téléchargées depuis `raw.githubusercontent.com/<repo>/<sha>/pages/…` (l'image Docker n'a pas `git`), avec un cache local `.cache/tldr/<sha>/` ignoré par git.
-  2. Sélection d'une liste explicite d'outils par catégorie (voir §2.2) pour atteindre environ 50 exemples par catégorie.
-  3. Chaque exemple tldr devient une fiche : texte de l'exemple tldr → `title`, ligne de code → `command`. Les placeholders `{{...}}` sont conservés. tldr ne fournit pas de phrase expliquant ce que fait la commande : la `description` est donc **rédigée pour chaque fiche importée** (brouillon possible, puis relue dans la PR d'import). Une fiche sans description valide ne passe pas la CI.
-  4. Le `danger` est pré-rempli par le linter (voir §7.2), puis revu manuellement.
-  5. Conversion des placeholders tldr : `{{path/to/file}}` est conservé ; `{{[-r|--recursive]}}` et `{{[ps|container ls]}}` deviennent la forme longue écrite en dur ; une URL devient `{{url:<URL>}}` ; tout autre `:` dans un placeholder devient `_` (signalé à la relecture). Les exemples avec accolades échappées (`\{\{`), accolades ambiguës (`{{{`), caractères non ASCII ou invisibles sont écartés et listés dans le rapport.
-  6. Sortie : `content/drafts/<category>/<id>.yaml` (`description` vide), exclue du build et de `lint-content`, mais vérifiée par `lint-danger` en CI. L'import est idempotent : un brouillon existant n'est jamais écrasé sans `--force`, et une fiche déjà publiée (même id, ou même `source.page` + `source.example`) n'est pas recréée, même si son titre et sa commande ont été réécrits. Un exemple écarté à la relecture est aussi retiré de `scripts/tldr-selection.yaml`.
+### 4.2 Import depuis tldr-pages
+- `scripts/import-tldr.ts`, lancé à la main (`make import-tldr`), jamais au build : il lit tldr-pages (anglais, `pages/common` et `pages/linux`) à un **commit épinglé**, pour la liste explicite d'exemples de `scripts/tldr-selection.yaml`, et écrit un brouillon par exemple dans `content/drafts/<category>/` (hors build).
+- Placeholders : `{{path/to/file}}` conservé ; `{{[-r|--recursive]}}` → forme longue en dur ; URL → `{{url:<URL>}}` ; autre `:` → `_`. Les exemples ambigus (accolades échappées, non-ASCII) sont écartés et listés.
+- Le `danger` est pré-rempli par le linter (§7.2) ; la `description` est rédigée à la main. L'import est idempotent : il n'écrase pas un brouillon sans `--force` et ne recrée jamais une fiche publiée.
 - Le résultat est commité via **une PR relue** comme n'importe quelle contribution.
 - **Licence** : tldr-pages est sous CC BY 4.0. Attribution sur chaque fiche importée + page `/about` + fichier `CONTENT_LICENSE`. Le contenu original du site est publié sous CC BY 4.0, le code sous licence MIT (`LICENSE`).
 
 ## 5. Données & vie privée
 
-- **Aucun compte, aucune donnée personnelle stockée côté serveur en v1.**
+- **Aucun compte, aucune donnée personnelle stockée côté serveur.**
 - Données conservées sur l'appareil de l'utilisateur uniquement : favoris, historique de copie, thème choisi (clé `gmiyc:v1:theme`).
 - Analytics Umami sans cookies et sans données personnelles (voir §6.4). Les logs Nginx ont une rétention limitée (14 jours).
 - Une page « Privacy » explique ces points simplement.
-- **Comptes utilisateurs (OAuth GitHub/Google) et synchronisation multi-appareils : reportés en v2** (voir §9).
+- Comptes utilisateurs et synchronisation multi-appareils : hors périmètre actuel (§9).
 
 ## 6. Architecture technique
 
 ### 6.1 Vue d'ensemble
 ```
-                 ┌──────── Serveur (Docker Compose, Nginx, TLS) ──────────────┐
-Navigateur ──►   │  /            → fichiers statiques Astro (build CI)        │
-                                  │  /stats/*     → Umami (analytics self-hosted)              │
-                 │                  └── PostgreSQL (données Umami uniquement)  │
-                 └────────────────────────────────────────────────────────────┘
+                ┌──────── Serveur (Docker Compose, Nginx, TLS) ───────────┐
+Navigateur ──►  │  /          → fichiers statiques Astro (build CI)       │
+                │  /stats/*   → Umami (analytics auto-hébergé)            │
+                │                └── PostgreSQL (données Umami seulement) │
+                └─────────────────────────────────────────────────────────┘
 ```
-- **Site 100 % statique, pas d'API en v1.** Le seul composant dynamique est Umami (analytics).
+- **Site 100 % statique, pas d'API.** Le seul composant dynamique est Umami (analytics).
 - **Même domaine** pour le site et les stats : pas de CORS, CSP simple.
 - **Domaine de production : `grepmeifyoucan.com`**. URL canonique `https://grepmeifyoucan.com` ; `www.grepmeifyoucan.com` redirige en 301 vers l'apex.
   - `PUBLIC_BASE_URL=https://grepmeifyoucan.com` : utilisé pour le sitemap, les URL canoniques et les liens de partage. Valeur par défaut si la variable est absente (en CI par exemple).
-  - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS activé progressivement (`max-age=300` jusqu'à la mise en ligne, 1 an depuis J20 ; `preload` envisagé plus tard, car difficile à annuler).
-  - DNS : enregistrements A (apex et `www`) vers le serveur, CAA limité à Let's Encrypt. Pas d'AAAA en v1 : Docker ne publie 80/443 qu'en IPv4, et un AAAA sans écoute IPv6 casse le site pour les visiteurs IPv6 (et la validation Let's Encrypt, qui essaie l'IPv6 d'abord). L'IPv6 demandera un réseau Docker IPv6 et `listen [::]`.
+  - Certificat TLS Let's Encrypt pour l'apex et `www` ; HSTS 1 an, sans `preload` (difficile à annuler).
+  - DNS : enregistrements A (apex et `www`) vers le serveur, CAA limité à Let's Encrypt. Pas d'AAAA : Docker ne publie 80/443 qu'en IPv4, et un AAAA sans écoute IPv6 casse le site pour les visiteurs IPv6 (et la validation Let's Encrypt, qui essaie l'IPv6 d'abord). L'IPv6 demandera un réseau Docker IPv6 et `listen [::]`.
 
 ### 6.2 Front
 - **Astro + TypeScript**, génération statique : une page par fiche, par outil et par catégorie, plus l'accueil.
 - Îlots interactifs (recherche, variables, favoris) en TS léger, éventuellement avec Preact ou Solid si nécessaire. Le JS de la page d'accueil reste léger.
-- Index de recherche généré au build (`/search-index.json`), chargé à la première interaction ou en idle, et mis en cache.
+- Index de recherche généré au build (`/search-index.json`), chargé au premier focus ou à la première frappe, sinon quand le navigateur est inactif, et revalidé à chaque visite.
 - Les fonctions de favoris et d'historique passent par une couche « store » unique, basée sur `localStorage` (voir §2.8).
 
 ### 6.3 Backend
-- **Aucune API ni base applicative en v1.** Tout le site est généré au build et servi par Nginx.
+- **Aucune API ni base applicative.** Tout le site est généré au build et servi par Nginx.
 - PostgreSQL n'est présent que pour Umami.
 
 ### 6.4 Analytics
@@ -235,81 +232,32 @@ Navigateur ──►   │  /            → fichiers statiques Astro (build CI)
 - Le script est servi depuis le même domaine (`/stats/script.js`), conforme à la CSP. Il n'est ajouté aux pages que si `PUBLIC_UMAMI_WEBSITE_ID` (UUID du site dans Umami, validé au build) est défini : sans lui (CI, Lighthouse, `make up`), aucun traceur. Chargé en `defer`, il ne bloque jamais l'affichage.
 - Règles d'envoi : `copy` seulement après une copie réussie ; `favorite` seulement à l'ajout ; `search_no_result` 1,5 s après la dernière frappe, si la requête fait au moins 2 caractères et ne donne aucun résultat, une seule fois par requête et par page. La requête est nettoyée (caractères invisibles retirés, espaces regroupés, minuscules) puis tronquée à 100 caractères.
 - Les pages vues n'incluent ni la query string (`data-exclude-search`, donc jamais `?q=…`) ni le hash. Do Not Track n'est pas suivi (choix du mainteneur, 2026-10-30) : la mesure est sans cookie, anonyme et agrégée, et la page Privacy le dit.
-- Seules deux URLs passent par le proxy : `/stats/script.js` et `/stats/api/send` (POST uniquement, corps ≤ 8 ko, 10 req/s par IP avec rafale de 20, pas de log d'accès car le Referer contient la recherche). Tout autre chemin sous `/stats` renvoie 404 : l'interface d'administration n'est jamais publique (en dev : `http://127.0.0.1:3001` ; en prod : tunnel SSH). Le proxy retire les cookies et les en-têtes de sécurité d'Umami (plus permissifs) au profit des siens, et résout Umami à la requête : il démarre sans lui, et `/stats` répond 502 tant qu'il est arrêté.
-- Le site Umami est créé une fois à la main dans le tableau de bord (Settings > Websites), et son id est reporté dans `.env`. Le compte par défaut (`admin` / `umami`) doit être changé à la première connexion.
+- Seules deux URLs passent par le proxy : `/stats/script.js` et `/stats/api/send` (POST uniquement, corps ≤ 8 ko, limité en débit par IP, sans log d'accès car le Referer contient la recherche). Tout autre chemin sous `/stats` renvoie 404 : l'administration n'est jamais publique (en dev : `http://127.0.0.1:3001` ; en prod : tunnel SSH). Le proxy remplace les cookies et en-têtes d'Umami par les siens, et démarre même si Umami est arrêté.
+- Le site Umami est créé une fois à la main dans le tableau de bord (Settings > Websites) ; son id va dans `.env` en local et dans la variable GitHub `PUBLIC_UMAMI_WEBSITE_ID` pour les builds de production. Le mot de passe par défaut (`admin` / `umami`) est changé à la première connexion (fait en production le 2026-10-30).
 
 ### 6.5 CI/CD (GitHub Actions)
-- **Sur PR** : lint + typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E (Playwright sur le site construit, `astro preview`), validation du schéma des fiches, **lint de danger**, unicité des ids, build Astro.
-- **Sur PR** : build des images Docker (sans push) pour vérifier qu'elles se construisent.
-- **Sur merge dans `main`** (`.github/workflows/deploy.yml`, détail dans `deploy/README.md`) :
-  1. Build de l'image `web` de production à partir du **même Dockerfile** que le dev (stage `prod`) : build Astro, puis les fichiers statiques sont copiés dans une image Nginx qui sert aussi de proxy vers Umami.
-  2. Scan de vulnérabilités de l'image (Trivy, même image que `make scan`), **avant tout push** : une faille critique arrête tout, rien n'est publié ni déployé.
-  3. Push sur **GitHub Container Registry** (`ghcr.io`, privé), tag = SHA du commit (+ `main`).
-  4. Connexion SSH au serveur : la clé ne peut lancer que `deploy/deploy.sh` avec `deploy <sha>`. Le script :
-     - télécharge `compose.yaml` et `compose.prod.yaml` **à ce commit** (pas de git sur le serveur) ;
-     - `docker compose pull` puis `up -d --wait` (healthchecks de tous les services) ;
-     - si la nouvelle version n'est pas saine, relance la précédente et échoue.
-  5. Healthcheck sur `https://grepmeifyoucan.com/healthz` depuis l'extérieur.
-- **Rollback** : redéployer le SHA précédent, par le workflow lancé à la main (entrée `sha`) ou par `ssh deploy@<serveur> "deploy <sha>"`. L'image et les fichiers Compose de ce commit reviennent ensemble ; les données (volumes) ne sont pas restaurées.
-- Clé SSH de déploiement dédiée, utilisateur non-root `deploy` (membre du groupe `docker`, donc équivalent root : la commande forcée est la vraie barrière). Commande forcée à la fois dans `authorized_keys` (`restrict,command=…`, fichier appartenant à root) et dans `sshd` (`ForceCommand`, sans redirection de port ni TTY). `deploy.sh` est installé par un admin (`deploy/setup-server.sh`), jamais mis à jour par la CI. Token de lecture GHCR (PAT classique `read:packages`) sur le serveur. Secrets dans l'environnement GitHub `production`, limité aux branches protégées.
+- **Sur PR** : typecheck, tests unitaires avec **seuils de couverture** (§8.1), tests E2E (Playwright sur le site construit), validation des fiches et **lint de danger**, build, Lighthouse, build des images Docker (sans push).
+- **Sur merge dans `main`** : build de l'image de production (même Dockerfile que le dev), **scan Trivy avant tout push** (une faille critique arrête tout), push sur GHCR (privé, tag = SHA), déploiement par SSH, puis healthcheck `https://grepmeifyoucan.com/healthz` depuis l'extérieur.
+- Sur le serveur, la clé de déploiement ne peut lancer qu'une commande forcée (`deploy <sha>`) : elle récupère les fichiers Compose de ce commit, démarre la nouvelle version et relance la précédente si elle n'est pas saine. Cette commande est installée par un admin, jamais par la CI.
+- **Rollback** : redéployer un SHA précédent (workflow lancé à la main avec l'entrée `sha`). Les données (volumes) ne sont pas restaurées.
+- Détails (clés, secrets de l'environnement GitHub `production`, mise en place) : `deploy/README.md`.
 
 ### 6.6 Environnement de développement local (Docker)
-**Phase actuelle : tout le développement se fait en local, sur macOS, entièrement conteneurisé.** Le domaine de production (`grepmeifyoucan.com`) n'est utilisé qu'à partir de M3 ; le serveur de production (§6.7) est alimenté par le pipeline de déploiement (§6.5). Seuls Docker Desktop (ou OrbStack) et Git sont requis sur le Mac : pas de Node installé sur l'hôte.
-
-Les fichiers `compose.yaml` (services partagés) et `compose.dev.yaml` (services et réglages de dev) décrivent l'environnement :
-
-| Service  | Image / build | Rôle | Port hôte |
-|----------|---------------|------|-----------|
-| `proxy`  | `nginx-unprivileged:<version épinglée>-slim` (dev uniquement : en prod, `web` joue ce rôle) | Point d'entrée unique : `/` → `web`, `/stats` → `umami`. Mêmes routes et en-têtes de sécurité (CSP…) qu'en production | `8080` |
-| `web`    | `docker/web.Dockerfile` (Node LTS) | `astro dev` avec rechargement à chaud | interne |
-| `db`     | `postgres:<version épinglée>` | Base `umami`. Profil Compose `analytics` | interne |
-| `umami`  | `ghcr.io/umami-software/umami:<version épinglée>` | Analytics. Profil Compose `analytics`, optionnel en dev | `3001` (admin, dev uniquement) |
-
-Règles :
-- **Une seule URL locale** : `http://localhost:8080`. Passer par le proxy reproduit la production : mêmes routes, CSP réaliste.
-- `make up` lance seulement `proxy` + `web` ; `make up-analytics` ajoute `db` + `umami`.
-- **Code source monté en bind mount** pour le rechargement à chaud. `node_modules` reste dans un volume nommé, pour ne pas mélanger les binaires macOS et Linux.
-- Données PostgreSQL (Umami) dans un volume nommé (`db-data`), persistantes entre redémarrages (`make clean` les supprime). `db` n'est que sur un réseau Docker interne (`analytics`) ; `umami` est sur ce réseau et sur celui du proxy. Les tables sont créées par Umami lui-même au démarrage : pas de script SQL d'initialisation.
-- Les ports sont exposés sur `127.0.0.1` uniquement, jamais sur `0.0.0.0`.
-- Toutes les images ont une **version épinglée** (pas de `latest`). Les conteneurs applicatifs tournent en utilisateur non-root.
-- Configuration via `.env` (non commité) ; un `.env.example` documente chaque variable : `UMAMI_DB_PASSWORD` et `UMAMI_APP_SECRET` (hex, `openssl rand -hex 32`, vérifiés par `make up-analytics`), `PUBLIC_UMAMI_WEBSITE_ID`, `PUBLIC_BASE_URL=http://localhost:8080`.
-- Les scripts outillage (import tldr, lint de danger, validation des fiches, tests) tournent eux aussi dans un conteneur : `docker compose run --rm web npm run <script>`.
-- Un `Makefile` (ou des scripts npm) fournit les raccourcis : `make up`, `make down`, `make logs`, `make import-tldr`, `make lint-content`, `make test`.
-
-Démarrage attendu pour un nouveau contributeur :
-```bash
-cp .env.example .env
-make up            # docker compose up -d --build
-open http://localhost:8080
-```
-
-**Lien avec la production : les mêmes conteneurs tournent en local et sur le serveur.**
-- Un `compose.yaml` de base est partagé, avec deux surcharges :
-  - `compose.dev.yaml` : bind mounts, `astro dev`, port sur localhost ;
-  - `compose.prod.yaml` : images taguées depuis GHCR, pas de bind mount de code, `restart: unless-stopped`, durcissement. Nom de projet distinct (`grepmeifyoucan-prod`) : `make prod-local` ne touche jamais aux conteneurs de dev.
-- Le Dockerfile `web` a des stages `dev` et `prod` : un seul fichier, deux cibles (`--target`). Le stage `prod` construit le site (`npm run build`, donc `lint-content` aussi) puis copie `dist/` et la conf Nginx dans `nginx-unprivileged` (variante `-slim`, même image que le proxy de dev). L'image est la même partout : `PUBLIC_BASE_URL` y vaut toujours `https://grepmeifyoucan.com`, et `PUBLIC_UMAMI_WEBSITE_ID` est passé au build.
-- **Production en local** (`make prod-local`) : les images de prod tournent sur `https://localhost` (ports `127.0.0.1:80` et `443`), avec un certificat auto-signé (`scripts/make-local-cert.sh`, dans `.cache/tls`, au même emplacement que celui de Let's Encrypt). `make check-prod` vérifie en-têtes, redirections, routes, durcissement des conteneurs et taille de l'image ; `make e2e-prod` lance toute la suite Playwright sur cette stack (vraie CSP) ; `make scan` passe l'image au scanner Trivy (archive `docker save`, socket Docker jamais monté).
+Tout tourne en conteneurs sur le Mac : seuls Docker Desktop (ou OrbStack), `make` et Git sont requis, pas de Node sur l'hôte. Les commandes sont dans le `README.md`.
+- `compose.yaml` (services partagés `web`, `db`, `umami`) + `compose.dev.yaml` (proxy Nginx local, `astro dev` avec rechargement à chaud, code en bind mount, `node_modules` en volume nommé) + `compose.prod.yaml` (images GHCR, durcissement, `certbot`, `backup`, nom de projet distinct `grepmeifyoucan-prod`).
+- **Une seule URL locale** : `http://localhost:8080`, par le proxy, avec les mêmes routes et en-têtes (CSP…) qu'en production. Ports publiés sur `127.0.0.1` uniquement.
+- Umami et PostgreSQL sont optionnels en dev (profil Compose `analytics`) ; `db` n'est que sur un réseau Docker interne.
+- Toutes les images ont une **version épinglée** (pas de `latest`) ; les conteneurs tournent en non-root. Secrets dans `.env` (non commité, documenté par `.env.example`).
+- Un seul Dockerfile `web`, stages `dev` et `prod` : la même image de production tourne en local (`make prod-local`, certificat auto-signé, vérifiée par `make check-prod`, `make e2e-prod` et `make scan`) et sur le serveur.
 
 ### 6.7 Serveur de production
-**Déploiement : Docker Compose sur le serveur**, avec les mêmes services qu'en local : `web` (Nginx + statique + proxy), `db` et `umami`, plus `certbot`.
-- **Serveur** : VPS Hostinger, Ubuntu 26.04 LTS, 1 vCPU, 4 Go de RAM, 48 Go de disque. Préparé par `deploy/setup-server.sh` (voir `deploy/README.md`).
-- **Sur l'hôte** : Docker Engine + le plugin Compose, SSH. Pas de Node, Nginx ni PostgreSQL installés pour le site (le Nginx de l'hôte est désactivé : 80/443 appartiennent au conteneur `web`). Le monitoring personnel du mainteneur (Grafana, Prometheus, node_exporter) peut y tourner, jamais exposé : accès par tunnel SSH.
-- **Pare-feu** : celui de l'hébergeur, en liste blanche (TCP 22, 80, 443 seulement). Il est hors du serveur, donc Docker ne peut pas le contourner.
-- **Exposition** : seul `web` publie les ports `80`/`443` (Nginx écoute sur `8080`/`8443` dans le conteneur, sans capacité). L'adresse vient de `WEB_BIND` : `127.0.0.1` par défaut, `0.0.0.0` dans le `.env` du serveur. Les hôtes inconnus ne reçoivent aucune réponse (444 en HTTP, poignée de main TLS refusée). `db` et `umami` restent sur un réseau Docker interne, sans port publié. Attention, Docker contourne `ufw` : on ne publie donc jamais d'autre port.
-- **TLS** : Let's Encrypt via un conteneur `certbot` (challenge HTTP-01 en webroot, tentative de renouvellement deux fois par jour), certificats dans un volume partagé avec `web`, redirection HTTP→HTTPS. `certbot` tourne sous l'uid de Nginx (101) : la clé privée reste en `600` et lisible par `web`, sans rien ouvrir. `web` recharge sa configuration toutes les 6 h pour prendre un certificat renouvelé (le socket Docker n'est jamais monté, `certbot` ne peut donc pas le prévenir). Le premier certificat est demandé par `deploy/setup-server.sh` (essai à blanc sur l'environnement de test de Let's Encrypt d'abord), le site tournant encore avec un certificat temporaire.
-- **Durcissement des conteneurs** :
-  - utilisateur non-root ;
-  - `read_only: true` (avec `tmpfs` si nécessaire), pour les trois services ;
-  - `cap_drop: [ALL]`, sans exception (`web` écoute sur des ports non privilégiés ; `db` tourne directement sous l'utilisateur `postgres`, uid 70) ;
-  - `security_opt: no-new-privileges:true` ;
-  - limites mémoire, CPU et nombre de processus ;
-  - healthchecks ;
-  - socket Docker jamais monté dans un conteneur.
-- **Secrets** : fichier `.env` de production sur le serveur (`chmod 600`, jamais commité), ou secrets Compose.
-- **Données** : volumes nommés pour PostgreSQL et les certificats. `pg_dump` quotidien par le service `backup` (même image que `db`, 14 jours gardés dans `/opt/grepmeifyoucan/backups`). Copie hors serveur par `make backup-pull` depuis le Mac du mainteneur (au moins chaque semaine), qui restaure aussitôt la sauvegarde la plus récente dans un PostgreSQL vierge. Un stockage objet automatique pourra remplacer cette copie manuelle.
-- **Logs** : driver `json-file` avec rotation (`max-size`, `max-file`).
-- **Cache et compression** : fichiers à nom haché (`/_astro/`) en cache 1 an, polices 30 jours, pages et `search-index.json` revalidés à chaque visite (`no-cache`), pour qu'un déploiement soit visible tout de suite ; gzip sur les fichiers texte. Seul `GET` est accepté sur le site statique.
-- **Mises à jour** : OS de l'hôte en mises à jour de sécurité automatiques (`unattended-upgrades`). Images de base reconstruites régulièrement (Dependabot sur les Dockerfiles).
+Docker Compose sur un VPS Hostinger (Ubuntu 26.04 LTS, 1 vCPU, 4 Go), avec les mêmes services qu'en local plus `certbot` et `backup`. Mise en place et exploitation : `deploy/README.md`.
+- **Pare-feu** de l'hébergeur en liste blanche (TCP 22, 80, 443). Seul `web` publie 80/443 ; `db` et `umami` n'ont aucun port publié. Les hôtes inconnus ne reçoivent aucune réponse.
+- **TLS** Let's Encrypt (challenge HTTP-01, renouvellement automatique), redirection HTTP → HTTPS.
+- **Durcissement de chaque conteneur** : non-root, système de fichiers en lecture seule, aucune capacité Linux, `no-new-privileges`, limites mémoire/CPU/processus, healthcheck, rotation des logs. Le socket Docker n'est jamais monté.
+- **Sauvegardes** : `pg_dump` quotidien de la base Umami (14 jours sur le serveur) ; copie hors serveur au moins chaque semaine (`make backup-pull`), avec restauration testée à chaque copie.
+- **Cache** : fichiers à nom haché en cache 1 an, polices 30 jours, pages et index revalidés à chaque visite ; gzip.
+- **Mises à jour** : sécurité de l'OS automatique ; images suivies par Dependabot.
 
 ## 7. Sécurité
 
@@ -327,7 +275,7 @@ open http://localhost:8080
 ### 7.2 Lint de danger en CI
 - Le linter détecte des patterns à risque : `rm -rf`, `dd `, `mkfs`, `> /dev/sd*`, `chmod -R 777`, `curl|wget … | (sh|bash)`, `base64 -d | sh`, `:(){ :|:& };:`, `--force`, `terraform destroy`, `kubectl delete`, `git push --force`, `git reset --hard`…
 - Chaque règle a un **niveau minimum** : `caution` ou `destructive`. Si le niveau déclaré est inférieur → **échec de la CI et du build**. Un niveau plus élevé que nécessaire est toujours accepté.
-  - Les règles sont dans `src/lib/danger-patterns.ts`. Elles ajoutent à la liste ci-dessus `find -delete`, `wipefs`, `shred`, `helm uninstall`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive`, `rsync --delete…`/`--remove-source-files`, `docker compose down -v`/`docker volume rm`, la suppression de ressources cloud (`aws … delete-*`/`terminate-*`, `gcloud … delete`, `az … delete`), `git push --delete`/`--prune`/`:branche`, `git branch -D` et `git stash clear` (destructive), ainsi que `rm` simple, `kill -9`/`pkill`/`killall`, tout `--force…`, `git rebase`/`commit --amend`, `git branch -d`, `git stash drop`, `terraform apply`, `ansible-playbook` hors mode `--check` et `ansible -m shell|command|raw|script`, `gh pr merge`, `gh workflow run`/`gh run rerun` (caution).
+  - Les règles sont dans `src/lib/danger-patterns.ts` (chacune avec ses exemples testés). En plus de la liste ci-dessus, elles couvrent notamment les suppressions récursives ou forcées (`find -delete`, `git clean -f`, `docker … prune`, `aws s3 rm --recursive`, `rsync --delete`), la suppression de ressources cloud ou Kubernetes (`destructive`), et les commandes qui modifient l'état ou l'historique (`rm`, `kill -9`, `--force…`, `git rebase`, `terraform apply`, `ansible-playbook` hors `--check`… : `caution`).
   - `terraform plan -destroy` n'est pas signalé : il affiche seulement ce que `destroy` supprimerait.
   - Le `-f` court n'est détecté que là où il est dangereux (`git push -f`, `git clean -f`, `rm -rf`), pour éviter les faux positifs sur `tail -f` ou `ls -f`.
   - Les placeholders sont analysés tels qu'ils seront copiés : `{{nom:défaut}}` est remplacé par sa valeur par défaut, `{{nom}}` par son nom, et un `|` à l'intérieur (alternatives tldr comme `{{f|d}}`) n'est pas lu comme un pipe.
@@ -353,18 +301,23 @@ open http://localhost:8080
   - `Referrer-Policy: strict-origin-when-cross-origin` ;
   - `Permissions-Policy` restrictive.
 - Aucun script, police ou CDN tiers : tout est auto-hébergé.
-- **Écarts dev / prod** (proxy local, §6.6) : les en-têtes sont les mêmes, à trois exceptions près, toutes imposées par le rechargement à chaud ou par `localhost`.
+- **Écarts dev / prod** (proxy local, §6.6) : les en-têtes sont les mêmes, à quelques exceptions près, imposées par le rechargement à chaud ou par `localhost`.
   - La CSP de dev ajoute `style-src 'unsafe-inline'` (styles injectés par Vite) et `connect-src ws://<host>` (WebSocket HMR). Les scripts inline restent interdits même en dev, et la barre d'outils de dev d'Astro est désactivée pour cette raison.
   - HSTS n'est envoyé qu'en production : en local, il forcerait HTTPS sur `localhost` pour tous les projets.
   - La CSP stricte de prod est vérifiée sur le vrai build : `make e2e-prod` (toute la suite E2E derrière le Nginx de prod) et `make check-prod`. Un test garde la CSP de dev égale à celle de prod plus ces deux assouplissements.
-- Pas d'API, donc pas de surface d'authentification ni d'écriture côté serveur en v1.
-- Rate limiting Nginx sur `/stats/api/send` (collecte Umami). L'interface d'administration Umami n'est pas exposée publiquement (accès via tunnel SSH, ou restreint par IP).
+- Pas d'API, donc pas de surface d'authentification ni d'écriture côté serveur.
+- Rate limiting Nginx sur `/stats/api/send` (collecte Umami). L'interface d'administration Umami n'est pas exposée publiquement (tunnel SSH).
 - Les données lues depuis `localStorage` sont validées avant usage et ne sont jamais injectées comme HTML.
 - Les secrets (mot de passe DB Umami, secret Umami) sont passés en variables d'environnement, jamais commités.
 - Dépendances : Dependabot + `npm audit` en CI.
 
 ## 8. Exigences non fonctionnelles
-- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s (URL de recherche : < 1,8 s) ; CLS < 0,1 ; résultat de recherche < 50 ms pour environ 1000 fiches. En CI, Lighthouse simule une 4G lente sur `dist/` servi par son serveur statique : le budget y est **LCP ≤ 1,6 s** (la simulation varie de 1,36 à 1,51 s selon l'arrivée des polices), sauf pour une URL de recherche (`/?q=`) : **≤ 2,0 s**, car ses résultats attendent les scripts et l'index (1,81 s simulé ; jusqu'à la catégorie Unix, la liste des catégories, affichée avant les résultats, masquait ce temps) ; les 1,5 s se vérifient sur le vrai serveur (`make lighthouse-prod`), sauf l'URL de recherche : **≤ 1,8 s** (1,50–1,51 s mesurés après la mise en ligne de la catégorie Unix, quand la mesure est passée sur les résultats).
+- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s (URL de recherche : < 1,8 s) ; CLS < 0,1 ; résultat de recherche < 50 ms pour environ 1000 fiches. Une URL de recherche a un budget plus large, car ses résultats attendent les scripts et l'index.
+
+  | Budget LCP | Pages | URL de recherche (`/?q=`) |
+  |---|---|---|
+  | CI (`make lighthouse`, 4G lente simulée sur `dist/`) | ≤ 1,6 s | ≤ 2,0 s |
+  | Production (`make lighthouse-prod`) | ≤ 1,5 s | ≤ 1,8 s |
 - **SEO** : pages statiques par fiche, `<title>` et meta description, sitemap.xml, données structurées si pertinent.
 - **Compatibilité** : deux dernières versions de Chrome, Firefox, Safari, Edge ; iOS Safari et Chrome Android.
 - **Disponibilité** : le site fonctionne même si Umami est en panne (les analytics ne bloquent jamais l'affichage).
@@ -376,7 +329,7 @@ open http://localhost:8080
 |---|---|---|
 | Unitaire | **Vitest** | Logique pure de `src/lib/` et `scripts/` : recherche et pertinence, templates de variables, copie, store local, liens GitHub, import tldr, schéma, lint de danger |
 | Contenu | Vitest + `make lint-content` | Chaque nouvelle règle de schéma ou pattern de danger a au moins un cas positif et un cas négatif (fixtures dans `tests/fixtures/`) |
-| End-to-end | **Playwright** | Parcours utilisateur : recherche → copie, clavier, favoris/historique, export/import, mobile (375 px), accessibilité (axe) |
+| End-to-end | **Playwright** | Parcours utilisateur : recherche → copie, clavier, favoris/historique, export/import, mobile, accueil sans défilement, accessibilité (axe) |
 | Performance | Lighthouse CI | Budgets du §8 |
 
 - **Bug** : on écrit d'abord un test qui reproduit le bug et échoue, puis on corrige.
@@ -389,25 +342,17 @@ open http://localhost:8080
 - Les seuils ne baissent jamais pour faire passer une PR. Tout changement de seuil se fait par une PR dédiée, qui le justifie.
 - Tests déterministes : pas de réseau (les fixtures tldr sont locales), pas de dépendance à l'heure (horloge simulée), pas de `sleep` dans Playwright (attentes sur l'état).
 
-## 9. Hors périmètre v1
+## 9. Hors périmètre
 - Génération ou recherche de commandes par **IA / langage naturel**.
 - **Formulaire de soumission intégré et panel admin** : les contributions passent par les issues GitHub.
 - **Exécution de commandes** ou terminal web / sandbox.
-- **Comptes utilisateurs** (OAuth GitHub/Google), synchronisation des favoris et de l'historique entre appareils, API et base applicative : **prévus en v2**.
+- **Comptes utilisateurs** (OAuth GitHub/Google), synchronisation des favoris et de l'historique entre appareils, API et base applicative (candidats pour la v2, à décider avec le mainteneur).
 - Connexion email/mot de passe, 2FA maison.
 - Interface et contenu en **français** ou multilingue.
 - Commentaires, votes ou notes sur les fiches.
 - Applications mobiles natives, extension navigateur, CLI.
 - Fiches pour Windows / PowerShell.
 
-## 10. Jalons
-0. **M0 — Environnement local** : `compose.yaml`, Dockerfile `web`, proxy Nginx local, profil analytics (PostgreSQL + Umami), `.env.example`, Makefile, CI qui build les images.
-1. **M1 — Contenu** : schéma YAML, script d'import tldr, environ 200 fiches revues, lint de danger, CI de validation.
-2. **M2 — Site statique** : Astro, recherche, filtres, fiches, variables, copie sécurisée, danger, favoris et historique locaux (+ export/import), thèmes, responsive, clavier, page Privacy.
-3. **M3 — Mise en production** : serveur durci, Docker Compose de production, TLS sur `grepmeifyoucan.com`, pipeline build → GHCR → déploiement SSH, issue forms GitHub, Umami.
-4. **v2 (hors v1) — Comptes** : API, OAuth GitHub/Google, synchronisation favoris/historique, export et suppression de compte (RGPD).
-
-## 11. Questions ouvertes
-- ~~OS et taille du serveur~~ : Ubuntu 26.04 LTS, 1 vCPU, 4 Go (J19), largement suffisant pour Nginx + PostgreSQL + Umami.
-- Licence du code (MIT proposée).
-- Activer ou non dès M3 l'Action de conversion issue → PR.
+## 10. Évolutions (v2)
+La v1 (jalons J1 → J20, plan archivé dans `docs/archive/PLAN-v1.md`) est livrée. La v2 est planifiée dans `PLAN.md` à partir de la liste du mainteneur. Déjà retenu :
+- une GitHub Action qui convertit une issue de suggestion labellisée `accepted` en PR contenant le fichier YAML de la fiche, toujours relue et fusionnée à la main.
