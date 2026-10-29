@@ -34,7 +34,7 @@ Everything runs in Docker; nothing (not even Node) is installed on the macOS hos
 | `make lint-content` | Schema validation + danger lint of `content/commands/**` |
 | `make build` / `make check-dist` | Build `dist/`, then check it: one page per card/tool/category, title, meta description, canonical, danger badge/warning, sitemap (CI runs both) |
 | `make import-tldr` | Regenerate drafts from tldr-pages at the pinned SHA (`ARGS=--force` overwrites edited drafts) |
-| `make lighthouse` | Build in `web`, then Lighthouse CI (mobile) in the `e2e` image on `dist/` (budgets in `lighthouserc.json`: ≥ 0.95 on the 4 categories, LCP ≤ 1.6 s simulated) |
+| `make lighthouse` | Build in `web`, then Lighthouse CI (mobile) in the `e2e` image on `dist/` (budgets in `lighthouserc.json` (`assertMatrix`): ≥ 0.95 on the 4 categories, LCP ≤ 1.6 s simulated, ≤ 2.0 s on the `?q=` URL whose results wait for the scripts and the index) |
 | `make prod-local` / `make prod-down` / `make prod-logs` | Production images (+ Umami, needs the `.env` secrets) on https://localhost (127.0.0.1:80/443, self-signed cert in `.cache/tls`), Compose project `grepmeifyoucan-prod` |
 | `make check-prod` | `scripts/check-prod.sh` on prod-local: headers + strict CSP, HSTS only for the public domain, redirects, routes, cache/gzip, `docker inspect` hardening of every service, image < 50 MB |
 | `make e2e-prod` | The whole Playwright suite against prod-local (real Nginx, strict CSP), from inside the web container's network (`https://localhost:8443`) |
