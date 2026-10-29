@@ -1,6 +1,32 @@
 ---
-// Marks a link that opens in a new tab (GitHub issue forms): a visible arrow,
-// and the same information for screen readers.
+// Marks a link that opens in a new tab (GitHub issue forms): a small arrow
+// drawn as SVG (the ↗ character turns into an emoji on iOS), one space
+// away from the text, and the same information for screen readers.
 ---
 
-<span aria-hidden="true"> ↗</span><span class="visually-hidden"> (opens in a new tab)</span>
+<span class="new-tab" aria-hidden="true"
+  ><svg viewBox="0 0 12 12" width="12" height="12" focusable="false"
+    ><path
+      d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="square"></path></svg
+  ></span
+><span class="visually-hidden"> (opens in a new tab)</span>
+
+<style>
+  /* A space's width before the arrow, centred on the letters. */
+  .new-tab {
+    display: inline-flex;
+    align-items: center;
+    height: 1lh;
+    margin-left: 0.3em;
+    vertical-align: bottom;
+  }
+
+  svg {
+    width: 0.7em;
+    height: 0.7em;
+  }
+</style>

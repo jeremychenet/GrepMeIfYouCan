@@ -36,8 +36,8 @@ import { FAVORITES_MAX, HISTORY_MAX } from '../lib/store';
       server: no cookies, no tracking across sites, no personal data, so no consent banner. Besides
       page views, it records three anonymous events: a search with no result (the query, cut to
       100 characters, to know which commands are missing), a copy (the command id) and a favorite.
-      If your browser sends Do Not Track, nothing is recorded. The site works the same if
-      statistics are blocked.
+      Visits are counted even if your browser sends Do Not Track, since nothing identifies you.
+      The site works the same if statistics are blocked.
     </p>
 
     <h2 id="logs">Server logs</h2>
