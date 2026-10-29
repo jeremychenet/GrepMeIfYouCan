@@ -156,7 +156,9 @@ function init(): void {
       case 'prev':
       case 'first':
       case 'last':
-        if (!list || !card) return false;
+        // Only from the card or one of its variables, links and buttons:
+        // never from a multi-line field or a select, which need the arrows.
+        if (!list || !card || target.matches('textarea, select, [contenteditable]')) return false;
         setActive(list, moveIndex(cards(list).indexOf(card), action, cards(list).length), true);
         return true;
       case 'copy': {

@@ -44,7 +44,19 @@ describe('resolveKey', () => {
     expect(resolveKey(key('ArrowDown'), 'search')).toBe('enter-list');
     expect(resolveKey(key('ArrowUp'), 'search')).toBeNull();
     expect(resolveKey(key('a'), 'search')).toBeNull();
-    expect(resolveKey(key('ArrowDown'), 'page')).toBeNull();
+  });
+
+  it('moves between cards with the arrows from a variable, a link or a button of a card', () => {
+    // KeyboardNav ignores the move (native key) when the focus is outside a card.
+    for (const ctx of ['field', 'page'] as const) {
+      expect(resolveKey(key('ArrowDown'), ctx)).toBe('next');
+      expect(resolveKey(key('ArrowUp'), ctx)).toBe('prev');
+      // Shift+arrows select text in a field; Home/End move its caret.
+      expect(resolveKey(key('ArrowDown', { shiftKey: true }), ctx)).toBeNull();
+      expect(resolveKey(key('ArrowUp', { altKey: true }), ctx)).toBeNull();
+      expect(resolveKey(key('Home'), ctx)).toBeNull();
+      expect(resolveKey(key('End'), ctx)).toBeNull();
+    }
   });
 
   it('maps the list keys', () => {
