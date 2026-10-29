@@ -127,11 +127,8 @@ jobs:
             "deploy@$DEPLOY_HOST" "deploy $SHA"
           rm -f ~/.ssh/deploy_key
 
-      # Through the public Nginx, as a visitor. Until Let's Encrypt (J20) the
-      # certificate is self-signed and the DNS may not point here yet: --resolve
-      # and --insecure, both removed in J20.
+      # As a visitor: public DNS, Let's Encrypt certificate checked by curl.
       - name: Healthcheck https://grepmeifyoucan.com/healthz
         run: |
           curl -fsS --retry 5 --retry-all-errors --retry-delay 3 --max-time 10 \
-            --resolve "grepmeifyoucan.com:443:$DEPLOY_HOST" --insecure \
             https://grepmeifyoucan.com/healthz

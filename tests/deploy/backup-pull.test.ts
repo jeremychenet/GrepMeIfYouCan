@@ -15,6 +15,8 @@ const STUBS: Record<string, string> = {
 for a; do dest="$a"; done
 [ -z "\${RSYNC_FAILS:-}" ] || exit 23
 cp "$REMOTE"/* "$dest" 2>/dev/null || true
+# Like rsync -a with a trailing slash: the source folder's mode lands on dest.
+chmod 2750 "$dest"
 `,
   // run / exec / rm of the throwaway PostgreSQL. pg_restore stores its stdin.
   docker: `echo "docker $*" >> "$CALLS"

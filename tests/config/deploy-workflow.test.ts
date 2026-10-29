@@ -115,6 +115,8 @@ describe('deploy.yml', () => {
   it('ends with a healthcheck through the public Nginx', () => {
     const last = deploy.steps.at(-1);
     expect(last?.run).toContain('https://grepmeifyoucan.com/healthz');
+    // Real DNS and a verified certificate since the go-live (J20).
+    expect(last?.run).not.toMatch(/--insecure|-k\b|--resolve/);
   });
 });
 
