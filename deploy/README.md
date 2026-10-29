@@ -60,7 +60,14 @@ Other admin tools (Grafana, Prometheus…) are reached through an SSH tunnel:
 
    Keep your SSH session open and check that a new one still works: the setup
    disables password and root logins (it refuses to run if your admin user
-   has no SSH key).
+   has no SSH key), removes the `PermitRootLogin yes` line of the main
+   `sshd_config` (backup: `sshd_config.orig`) and prints the effective values
+   (`sshd -T`).
+
+   Recent OpenSSH (`PerSourcePenalties`) blocks an address for a while after
+   repeated failed logins: the connection is then reset before
+   authentication, even with a valid key. It lifts on its own (at most
+   10 minutes); avoid scripts that retry with a wrong key.
 
 3. Let the server pull the private image: create a **classic** personal
    access token with only `read:packages` (fine-grained tokens do not cover

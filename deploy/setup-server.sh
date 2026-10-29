@@ -111,10 +111,18 @@ Match User $DEPLOY_USER
     X11Forwarding no
 EOF
 chmod 644 "$SSHD_DROPIN"
+# The drop-in already wins (first value read), but a `PermitRootLogin yes`
+# left in the main file is misleading: remove it (backup kept once).
+if grep -qE '^[[:space:]]*PermitRootLogin[[:space:]]+yes[[:space:]]*$' /etc/ssh/sshd_config; then
+  [ -f /etc/ssh/sshd_config.orig ] || cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
+  sed -i -E '/^[[:space:]]*PermitRootLogin[[:space:]]+yes[[:space:]]*$/d' /etc/ssh/sshd_config
+fi
 sshd -t || {
   rm -f "$SSHD_DROPIN"
+  [ ! -f /etc/ssh/sshd_config.orig ] || cp -p /etc/ssh/sshd_config.orig /etc/ssh/sshd_config
   die "invalid sshd configuration, nothing changed"
 }
+echo "effective: $(sshd -T | grep -iE '^(permitrootlogin|passwordauthentication) ' | tr '\n' ' ')"
 # Socket-activated on recent Ubuntu: reload only if running (open sessions
 # stay up; new ones read the new configuration either way).
 systemctl try-reload-or-restart ssh
