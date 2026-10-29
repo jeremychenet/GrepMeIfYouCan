@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
+import { PLATFORMS } from '../../src/content/constants';
+import { CATEGORY_LABELS } from '../../src/lib/pages';
 import {
   REPORT_TEMPLATE,
   REPO_URL,
@@ -17,12 +19,27 @@ function params(url: string): URLSearchParams {
   return u.searchParams;
 }
 
+interface FormField {
+  id?: string;
+  attributes?: { options?: (string | { label: string })[] };
+}
+
+function formFields(template: string): FormField[] {
+  const form = parse(readFileSync(new URL(`../../.github/ISSUE_TEMPLATE/${template}`, import.meta.url), 'utf8')) as {
+    body: FormField[];
+  };
+  return form.body;
+}
+
 /** Ids of the fields of an issue form in .github/ISSUE_TEMPLATE/. */
 function formFieldIds(template: string): string[] {
-  const form = parse(readFileSync(new URL(`../../.github/ISSUE_TEMPLATE/${template}`, import.meta.url), 'utf8')) as {
-    body: { id?: string }[];
-  };
-  return form.body.flatMap((field) => (field.id ? [field.id] : []));
+  return formFields(template).flatMap((field) => (field.id ? [field.id] : []));
+}
+
+/** Option labels of a dropdown or checkboxes field. */
+function formOptions(template: string, id: string): string[] {
+  const field = formFields(template).find((f) => f.id === id);
+  return (field?.attributes?.options ?? []).map((o) => (typeof o === 'string' ? o : o.label));
 }
 
 describe('suggestCommandUrl', () => {
@@ -83,5 +100,11 @@ describe('issue forms', () => {
       expect.arrayContaining(['card-title', 'command', 'description', 'category', 'tags', 'platforms', 'danger']),
     );
     expect(formFieldIds(REPORT_TEMPLATE)).toEqual(expect.arrayContaining(['card', 'page']));
+  });
+
+  it('offer every category and platform of the schema, in the same order', () => {
+    expect(formOptions(SUGGEST_TEMPLATE, 'category')).toEqual(Object.values(CATEGORY_LABELS));
+    const names: Record<(typeof PLATFORMS)[number], string> = { linux: 'Linux', macos: 'macOS', unix: 'Unix' };
+    expect(formOptions(SUGGEST_TEMPLATE, 'platforms')).toEqual(PLATFORMS.map((p) => names[p]));
   });
 });

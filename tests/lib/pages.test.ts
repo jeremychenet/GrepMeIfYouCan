@@ -46,6 +46,7 @@ describe('paths', () => {
   it('labels every category', () => {
     expect(CATEGORY_LABELS).toEqual({
       linux: 'Linux',
+      unix: 'Unix',
       containers: 'Containers',
       'cloud-iac': 'Cloud & IaC',
       'git-ci': 'Git & CI',

@@ -328,6 +328,6 @@ Référence : [SPEC.md](./SPEC.md). Chaque jalon est livrable en une session, se
 ---
 
 ## Points à trancher en cours de route
-- [ ] Licence du code (MIT proposée), avant J15.
+- [x] Licence du code (MIT proposée), avant J15 : MIT (`LICENSE`), contenu sous `CONTENT_LICENSE`.
 - [x] OS et taille du serveur, avant J19 : VPS Hostinger, Ubuntu 26.04 LTS, 1 vCPU, 4 Go (SPEC §6.7).
 - [ ] Action « issue acceptée → PR » automatique : à ajouter après J20 si le volume de propositions le justifie.

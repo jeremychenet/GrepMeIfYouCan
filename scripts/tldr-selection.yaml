@@ -25,6 +25,8 @@ categories:
     - { page: common/chmod.md, tool: chmod, tags: [permissions, files], examples: [1, 7, 8] }
     - { page: common/curl.md, tool: curl, tags: [http, network], examples: [1, 2, 3, 4] }
 
+  unix: []
+
   containers:
     - { page: common/docker-container-run.md, tool: docker, tags: [run], examples: [2, 3, 4, 5, 6, 7] }
     - { page: common/docker-container-ls.md, tool: docker, tags: [list], examples: [1, 2, 4, 7] }

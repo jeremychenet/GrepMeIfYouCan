@@ -27,11 +27,12 @@ Une fiche n'est pas une page outil. La page outil (`find`) regroupe les fiches q
 | Catégorie   | Exemples d'outils |
 |-------------|-------------------|
 | `linux`     | find, grep, ss, lsof, du, df, systemctl, journalctl, chmod, tar |
+| `unix`      | outils propres aux autres Unix (BSD…) : rcctl |
 | `containers`| docker, podman, kubectl, helm |
 | `cloud-iac` | terraform, ansible, aws, gcloud, az |
 | `git-ci`    | git, gh |
 
-**Volume au lancement : environ 50 fiches par catégorie (≈ 200 au total)**, issues de tldr-pages (voir §4).
+**Volume au lancement : environ 50 fiches par catégorie (≈ 200 au total)**, issues de tldr-pages (voir §4). La catégorie `unix` (ajoutée après la mise en ligne, avec la suggestion #30) démarre avec les fiches proposées par les visiteurs.
 
 ### 2.3 Recherche
 - Barre de recherche toujours visible, focus avec `/` ou `⌘K` / `Ctrl+K`.
@@ -99,7 +100,7 @@ Chaque fiche a aussi sa propre page statique (`/c/<id>`) pour le SEO et le parta
 
 ### 2.9 Contributions
 Il n'y a **aucun formulaire de soumission intégré au site**. Tout passe par GitHub :
-- Lien global **« Suggest a command »** (pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` reprenant les champs d'une fiche, avec un exemple dans chacun : titre, commande, description (obligatoires), catégorie, tags, plateformes (Linux, macOS), niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre de l'issue et le titre de la fiche (champ `card-title`, car `title` est réservé au titre de l'issue).
+- Lien global **« Suggest a command »** (pied de page, et message « aucun résultat » de la recherche) → formulaire d'*issue* GitHub `suggest-command.yml` reprenant les champs d'une fiche, avec un exemple dans chacun : titre, commande, description (obligatoires), catégorie, tags, plateformes (Linux, macOS, Unix), niveau de danger supposé, source. Depuis une recherche vide, la requête (nettoyée, 100 caractères max) préremplit le titre de l'issue et le titre de la fiche (champ `card-title`, car `title` est réservé au titre de l'issue).
 - Les liens vers GitHub (Suggest, Report) s'ouvrent dans un **nouvel onglet** (↗, annoncé aux lecteurs d'écran) : le visiteur ne quitte pas le site.
 - Lien **« Report an issue »** sur la page de chaque fiche (`/c/<id>`, pas sur les lignes des listes) → formulaire `report-issue.yml` prérempli avec l'id et l'URL de la fiche ; type de problème et détails à remplir.
 - Les champs sont préremplis par les paramètres d'URL nommés d'après leur `id` dans le formulaire (`src/lib/github.ts`) ; un test vérifie que ces `id` existent. Les issues vides sont désactivées (`config.yml`). Labels : `suggestion`, `report`.
@@ -156,7 +157,7 @@ tool: find
 category: linux
 tags: [disk, cleanup, files]
 danger: safe            # safe | caution | destructive
-platforms: [linux]      # optionnel : linux | macos
+platforms: [linux]      # optionnel : linux | macos | unix
 source:
   type: tldr            # tldr | original
   page: common/find.md
@@ -175,7 +176,7 @@ source:
   - `description` : une phrase au présent, 3e personne (« Lists… », « Deletes… »), qui dit ce que fait la commande et ses effets de bord.
   - `command` : options courtes idiomatiques (`du -sh`, `grep -rn`, `tar -xzf`) car les formes longues GNU échouent sur macOS ; forme longue seulement si elle est plus claire et peu connue en court (`--dry-run`, `--tail`). `sudo` quand la commande l'exige sur un système standard.
   - Variables : noms courts en snake_case (`{{path:.}}`, `{{lines:100}}`), valeur par défaut seulement si elle est évidente et sans risque ; **jamais de valeur par défaut pour la cible d'une commande destructive**.
-  - `platforms` : `[linux]` pour ce qui est propre à Linux (systemd, `ss`, options GNU), `[linux, macos]` seulement si la commande a été vérifiée sur macOS ; omis pour les catégories hors `linux`.
+  - `platforms` : `[linux]` pour ce qui est propre à Linux (systemd, `ss`, options GNU), `[linux, macos]` seulement si la commande a été vérifiée sur macOS ; `[unix]` pour ce qui est propre à un autre Unix (catégorie `unix`), avec le système précis dans le titre (« (OpenBSD) ») et en tag (`openbsd`), car la plateforme n'apparaît que sur la page de la fiche ; omis pour les autres catégories.
   - Fiche adaptée d'un exemple tldr : `source.type: tldr` avec `example`. Fiche écrite sans exemple tldr : `source.type: original`.
 - La validation tourne avant chaque build (`npm run build` = `lint-content` + `astro build`), et Astro revalide aussi chaque fiche avec le même schéma Zod.
 
@@ -360,7 +361,7 @@ open http://localhost:8080
 - Dépendances : Dependabot + `npm audit` en CI.
 
 ## 8. Exigences non fonctionnelles
-- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s ; CLS < 0,1 ; résultat de recherche < 50 ms pour environ 1000 fiches. En CI, Lighthouse simule une 4G lente sur `dist/` servi par son serveur statique : le budget y est **LCP ≤ 1,6 s** (la simulation varie de 1,36 à 1,51 s selon l'arrivée des polices) ; les 1,5 s se vérifient sur le vrai serveur à la mise en ligne (J20).
+- **Performance** : Lighthouse ≥ 95 (Performance, Accessibilité, Best Practices, SEO) sur mobile ; LCP < 1,5 s ; CLS < 0,1 ; résultat de recherche < 50 ms pour environ 1000 fiches. En CI, Lighthouse simule une 4G lente sur `dist/` servi par son serveur statique : le budget y est **LCP ≤ 1,6 s** (la simulation varie de 1,36 à 1,51 s selon l'arrivée des polices), sauf pour une URL de recherche (`/?q=`) : **≤ 2,0 s**, car ses résultats attendent les scripts et l'index (1,81 s simulé ; jusqu'à la catégorie Unix, la liste des catégories, affichée avant les résultats, masquait ce temps) ; les 1,5 s se vérifient sur le vrai serveur à la mise en ligne (J20).
 - **SEO** : pages statiques par fiche, `<title>` et meta description, sitemap.xml, données structurées si pertinent.
 - **Compatibilité** : deux dernières versions de Chrome, Firefox, Safari, Edge ; iOS Safari et Chrome Android.
 - **Disponibilité** : le site fonctionne même si Umami est en panne (les analytics ne bloquent jamais l'affichage).

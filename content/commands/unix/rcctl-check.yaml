@@ -1,0 +1,11 @@
+id: rcctl-check
+title: Check the status of a service (OpenBSD)
+description: Checks whether an rc.d service is running, printing service(ok) or service(failed) and exiting 0 only when it runs.
+command: rcctl check {{service}}
+tool: rcctl
+category: unix
+tags: [services, openbsd]
+danger: safe
+platforms: [unix]
+source:
+  type: original
