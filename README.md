@@ -1,10 +1,11 @@
 # GrepMeIfYouCan
 
-Find, adapt and copy the right Linux / Infra / DevOps command in under 10 seconds.
+Find, adapt and copy the right Linux / Infra / DevOps command in under 5 seconds: **https://grepmeifyoucan.com**
 
-- Specification: [SPEC.md](./SPEC.md)
-- Milestones: [PLAN.md](./PLAN.md)
+- Specification: [SPEC.md](./SPEC.md) (French)
+- Roadmap: [PLAN.md](./PLAN.md) (v2; the v1 plan is in [docs/archive](./docs/archive/PLAN-v1.md))
 - Deployment and server: [deploy/README.md](./deploy/README.md)
+- Contributing a command: use **Suggest a command** on the site (a prefilled GitHub issue). Every command is reviewed before it is published.
 
 ## Requirements
 
@@ -30,6 +31,14 @@ make up          # http://localhost:8080
 | `make clean` | Stop and delete volumes (forces a fresh `npm ci`, deletes local Umami data) |
 | `make check-headers` | Check the security headers served on :8080 |
 | `make nginx-test` | Validate the Nginx configuration |
+| `make test` / `make coverage` | Unit tests / unit tests with the CI coverage thresholds |
+| `make e2e` | Playwright end-to-end tests against the dev stack |
+| `make lint-content` | Validate every command card (schema + danger lint) |
+| `make build` / `make check-dist` | Build the static site, then check the generated pages |
+| `make lighthouse` | Lighthouse (mobile) with the CI budgets |
+| `make prod-local` / `make check-prod` | Run and check the production images locally (https://localhost) |
+
+Run `make help` for the full list.
 
 The site is only reachable through the Nginx proxy on `127.0.0.1:8080`, which adds the security headers (CSP…); the Astro dev server has no published port.
 
