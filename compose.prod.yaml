@@ -96,7 +96,7 @@ services:
   # Always the named volume, even while `web` still reads LETSENCRYPT_DIR.
   certbot:
     <<: *hardening
-    image: certbot/certbot:v5.8.0
+    image: certbot/certbot:v5.9.0
     init: true
     user: "101:101"
     read_only: true
