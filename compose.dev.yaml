@@ -37,7 +37,7 @@ services:
   # the site is http://localhost:8080 (accepted by Vite's host check). The
   # image tag must match @playwright/test in package.json (tests/config).
   e2e:
-    image: mcr.microsoft.com/playwright:v1.64.1-noble
+    image: mcr.microsoft.com/playwright:v1.65.0-noble
     profiles: [test]
     init: true
     ipc: host
